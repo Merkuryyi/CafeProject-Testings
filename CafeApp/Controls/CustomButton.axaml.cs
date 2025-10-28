@@ -2,6 +2,7 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using System;
 
 namespace CafeApp.Controls
 {
@@ -12,8 +13,7 @@ namespace CafeApp.Controls
             get => MainButton.Content?.ToString() ?? "";
             set => MainButton.Content = value;
         }
-
-        public event RoutedEventHandler Click;
+        public event EventHandler Click;
 
         public CustomButton()
         {
