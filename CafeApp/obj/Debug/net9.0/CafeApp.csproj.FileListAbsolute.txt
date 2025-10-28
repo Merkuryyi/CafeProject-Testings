@@ -1,0 +1,2 @@
+C:\Users\Terra\RiderProjects\CafeProject\CafeApp\obj\Debug\net9.0\CafeApp.csproj.AssemblyReference.cache
+C:\Users\Terra\RiderProjects\CafeProject\CafeApp\obj\Debug\net9.0\Avalonia\Resources.Inputs.cache
