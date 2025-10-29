@@ -1,10 +1,9 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             x:Class="CafeApp.App"
-             RequestedThemeVariant="Default">
-             <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
-
+             x:Class="CafeApp.App">
     <Application.Styles>
         <FluentTheme />
+        <!-- Временно закомментируем ACSS -->
+        <!-- <StyleInclude Source="avares://CafeApp/Styles/Components.acss" /> -->
     </Application.Styles>
 </Application>

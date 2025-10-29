@@ -27,5 +27,8 @@ build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 [C:/Users/Terra/RiderProjects/CafeProject/CafeApp/Controls/CustomButton.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 
+[C:/Users/Terra/RiderProjects/CafeProject/CafeApp/Controls/formInput/FormInput.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
 [C:/Users/Terra/RiderProjects/CafeProject/CafeApp/MainWindow.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml

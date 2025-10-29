@@ -1,0 +1,42 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="CafeApp.Controls.FormInput"
+             Width="400">
+    
+    <StackPanel Spacing="15">
+        <!-- Название формы -->
+        <TextBlock x:Name="TitleTextBlock"
+                   FontSize="24"
+                   FontWeight="Bold"
+                   Foreground="#333333"
+                   HorizontalAlignment="Center"
+                   Text="Регистрация"/>
+        
+        <!-- Поле ввода логина -->
+        <StackPanel Spacing="5">
+            <TextBlock Text="Логин:"
+                       FontSize="14"
+                       Foreground="#194E84"/>
+            <TextBox x:Name="LoginInput"
+                     Height="45"
+                     FontSize="14"
+                     Padding="15,0"
+                     BorderThickness="2"
+                     BorderBrush="#194E84"
+                     CornerRadius="8"/>
+        </StackPanel>
+        
+        <!-- Кнопка далее -->
+        <Button x:Name="NextButton"
+                Height="45"
+                Content="Далее"
+                FontSize="16"
+                FontWeight="Bold"
+                Background="#007ACC"
+                Foreground="White"
+                BorderThickness="0"
+                CornerRadius="8"
+                HorizontalAlignment="Stretch"/>
+    </StackPanel>
+    
+</UserControl>

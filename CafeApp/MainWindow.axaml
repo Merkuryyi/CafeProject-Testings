@@ -1,9 +1,23 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        xmlns:controls="clr-namespace:CafeApp.Controls"
         x:Class="CafeApp.MainWindow"
-        Title="CafeApp">
-    Welcome to Avalonia!
+        Title="CafeApp"
+        Width="800"
+        Height="600"
+        Background="#062B58">
+    
+    <Grid>
+        <!-- Отступы по 10% с каждой стороны = 80% ширины/высоты -->
+        <Rectangle Fill="#F2F2F2"
+                   Margin="30"
+                   HorizontalAlignment="Stretch"
+                   VerticalAlignment="Stretch"
+                   RadiusX="20"
+                   RadiusY="20"/>
+        <controls:FormInput Title="Регистрация"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"/>
+    </Grid>
+    
 </Window>
