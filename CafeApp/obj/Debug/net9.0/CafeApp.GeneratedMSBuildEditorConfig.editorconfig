@@ -24,7 +24,7 @@ build_property.EnableCodeStyleSeverity =
 [C:/Users/Terra/RiderProjects/CafeProject/CafeApp/App.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 
-[C:/Users/Terra/RiderProjects/CafeProject/CafeApp/Controls/CustomButton.axaml]
+[C:/Users/Terra/RiderProjects/CafeProject/CafeApp/Controls/Components/Button.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 
 [C:/Users/Terra/RiderProjects/CafeProject/CafeApp/Controls/formInput/FormInput.axaml]

@@ -1,25 +1,12 @@
 ﻿<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="CafeApp.Controls.FormInput"
+			xmlns:components="clr-namespace:CafeApp.Controls.Components"
              Width="400">
     
     <UserControl.Styles>
         <!-- Стили для кнопки -->
-        <Style Selector="Button#NextButton">
-            <Setter Property="Background" Value="#AEC8D9"/>
-            <Setter Property="Foreground" Value="#194E84"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="CornerRadius" Value="8"/>
-            <Setter Property="Cursor" Value="Hand"/>
-        </Style>
-        <Style Selector="Button#NextButton:pointerover">
-            <Setter Property="Background" Value="#8BAEC9"/>
-            <Setter Property="Foreground" Value="#194E84"/>
-        </Style>
-        <Style Selector="Button#NextButton:pressed">
-            <Setter Property="Background" Value="#8BAEC9"/>
-            <Setter Property="Foreground" Value="#194E84"/>
-        </Style>
+       
 
         <!-- Стили для полей ввода -->
         <Style Selector="TextBox">
@@ -68,9 +55,6 @@
         <Setter Property="Foreground" Value="White"/>
     </Style>
 
-
-
-
     </UserControl.Styles>
 
 
@@ -118,15 +102,7 @@
 					 PasswordChar="*"/>
         </StackPanel>
 
-        <Button x:Name="NextButton"
-                Height="45"
-                Content="Далее"
-                FontSize="16"
-                FontWeight="Bold"
-                BorderThickness="0"
-                CornerRadius="8"
-                HorizontalContentAlignment="Center"
-                VerticalContentAlignment="Center"
-                HorizontalAlignment="Stretch"/>
+        <components:Button Text="Далее"
+                   HorizontalAlignment="Stretch"/>
     </StackPanel>
 </UserControl>
