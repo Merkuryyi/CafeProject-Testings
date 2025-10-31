@@ -2,7 +2,7 @@
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 
-namespace CafeApp.Controls.Components
+namespace CafeApp.Controls.Components.Button
 {
     public partial class Button : UserControl
     {
