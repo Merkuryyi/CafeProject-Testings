@@ -8,13 +8,13 @@
         Background="#062B58">
     
     <Grid>
-        <!-- Отступы по 10% с каждой стороны = 80% ширины/высоты -->
         <Rectangle Fill="#F2F2F2"
                    Margin="30"
                    HorizontalAlignment="Stretch"
                    VerticalAlignment="Stretch"
                    RadiusX="20"
                    RadiusY="20"/>
+
         <controls:FormInput Title="Регистрация"
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center"/>
