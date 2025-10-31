@@ -1,14 +1,13 @@
 ﻿<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="CafeApp.Controls.FormInput"
-			xmlns:components="clr-namespace:CafeApp.Controls.Components.Button"
+			xmlns:button="clr-namespace:CafeApp.Controls.Components.Button"
+             xmlns:combobox="clr-namespace:CafeApp.Controls.Components.ComboBox"
              Width="400"
             x:Name="root">
     
     <UserControl.Styles>
-        <!-- Стили для кнопки -->
-       
-
+          
         <!-- Стили для полей ввода -->
         <Style Selector="TextBox">
             <Setter Property="BorderBrush" Value="#194E84"/>
@@ -30,31 +29,7 @@
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="BorderBrush" Value="#B7B7B7"/>
         </Style>
-		<Style Selector="ComboBox">
-            <Setter Property="BorderBrush" Value="#194E84"/>
-            <Setter Property="BorderThickness" Value="2"/>
-            <Setter Property="Background" Value="White"/>   
-            <Setter Property="Foreground" Value="#194E84"/>
-            <Setter Property="CornerRadius" Value="8"/>
-
-        </Style>
-<Style Selector="ComboBoxItem">
-        <Setter Property="Background" Value="White"/>
-        <Setter Property="Foreground" Value="#194E84"/>
-        <Setter Property="BorderThickness" Value="0"/>
-        <Setter Property="Height" Value="35"/>
-        <Setter Property="VerticalContentAlignment" Value="Center"/>
-        <Setter Property="Padding" Value="15,0"/>
-    </Style>
-<Style Selector="ComboBoxItem:pointerover">
-        <Setter Property="Background" Value="#194E84"/>
-        <Setter Property="Foreground" Value="White"/>
-    </Style>
-
-    <Style Selector="ComboBoxItem:selected">
-        <Setter Property="Background" Value="#194E84"/>
-        <Setter Property="Foreground" Value="White"/>
-    </Style>
+		
 
     </UserControl.Styles>
 
@@ -66,24 +41,10 @@
                    Foreground="#194E84"
                    HorizontalAlignment="Center"
                    />
-
-
-		<TextBlock Text="Роль:"
-               FontSize="14"
-               Foreground="#194E84"/>
-		<ComboBox x:Name="RoleComboBox"
-          Height="45"
-          FontSize="14"
-          Padding="15,0"
-          VerticalContentAlignment="Center"
-            PlaceholderText="Выберите роль">
-    		<ComboBoxItem>Администратор</ComboBoxItem>
-    		<ComboBoxItem>Официант</ComboBoxItem>
-    		<ComboBoxItem>Повар</ComboBoxItem>
-		</ComboBox>
+		<combobox:ComboBox Text="Роль:"/>
 
         
-        
+   
         <StackPanel Spacing="5">
             <TextBlock Text="Логин:"
                        FontSize="14"
@@ -103,7 +64,7 @@
 					 PasswordChar="*"/>
         </StackPanel>
 
-        <components:Button Text="Далее"
+        <button:Button Text="Далее"
                    HorizontalAlignment="Stretch"/>
     </StackPanel>
 </UserControl>

@@ -1,0 +1,48 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="CafeApp.Controls.Components.ComboBox.ComboBox"
+             x:Name="root"
+             Width="400">
+    
+    <UserControl.Styles>
+        <Style Selector="ComboBox">
+            <Setter Property="BorderBrush" Value="#194E84"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="Background" Value="White"/>   
+            <Setter Property="Foreground" Value="#194E84"/>
+            <Setter Property="CornerRadius" Value="8"/>
+        </Style>
+        <Style Selector="ComboBoxItem">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="#194E84"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Height" Value="35"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Padding" Value="15,0"/>
+        </Style>
+        <Style Selector="ComboBoxItem:pointerover">
+            <Setter Property="Background" Value="#194E84"/>
+            <Setter Property="Foreground" Value="White"/>
+        </Style>
+        <Style Selector="ComboBoxItem:selected">
+            <Setter Property="Background" Value="#194E84"/>
+            <Setter Property="Foreground" Value="White"/>
+        </Style>
+    </UserControl.Styles>
+
+    <StackPanel Spacing="5">
+        <TextBlock Text="{Binding #root.Text}"
+                   FontSize="14"
+                   Foreground="#194E84"/>
+        <ComboBox x:Name="MainComboBox"
+                  Height="45"
+                  FontSize="14"
+                  Padding="15,0"
+                  VerticalContentAlignment="Center"
+                  PlaceholderText="Выберите роль">
+            <ComboBoxItem>Администратор</ComboBoxItem>
+            <ComboBoxItem>Официант</ComboBoxItem>
+            <ComboBoxItem>Повар</ComboBoxItem>
+        </ComboBox>
+    </StackPanel>
+</UserControl>
