@@ -15,7 +15,7 @@
                    RadiusX="20"
                    RadiusY="20"/>
 
-        <controls:FormInput Title="Регистрация"
+        <controls:FormInput Title="Авторизация"
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center"/>
     </Grid>

@@ -6,9 +6,8 @@ namespace CafeApp.Controls
 {
     public partial class FormInput : UserControl
     {
-
         public static readonly StyledProperty<string> TitleProperty =
-            AvaloniaProperty.Register<FormInput, string>(nameof(Title), "Регистрация");
+            AvaloniaProperty.Register<FormInput, string>(nameof(Title), "Название");
 
         public FormInput()
         {

@@ -2,7 +2,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="CafeApp.Controls.FormInput"
 			xmlns:components="clr-namespace:CafeApp.Controls.Components.Button"
-             Width="400">
+             Width="400"
+            x:Name="root">
     
     <UserControl.Styles>
         <!-- Стили для кнопки -->
@@ -59,12 +60,12 @@
 
 
     <StackPanel Spacing="15">
-		<TextBlock x:Name="TitleTextBlock"
+		<TextBlock x:Name="TitleTextBlock" Text="{Binding #root.Title}"
                    FontSize="24"
                    FontWeight="Bold"
                    Foreground="#194E84"
                    HorizontalAlignment="Center"
-                   Text="Регистрация"/>
+                   />
 
 
 		<TextBlock Text="Роль:"
