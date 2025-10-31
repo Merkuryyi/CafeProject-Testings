@@ -9,6 +9,9 @@ namespace CafeApp.Controls
         public static readonly StyledProperty<string> TitleProperty =
             AvaloniaProperty.Register<FormInput, string>(nameof(Title), "Название");
 
+        public static readonly StyledProperty<bool> ShowRoleSelectorProperty =
+            AvaloniaProperty.Register<FormInput, bool>(nameof(ShowRoleSelector), true);
+
         public FormInput()
         {
             InitializeComponent();
@@ -23,6 +26,23 @@ namespace CafeApp.Controls
         {
             get => GetValue(TitleProperty);
             set => SetValue(TitleProperty, value);
+        }
+
+        public bool ShowRoleSelector
+        {
+            get => GetValue(ShowRoleSelectorProperty);
+            set => SetValue(ShowRoleSelectorProperty, value);
+        }
+
+        protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
+        {
+            base.OnPropertyChanged(change);
+
+            if (change.Property == TitleProperty)
+            {
+                // Автоматически скрываем ComboBox когда Title = "Авторизация"
+                ShowRoleSelector = change.NewValue?.ToString() != "Авторизация";
+            }
         }
     }
 }

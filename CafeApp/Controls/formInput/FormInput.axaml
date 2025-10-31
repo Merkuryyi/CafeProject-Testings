@@ -1,70 +1,35 @@
 ﻿<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="CafeApp.Controls.FormInput"
-			xmlns:button="clr-namespace:CafeApp.Controls.Components.Button"
+             xmlns:button="clr-namespace:CafeApp.Controls.Components.Button"
              xmlns:combobox="clr-namespace:CafeApp.Controls.Components.ComboBox"
+             xmlns:input="clr-namespace:CafeApp.Controls.Components.Input"
              Width="400"
-            x:Name="root">
+             x:Name="root">
     
     <UserControl.Styles>
-          
         <!-- Стили для полей ввода -->
-        <Style Selector="TextBox">
-            <Setter Property="BorderBrush" Value="#194E84"/>
-            <Setter Property="BorderThickness" Value="2"/>
-            <Setter Property="Background" Value="White"/>   
-            <Setter Property="Foreground" Value="#194E84"/>
-            <Setter Property="CornerRadius" Value="8"/>
-	        <Setter Property="VerticalContentAlignment" Value="Center"/>
-        </Style>
-
-        <Style Selector="TextBox:pointerover">
-            <Setter Property="Background" Value="#194E84"/>
-            <Setter Property="Foreground" Value="White"/>
-            <Setter Property="BorderBrush" Value="#194E84"/>
-        </Style>
-
-        <Style Selector="TextBox:focus">
-            <Setter Property="Background" Value="#194E84"/>
-            <Setter Property="Foreground" Value="White"/>
-            <Setter Property="BorderBrush" Value="#B7B7B7"/>
-        </Style>
-		
-
+        
     </UserControl.Styles>
 
-
     <StackPanel Spacing="15">
-		<TextBlock x:Name="TitleTextBlock" Text="{Binding #root.Title}"
+        <TextBlock x:Name="TitleTextBlock" Text="{Binding #root.Title}"
                    FontSize="24"
                    FontWeight="Bold"
                    Foreground="#194E84"
-                   HorizontalAlignment="Center"
-                   />
-		<combobox:ComboBox Text="Роль:"/>
-
+                   HorizontalAlignment="Center"/>
         
-   
-        <StackPanel Spacing="5">
-            <TextBlock Text="Логин:"
-                       FontSize="14"
-                       Foreground="#194E84"/>
-            <TextBox x:Name="LoginInput"
-                     Height="45"
-                     FontSize="14"
-                     Padding="15,0"/>
+        <!-- ComboBox будет скрываться при Title = "Авторизация" -->
+        <combobox:ComboBox Text="Роль:" 
+                          IsVisible="{Binding #root.ShowRoleSelector}"/>
 
-            <TextBlock Text="Пароль:"
-                       FontSize="14"
-                       Foreground="#194E84"/>
-            <TextBox x:Name="PasswordInput"
-                     Height="45"
-                     FontSize="14"
-                     Padding="15,0"
-					 PasswordChar="*"/>
+        <StackPanel Spacing="5">
+            <input:Input Text="Логин" />
+            <input:Input Text="Пароль" IsPassword="True"/>
+
         </StackPanel>
 
         <button:Button Text="Далее"
-                   HorizontalAlignment="Stretch"/>
+                       HorizontalAlignment="Stretch"/>
     </StackPanel>
 </UserControl>
