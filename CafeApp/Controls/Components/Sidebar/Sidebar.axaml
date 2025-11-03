@@ -1,0 +1,48 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="CafeApp.Controls.Components.Sidebar.Sidebar"
+             x:Name="root">
+    
+    <StackPanel Margin="20" Spacing="15">
+        <TextBlock Text="{Binding #root.Role}"
+                   FontSize="32"
+                   Foreground="#194E84"
+                   Margin="0,0,0,40"/>
+        
+        <TextBlock x:Name="RegistrationText" 
+                   Text="Регистрация"
+                   FontSize="24"
+                   Foreground="#194E84"
+                   Margin="0,0,0,20"/>
+        
+        <TextBlock x:Name="EmployeesText"
+                   Text="Сотрудники"
+                   FontSize="24"
+                   Foreground="#194E84"
+                   Margin="0,0,0,20"/>
+        
+        <!-- Добавлены имена OrdersText и ReportsText -->
+        <TextBlock x:Name="OrdersText"
+                   Text="Заказы"
+                   FontSize="24"
+                   Foreground="#194E84"
+                   Margin="0,0,0,20"/>
+        
+        <TextBlock x:Name="ShiftsText"
+                   Text="Смены"
+                   FontSize="24"
+                   Foreground="#194E84"
+                   Margin="0,0,0,20"/>
+
+        <TextBlock x:Name="ReportsText"
+                   Text="Отчеты"
+                   FontSize="24"
+                   Foreground="#194E84"
+                   Margin="0,0,0,20"/>
+        
+        <TextBlock x:Name="OrderText"
+                   Text="Ордер"
+                   FontSize="24"
+                   Foreground="#194E84"/>
+    </StackPanel>
+</UserControl>

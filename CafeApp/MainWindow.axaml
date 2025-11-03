@@ -1,23 +1,53 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:controls="clr-namespace:CafeApp.Controls"
+        xmlns:sidebar="clr-namespace:CafeApp.Controls.Components.Sidebar"
         x:Class="CafeApp.MainWindow"
         Title="CafeApp"
         Width="800"
         Height="600"
         Background="#062B58">
     
-    <Grid>
-        <Rectangle Fill="#F2F2F2"
-                   Margin="30"
-                   HorizontalAlignment="Stretch"
-                   VerticalAlignment="Stretch"
-                   RadiusX="20"
-                   RadiusY="20"/>
+    <Grid Name="MainGrid">
+        <!-- Когда сайдбар ЕСТЬ -->
+        <Grid Name="WithSidebarPanel" IsVisible="False">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="400"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
 
-        <controls:FormInput Title="Авторизация"
+            <!-- Левая колонка: фон + сайдбар -->
+            <Grid Grid.Column="0">
+                <Rectangle Fill="#F2F2F2"
+                           Margin="30,30,15,30"
+                           RadiusX="20" 
+                           RadiusY="20"/>
+                
+                <sidebar:Sidebar Role="Администратор"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Stretch"
+                                Margin="40,40,25,40"/>
+            </Grid>
+
+            <!-- Правая колонка: только фон -->
+            <Rectangle Grid.Column="1" 
+                       Fill="#F2F2F2"
+                       Margin="15,30,30,30"
+                       RadiusX="20" 
+                       RadiusY="20"/>
+        </Grid>
+
+        <!-- Когда сайдбара НЕТ -->
+        <Grid Name="WithoutSidebarPanel" IsVisible="True">
+            <Rectangle Fill="#F2F2F2"
+                       Margin="30"
+                       HorizontalAlignment="Stretch"
+                       VerticalAlignment="Stretch"
+                       RadiusX="20" 
+                       RadiusY="20"/>
+			<controls:FormInput Title="Авторизация"
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center"/>
+        </Grid>
     </Grid>
-    
 </Window>

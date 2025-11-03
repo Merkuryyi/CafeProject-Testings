@@ -19,7 +19,7 @@ namespace CafeApp.Controls.Components.Input
         {
             InitializeComponent();
             
-            // Подписываемся на событие после загрузки XAML
+     
             this.AttachedToVisualTree += (s, e) => UpdatePasswordChar();
         }
 
