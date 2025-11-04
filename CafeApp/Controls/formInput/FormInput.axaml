@@ -7,11 +7,6 @@
              Width="400"
              x:Name="root">
     
-    <UserControl.Styles>
-        <!-- Стили для полей ввода -->
-        
-    </UserControl.Styles>
-
     <StackPanel Spacing="15">
         <TextBlock x:Name="TitleTextBlock" Text="{Binding #root.Title}"
                    FontSize="24"
@@ -24,12 +19,12 @@
                           IsVisible="{Binding #root.ShowRoleSelector}"/>
 
         <StackPanel Spacing="5">
-            <input:Input Text="Логин" />
-            <input:Input Text="Пароль" IsPassword="True"/>
-
+            <input:Input x:Name="UsernameInput" Text="Логин" />
+            <input:Input x:Name="PasswordInput" Text="Пароль" IsPassword="True"/>
         </StackPanel>
 
         <button:Button Text="Далее"
-                       HorizontalAlignment="Stretch"/>
+                       HorizontalAlignment="Stretch"
+                      Click="LoginButton_Click"/> 
     </StackPanel>
 </UserControl>

@@ -1,20 +1,24 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Ксюша\\CafeProject\\CafeProject\\CafeApp\\CafeApp.csproj": {}
+    "C:\\Users\\Terra\\RiderProjects\\CafeProject\\CafeApp\\CafeApp.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Ксюша\\CafeProject\\CafeProject\\CafeApp\\CafeApp.csproj": {
+    "C:\\Users\\Terra\\RiderProjects\\CafeProject\\CafeApp\\CafeApp.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Ксюша\\CafeProject\\CafeProject\\CafeApp\\CafeApp.csproj",
+        "projectUniqueName": "C:\\Users\\Terra\\RiderProjects\\CafeProject\\CafeApp\\CafeApp.csproj",
         "projectName": "CafeApp",
-        "projectPath": "C:\\Users\\Ксюша\\CafeProject\\CafeProject\\CafeApp\\CafeApp.csproj",
-        "packagesPath": "C:\\Users\\Ксюша\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Ксюша\\CafeProject\\CafeProject\\CafeApp\\obj\\",
+        "projectPath": "C:\\Users\\Terra\\RiderProjects\\CafeProject\\CafeApp\\CafeApp.csproj",
+        "packagesPath": "C:\\Users\\Terra\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Terra\\RiderProjects\\CafeProject\\CafeApp\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
         "configFilePaths": [
-          "C:\\Users\\Ксюша\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\Terra\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -39,7 +43,8 @@
           "enableAudit": "true",
           "auditLevel": "low",
           "auditMode": "direct"
-        }
+        },
+        "SdkAnalysisLevel": "9.0.200"
       },
       "frameworks": {
         "net8.0": {
@@ -102,7 +107,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Users\\Ксюша\\.dotnet\\sdk\\8.0.203/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.200/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
