@@ -62,7 +62,7 @@ namespace CafeApp.Controls
                 string username = GetUsernameFromInput();
                 string password = GetPasswordFromInput();
 
-                Console.WriteLine($"Логин: {username}, Пароль: {password}");
+                //Console.WriteLine($"Логин: {username}, Пароль: {password}");
 /*
                 // Проверяем, что поля не пустые
                 if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))

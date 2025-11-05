@@ -9,40 +9,81 @@
                    Foreground="#194E84"
                    Margin="0,0,0,40"/>
         
-        <TextBlock x:Name="RegistrationText" 
-                   Text="Регистрация"
-                   FontSize="24"
-                   Foreground="#194E84"
-                   Margin="0,0,0,20"/>
+        <Border x:Name="RegistrationBorder" 
+                Background="Transparent"
+                CornerRadius="10"
+                Margin="0,0,0,20">
+            <TextBlock x:Name="RegistrationText" 
+                       Text="Регистрация"
+                       FontSize="24"
+                       Foreground="#194E84"
+                       Padding="20,10"
+                       HorizontalAlignment="Stretch"
+                       PointerPressed="TextBlock_PointerPressed"/>
+        </Border>
+		
+        <Border x:Name="EmployeesBorder" 
+                Background="Transparent"
+                CornerRadius="10"
+                Margin="0,0,0,20">
+            <TextBlock x:Name="EmployeesText"
+                       Text="Сотрудники"
+                       FontSize="24"
+                       Foreground="#194E84"
+                       Padding="20,10"
+                       HorizontalAlignment="Stretch"
+                       PointerPressed="TextBlock_PointerPressed"/>
+        </Border>
         
-        <TextBlock x:Name="EmployeesText"
-                   Text="Сотрудники"
-                   FontSize="24"
-                   Foreground="#194E84"
-                   Margin="0,0,0,20"/>
+        <Border x:Name="OrdersBorder" 
+                Background="Transparent"
+                CornerRadius="10"
+                Margin="0,0,0,20">
+            <TextBlock x:Name="OrdersText"
+                       Text="Заказы"
+                       FontSize="24"
+                       Foreground="#194E84"
+                       Padding="20,10"
+                       HorizontalAlignment="Stretch"
+                       PointerPressed="TextBlock_PointerPressed"/>
+        </Border>
         
-        <!-- Добавлены имена OrdersText и ReportsText -->
-        <TextBlock x:Name="OrdersText"
-                   Text="Заказы"
-                   FontSize="24"
-                   Foreground="#194E84"
-                   Margin="0,0,0,20"/>
-        
-        <TextBlock x:Name="ShiftsText"
-                   Text="Смены"
-                   FontSize="24"
-                   Foreground="#194E84"
-                   Margin="0,0,0,20"/>
+        <Border x:Name="ShiftsBorder" 
+                Background="Transparent"
+                CornerRadius="10"
+                Margin="0,0,0,20">
+            <TextBlock x:Name="ShiftsText"
+                       Text="Смены"
+                       FontSize="24"
+                       Foreground="#194E84"
+                       Padding="20,10"
+                       HorizontalAlignment="Stretch"
+                       PointerPressed="TextBlock_PointerPressed"/>
+        </Border>
 
-        <TextBlock x:Name="ReportsText"
-                   Text="Отчеты"
-                   FontSize="24"
-                   Foreground="#194E84"
-                   Margin="0,0,0,20"/>
+        <Border x:Name="ReportsBorder" 
+                Background="Transparent"
+                CornerRadius="10"
+                Margin="0,0,0,20">
+            <TextBlock x:Name="ReportsText"
+                       Text="Отчеты"
+                       FontSize="24"
+                       Foreground="#194E84"
+                       Padding="20,10"
+                       HorizontalAlignment="Stretch"
+                       PointerPressed="TextBlock_PointerPressed"/>
+        </Border>
         
-        <TextBlock x:Name="OrderText"
-                   Text="Ордер"
-                   FontSize="24"
-                   Foreground="#194E84"/>
+        <Border x:Name="OrderBorder" 
+                Background="Transparent"
+                CornerRadius="10">
+            <TextBlock x:Name="OrderText"
+                       Text="Ордер"
+                       FontSize="24"
+                       Foreground="#194E84"
+                       Padding="20,10"
+                       HorizontalAlignment="Stretch"
+                       PointerPressed="TextBlock_PointerPressed"/>
+        </Border>
     </StackPanel>
 </UserControl>

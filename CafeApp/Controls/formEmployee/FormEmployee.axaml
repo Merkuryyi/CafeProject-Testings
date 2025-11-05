@@ -1,0 +1,26 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="CafeApp.Controls.FormEmployee"
+             xmlns:button="clr-namespace:CafeApp.Controls.Components.Button"
+             xmlns:combobox="clr-namespace:CafeApp.Controls.Components.ComboBox"
+             xmlns:input="clr-namespace:CafeApp.Controls.Components.Input"
+             x:Name="root">
+    
+    <StackPanel Spacing="15">
+        <TextBlock x:Name="TitleTextBlock" Text="{Binding #root.Title}"
+                   FontSize="24"
+                   FontWeight="Normal"
+                   Foreground="#194E84"
+                   Margin="0,25,0,0"
+                   />
+
+        <StackPanel Spacing="5" HorizontalAlignment="Stretch"
+                            VerticalAlignment="Top" Margin="40,40,25,40"> 
+            <input:Input x:Name="UsernameInput" Text="Логин" />
+            <input:Input x:Name="PasswordInput" Text="Пароль" IsPassword="True"/>
+        </StackPanel>
+        
+        <!-- Добавьте остальные элементы формы здесь -->
+        
+    </StackPanel>
+</UserControl>

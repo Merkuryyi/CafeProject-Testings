@@ -10,7 +10,7 @@
     
     <Grid Name="MainGrid">
         <!-- Когда сайдбар ЕСТЬ -->
-        <Grid Name="WithSidebarPanel" IsVisible="False">
+        <Grid x:Name="WithSidebarPanel" IsVisible="False">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="400"/>
                 <ColumnDefinition Width="*"/>
@@ -21,31 +21,40 @@
                 <Rectangle Fill="#F2F2F2"
                            Margin="30,30,15,30"
                            RadiusX="20" 
-                           RadiusY="20"/>
-                
-                <sidebar:Sidebar Role="Администратор"
+                           RadiusY="20"/>					
+				
+                <sidebar:Sidebar x:Name="SidebarControl"
+                                Role="Администратор"
                                 HorizontalAlignment="Stretch"
                                 VerticalAlignment="Stretch"
                                 Margin="40,40,25,40"/>
             </Grid>
 
-            <!-- Правая колонка: только фон -->
-            <Rectangle Grid.Column="1" 
-                       Fill="#F2F2F2"
+            <Grid Grid.Column="1">
+                <Rectangle Fill="#F2F2F2"
                        Margin="15,30,30,30"
                        RadiusX="20" 
                        RadiusY="20"/>
+
+                <controls:FormEmployee x:Name="FormEmployeeControl"
+                            Title="Форма сотрудника"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Stretch"
+                            Margin="40,40,25,40"
+                            IsVisible="True"/>
+            </Grid>
         </Grid>
 
         <!-- Когда сайдбара НЕТ -->
-        <Grid Name="WithoutSidebarPanel" IsVisible="True">
+        <Grid x:Name="WithoutSidebarPanel" IsVisible="True">
             <Rectangle Fill="#F2F2F2"
                        Margin="30"
                        HorizontalAlignment="Stretch"
                        VerticalAlignment="Stretch"
                        RadiusX="20" 
                        RadiusY="20"/>
-			<controls:FormInput Title="Авторизация"
+            <controls:FormInput x:Name="FormInputControl"
+                            Title="Авторизация"
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center"/>
         </Grid>
