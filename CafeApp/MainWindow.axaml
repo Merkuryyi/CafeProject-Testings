@@ -24,7 +24,7 @@
                            RadiusY="20"/>					
 				
                 <sidebar:Sidebar x:Name="SidebarControl"
-                                Role="Администратор"
+                           
                                 HorizontalAlignment="Stretch"
                                 VerticalAlignment="Stretch"
                                 Margin="40,40,25,40"/>

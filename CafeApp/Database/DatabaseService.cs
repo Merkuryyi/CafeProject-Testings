@@ -1,9 +1,7 @@
 ﻿using Npgsql;
-using CafeApp.Database;
 using System;
-using System.Collections.Generic;
 using System.Data;
-using System.IO; // Добавьте этот using
+using System.IO;
 
 namespace CafeApp.Database
 {
@@ -19,32 +17,40 @@ namespace CafeApp.Database
             return _connection;
         }
 
-        public bool AuthenticateUser(string username, string password)
+        public string? AuthenticateUser(string username, string password)
         {
             try
             {
                 using (var conn = GetConnection())
                 {
-                    string query = @"SELECT * FROM ""users"" WHERE username = @username AND password_ = @password AND employment_status = true";
+                    // ИСПРАВЛЕН ЗАПРОС: таблица называется "user", а не "users"
+                    string query = @"SELECT role FROM ""users"" WHERE username = @username AND password_ = @password AND employment_status = true";
                     using (var command = new NpgsqlCommand(query, conn))
                     {
                         command.Parameters.AddWithValue("@username", username);
                         command.Parameters.AddWithValue("@password", password);
                         
-                        // ИСПРАВЛЕННАЯ СТРОКА ЛОГИРОВАНИЯ:
                         string filePath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
                         string logMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB query: username='{username}', password='{password}'\n";
                         File.AppendAllText(filePath, logMessage);
 
                         using (var reader = command.ExecuteReader()) 
                         {
-                            bool hasRows = reader.HasRows;
-                            
-                            // Логируем результат запроса
-                            string resultMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB result: {hasRows}\n";
-                            File.AppendAllText(filePath, resultMessage);
-                            
-                            return hasRows;
+                            if (reader.Read())
+                            {
+                                string role = reader.GetString(0); // Получаем роль из первого столбца
+                                
+                                string resultMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB result: role='{role}'\n";
+                                File.AppendAllText(filePath, resultMessage);
+                                
+                                return role;
+                            }
+                            else
+                            {
+                                string resultMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB result: user not found\n";
+                                File.AppendAllText(filePath, resultMessage);
+                                return null;
+                            }
                         }
                     }
                 }
@@ -56,7 +62,7 @@ namespace CafeApp.Database
                 File.AppendAllText(filePath, errorMessage);
                 
                 Console.WriteLine($"Ошибка аутентификации: {ex.Message}");
-                return false;
+                return null;
             }
         }
 

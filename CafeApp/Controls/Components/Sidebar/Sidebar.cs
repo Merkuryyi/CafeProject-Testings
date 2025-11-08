@@ -13,6 +13,7 @@ namespace CafeApp.Controls.Components.Sidebar
 
         public static readonly StyledProperty<string> RoleProperty =
             AvaloniaProperty.Register<Sidebar, string>(nameof(Role), "Администратор");
+        
 
         private Border _activeBorder;
         private TextBlock _activeTextBlock;
@@ -23,7 +24,7 @@ namespace CafeApp.Controls.Components.Sidebar
             UpdateVisibility();
             
             // Делаем "Регистрацию" активной после полной загрузки
-            this.AttachedToVisualTree += (s, e) => SelectRegistration();
+            this.AttachedToVisualTree += (s, e) => SelectFirstAvailableItem();
         }
 
         private void InitializeComponent()
@@ -39,17 +40,40 @@ namespace CafeApp.Controls.Components.Sidebar
             {
                 UpdateVisibility();
                 // При изменении роли также выбираем регистрацию, если она доступна
-                SelectRegistration();
+                SelectFirstAvailableItem();
             }
         }
 
-        private void SelectRegistration()
+        private void SelectFirstAvailableItem()
         {
-            // Если роль администратор и регистрация доступна, выбираем её
-            if (Role == "Администратор")
+            string roleLower = Role?.ToLower() ?? "";
+            
+            if (roleLower == "администратор")
             {
-                    SelectItem("RegistrationText");
+                SelectItem("RegistrationText");
             }
+            else if (roleLower == "повар")
+            {
+                // Для повара выбираем первый доступный пункт
+                if (IsItemVisible("OrdersText"))
+                    SelectItem("OrdersText");
+                else if (IsItemVisible("OrdersText"))
+                    SelectItem("OrdersText");
+            }
+            else if (roleLower == "официант")
+            {
+                // Для официанта выбираем первый доступный пункт
+                if (IsItemVisible("OrdersText"))
+                    SelectItem("OrdersText");
+                else if (IsItemVisible("OrdersText"))
+                    SelectItem("OrdersText");
+            }
+        }
+
+        private bool IsItemVisible(string itemName)
+        {
+            var textBlock = this.FindControl<TextBlock>(itemName);
+            return textBlock != null && textBlock.IsVisible;
         }
 
         private void UpdateVisibility()
@@ -63,9 +87,9 @@ namespace CafeApp.Controls.Components.Sidebar
 
             if (registrationBorder == null) return;
 
-            bool isAdmin = Role == "Администратор";
-            bool isCook = Role == "Повар";
-            bool isWaiter = Role == "Официант";
+            bool isAdmin = Role == "Администратор" || Role == "администратор";
+            bool isCook = Role == "Повар" || Role == "повар";
+            bool isWaiter = Role == "Официант" || Role == "официант";
 
             registrationBorder.IsVisible = isAdmin;
             employeesBorder.IsVisible = isAdmin;
@@ -97,39 +121,12 @@ namespace CafeApp.Controls.Components.Sidebar
                     _activeBorder.Background = new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.Parse("#194E84"));
                     _activeTextBlock.Foreground = new Avalonia.Media.SolidColorBrush(Avalonia.Media.Colors.White);
 
-                    // Выводим в консоль информацию о нажатом элементе
-                    Console.WriteLine($"Нажата кнопка: {clickedTextBlock.Text}");
-
-                    // Можно также использовать switch для разных действий
-                    switch (clickedTextBlock.Name)
-                    {
-                        case "RegistrationText":
-                            Console.WriteLine("Выполняется действие: Регистрация");
-                            break;
-                        case "EmployeesText":
-                            Console.WriteLine("Выполняется действие: Сотрудники");
-                            break;
-                        case "OrdersText":
-                            Console.WriteLine("Выполняется действие: Заказы");
-                            break;
-                        case "ShiftsText":
-                            Console.WriteLine("Выполняется действие: Смены");
-                            break;
-                        case "ReportsText":
-                            Console.WriteLine("Выполняется действие: Отчеты");
-                            break;
-                        case "OrderText":
-                            Console.WriteLine("Выполняется действие: Ордер");
-                            break;
-                    }
-
-                    // Вызываем событие выбора элемента
                     ItemSelected?.Invoke(this, clickedTextBlock.Name);
                 }
             }
         }
 
-        // Метод для сброса выделения (если понадобится извне)
+
         public void ResetSelection()
         {
             if (_activeBorder != null && _activeTextBlock != null)

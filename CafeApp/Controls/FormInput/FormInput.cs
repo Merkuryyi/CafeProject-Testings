@@ -4,7 +4,6 @@ using Avalonia.Markup.Xaml;
 using Avalonia.Interactivity;
 using System;
 using CafeApp.Database;
-
 using CafeApp.Controls.Components.Input;
 using System.IO;
 
@@ -14,7 +13,8 @@ namespace CafeApp.Controls
     {
         public static readonly StyledProperty<string> TitleProperty =
             AvaloniaProperty.Register<FormInput, string>(nameof(Title), "Вход в систему");
- private DatabaseService _databaseService;
+
+        private DatabaseService _databaseService;
 
         public static readonly StyledProperty<bool> ShowRoleSelectorProperty =
             AvaloniaProperty.Register<FormInput, bool>(nameof(ShowRoleSelector));
@@ -22,7 +22,7 @@ namespace CafeApp.Controls
         public FormInput()
         {
             InitializeComponent();
-			_databaseService = new DatabaseService();
+            _databaseService = new DatabaseService();
         }
 
         public string Title
@@ -39,31 +39,29 @@ namespace CafeApp.Controls
 
         // Событие для кнопки входа
         public event EventHandler? LoginButtonClicked;
+        public event EventHandler<string>? LoginResult; // Теперь передаем строку (роль)
 
         private void LoginButton_Click(object sender, RoutedEventArgs e)
-		{
-    		 var usernameInput = this.FindControl<Input>("UsernameInput");
-    var passwordInput = this.FindControl<Input>("PasswordInput");
+        {
+            var usernameInput = this.FindControl<Input>("UsernameInput");
+            var passwordInput = this.FindControl<Input>("PasswordInput");
 
-    // Попробуйте разные свойства
-    string username = usernameInput.Value?.ToString() ?? 
-                     usernameInput.Content?.ToString() ?? 
-                     usernameInput.Text ?? "";
-    
-    string password = passwordInput.Value?.ToString() ?? 
-                     passwordInput.Content?.ToString() ?? 
-                     passwordInput.Text ?? "";
-    		bool isAuthenticated = _databaseService.AuthenticateUser(username, password);
-   string filePath = "A:/Инженерно-техническая поддержка сопровождения ИС/debug.log";
-        string logMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Login result: {isAuthenticated}\n";
-        File.AppendAllText(filePath, logMessage);
-        
-        // Добавьте эту строку, чтобы увидеть где создается файл
-        string fullPath = Path.GetFullPath(filePath);
-        File.AppendAllText(filePath, $"File location: {fullPath}\n");
+            string username = usernameInput.Value?.ToString() ?? 
+                             usernameInput.Content?.ToString() ?? 
+                             usernameInput.Text ?? "";
+            
+            string password = passwordInput.Value?.ToString() ?? 
+                             passwordInput.Content?.ToString() ?? 
+                             passwordInput.Text ?? "";
 
-    		LoginResult?.Invoke(this, isAuthenticated);
-		}
-		public event EventHandler<bool>? LoginResult;
+            string? role = _databaseService.AuthenticateUser(username, password);
+            
+            string filePath = "A:/Инженерно-техническая поддержка сопровождения ИС/debug.log";
+            string logMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Login result: role='{role}'\n";
+            File.AppendAllText(filePath, logMessage);
+
+            // Передаем роль (или null если аутентификация не удалась)
+            LoginResult?.Invoke(this, role ?? "");
+        }
     }
 }
