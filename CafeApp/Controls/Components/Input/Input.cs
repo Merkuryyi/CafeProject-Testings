@@ -1,11 +1,13 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Media;
 using Avalonia.Markup.Xaml;
 
 namespace CafeApp.Controls.Components.Input
 {
     public partial class Input : UserControl
     {
+        // Существующие свойства...
         public static readonly StyledProperty<string> TextProperty =
             AvaloniaProperty.Register<Input, string>(nameof(Text), "Название");
 
@@ -15,11 +17,17 @@ namespace CafeApp.Controls.Components.Input
         public static readonly StyledProperty<bool> IsPasswordProperty =
             AvaloniaProperty.Register<Input, bool>(nameof(IsPassword), false);
 
+        public static readonly StyledProperty<double> InputWidthProperty =
+            AvaloniaProperty.Register<Input, double>(nameof(InputWidth), defaultValue: 400);
+
+        // Новое свойство для цвета текста
+        public static readonly StyledProperty<IBrush> TextColorProperty =
+            AvaloniaProperty.Register<Input, IBrush>(nameof(TextColor), 
+                SolidColorBrush.Parse("#194E84")); // Значение по умолчанию
+
         public Input()
         {
             InitializeComponent();
-            
-     
             this.AttachedToVisualTree += (s, e) => UpdatePasswordChar();
         }
 
@@ -63,6 +71,19 @@ namespace CafeApp.Controls.Components.Input
         {
             get => GetValue(IsPasswordProperty);
             set => SetValue(IsPasswordProperty, value);
+        }
+
+        public double InputWidth
+        {
+            get => GetValue(InputWidthProperty);
+            set => SetValue(InputWidthProperty, value);
+        }
+
+        // Новое свойство для цвета текста
+        public IBrush TextColor
+        {
+            get => GetValue(TextColorProperty);
+            set => SetValue(TextColorProperty, value);
         }
     }
 }

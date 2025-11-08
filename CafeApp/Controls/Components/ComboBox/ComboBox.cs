@@ -1,6 +1,7 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
+using System.Collections;
 
 namespace CafeApp.Controls.Components.ComboBox
 {
@@ -8,6 +9,12 @@ namespace CafeApp.Controls.Components.ComboBox
     {
         public static readonly StyledProperty<string> TextProperty =
             AvaloniaProperty.Register<ComboBox, string>(nameof(Text), "Роль:");
+        
+        public static readonly StyledProperty<double> ComboBoxWidthProperty =
+            AvaloniaProperty.Register<ComboBox, double>(nameof(ComboBoxWidth), defaultValue: 400);
+
+        public static readonly StyledProperty<IEnumerable> ItemsSourceProperty =
+            AvaloniaProperty.Register<ComboBox, IEnumerable>(nameof(ItemsSource));
 
         public ComboBox()
         {
@@ -23,6 +30,18 @@ namespace CafeApp.Controls.Components.ComboBox
         {
             get => GetValue(TextProperty);
             set => SetValue(TextProperty, value);
+        }
+
+        public double ComboBoxWidth
+        {
+            get => GetValue(ComboBoxWidthProperty);
+            set => SetValue(ComboBoxWidthProperty, value);
+        }
+
+        public IEnumerable ItemsSource
+        {
+            get => GetValue(ItemsSourceProperty);
+            set => SetValue(ItemsSourceProperty, value);
         }
     }
 }

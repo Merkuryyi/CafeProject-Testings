@@ -2,7 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="CafeApp.Controls.Components.Input.Input"
              x:Name="root"
-             Width="400"
+             Width="{Binding #root.InputWidth}"
              Height="80">
     
     <UserControl.Styles>
@@ -31,7 +31,7 @@
     <StackPanel Spacing="5">
         <TextBlock Text="{Binding #root.Text}"
                    FontSize="14"
-                   Foreground="#194E84"/>
+                   Foreground="{Binding #root.TextColor}"/>
         <TextBox x:Name="MainInput"
                  Height="45"
                  FontSize="14"

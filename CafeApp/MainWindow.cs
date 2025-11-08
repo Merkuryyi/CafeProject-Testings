@@ -1,5 +1,5 @@
 using Avalonia.Controls;
-using CafeApp.Services;
+
 using CafeApp.Controls;
 using CafeApp.Controls.Components.Sidebar;
 using System;
@@ -8,7 +8,7 @@ namespace CafeApp
 {
     public partial class MainWindow : Window
     {
-        private DatabaseService _databaseService;
+       
         private Sidebar? _sidebarControl;
         private FormEmployee? _formEmployeeControl;
         private FormInput? _formInputControl;
@@ -16,12 +16,10 @@ namespace CafeApp
         public MainWindow()
         {
             InitializeComponent();
-            _databaseService = new DatabaseService(new Models.AppConfig());
-            
             this.Opened += OnMainWindowOpened;
         }
 
-        private void OnMainWindowOpened(object sender, EventArgs e)
+        private void OnMainWindowOpened(object? sender, EventArgs e)
         {
             SubscribeToAuthEvents();
             SubscribeToSidebarEvents();
@@ -30,43 +28,29 @@ namespace CafeApp
         private void SubscribeToAuthEvents()
         {
             _formInputControl = this.FindControl<FormInput>("FormInputControl");
-            if (_formInputControl != null)
-            {
-                _formInputControl.AuthenticationCompleted += OnAuthenticationCompleted;
-                Console.WriteLine("Подписка на события формы авторизации установлена");
-            }
-            else
-            {
-                Console.WriteLine("FormInputControl не найден");
-            }
+    		_formInputControl.LoginResult += OnLoginResult;
         }
 
         private void SubscribeToSidebarEvents()
         {
             _sidebarControl = this.FindControl<Sidebar>("SidebarControl");
-            if (_sidebarControl != null)
-            {
-                _sidebarControl.ItemSelected += OnSidebarItemSelected;
-                Console.WriteLine("Подписка на события сайдбара установлена");
-            }
-            else
-            {
-                Console.WriteLine("SidebarControl не найден");
-            }
+            _sidebarControl.ItemSelected += OnSidebarItemSelected;
+              
+          
         }
 
-        private void OnSidebarItemSelected(object sender, string itemName)
+        // Обработчик нажатия кнопки входа - сразу показываем сайдбар
+        private void OnLoginButtonClicked(object? sender, EventArgs e)
         {
-            // Находим форму сотрудника каждый раз (на случай если она еще не инициализирована)
-            _formEmployeeControl = this.FindControl<FormEmployee>("FormEmployeeControl");
-            
-            if (_formEmployeeControl == null)
-            {
-                Console.WriteLine("FormEmployeeControl не найден");
-                return;
-            }
 
-            // Показываем форму только для регистрации
+			
+            ShowWithSidebar();
+        }
+
+        private void OnSidebarItemSelected(object? sender, string itemName)
+        {
+            _formEmployeeControl = this.FindControl<FormEmployee>("FormEmployeeControl");
+
             if (itemName == "RegistrationText")
             {
                 _formEmployeeControl.IsVisible = true;
@@ -78,21 +62,20 @@ namespace CafeApp
                 Console.WriteLine($"Скрыта форма сотрудника, выбран: {itemName}");
             }
         }
+private void OnLoginResult(object? sender, bool success)
+{
+    if (success)
+    {
+        ShowWithSidebar(); // Показываем сайдбар если вход успешный
+    }
+    else
+    {
+        // Можно показать сообщение об ошибке
+        Console.WriteLine("Ошибка входа!");
+    }
+}
 
-        private void OnAuthenticationCompleted(object sender, bool isAuthenticated)
-        {
-            if (isAuthenticated)
-            {
-                ShowWithSidebar();
-                Console.WriteLine("Авторизация успешна - показываем сайдбар");
-            }
-            else
-            {
-                Console.WriteLine("Авторизация не удалась");
-            }
-        }
-
-        // Метод для показа с сайдбаром (после авторизации)
+        // Метод для показа с сайдбаром
         public void ShowWithSidebar()
         {
             var withSidebarPanel = this.FindControl<Grid>("WithSidebarPanel");
@@ -110,7 +93,6 @@ namespace CafeApp
         {
             var withSidebarPanel = this.FindControl<Grid>("WithSidebarPanel");
             var withoutSidebarPanel = this.FindControl<Grid>("WithoutSidebarPanel");
-            
             if (withSidebarPanel != null && withoutSidebarPanel != null)
             {
                 withSidebarPanel.IsVisible = false;

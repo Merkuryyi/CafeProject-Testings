@@ -1,0 +1,29 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="CafeApp.Controls.Components.List.List"
+             x:Name="root">
+   
+    <StackPanel Spacing="10">
+        <!-- Заголовок "Сотрудники" -->
+        <TextBlock Text="{Binding #root.Text}"
+                   FontSize="24"
+                   Foreground="#194E84"
+                   FontWeight="Bold"/>
+        
+        <!-- Список сотрудников -->
+        <ItemsControl ItemsSource="{Binding #root.Items}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Border Background="#F8F9FA"
+                            CornerRadius="8"
+                            Padding="15,10"
+                            Margin="0,5">
+                        <TextBlock Text="{Binding}"
+                                   FontSize="20"
+                                   Foreground="#194E84"/>
+                    </Border>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </StackPanel>
+</UserControl>

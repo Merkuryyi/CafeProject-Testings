@@ -2,7 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="CafeApp.Controls.Components.ComboBox.ComboBox"
              x:Name="root"
-             Width="400">
+             Width="{Binding #root.ComboBoxWidth}">
     
     <UserControl.Styles>
         <Style Selector="ComboBox">
@@ -39,10 +39,7 @@
                   FontSize="14"
                   Padding="15,0"
                   VerticalContentAlignment="Center"
-                  PlaceholderText="Выберите роль">
-            <ComboBoxItem>Администратор</ComboBoxItem>
-            <ComboBoxItem>Официант</ComboBoxItem>
-            <ComboBoxItem>Повар</ComboBoxItem>
-        </ComboBox>
+                  PlaceholderText="Выберите"
+                  ItemsSource="{Binding #root.ItemsSource}"/>
     </StackPanel>
 </UserControl>

@@ -4,7 +4,7 @@
         xmlns:sidebar="clr-namespace:CafeApp.Controls.Components.Sidebar"
         x:Class="CafeApp.MainWindow"
         Title="CafeApp"
-        Width="800"
+        Width="1000"
         Height="600"
         Background="#062B58">
     
@@ -30,17 +30,17 @@
                                 Margin="40,40,25,40"/>
             </Grid>
 
-            <Grid Grid.Column="1">
+            <Grid Grid.Column="1" >
                 <Rectangle Fill="#F2F2F2"
                        Margin="15,30,30,30"
                        RadiusX="20" 
                        RadiusY="20"/>
 
                 <controls:FormEmployee x:Name="FormEmployeeControl"
-                            Title="Форма сотрудника"
+                          
                             HorizontalAlignment="Stretch"
-                            VerticalAlignment="Stretch"
-                            Margin="40,40,25,40"
+                            VerticalAlignment="Center"
+                            Margin="0,40,25,40"
                             IsVisible="True"/>
             </Grid>
         </Grid>

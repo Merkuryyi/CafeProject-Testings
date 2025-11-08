@@ -2,8 +2,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="CafeApp.Controls.FormInput"
              xmlns:button="clr-namespace:CafeApp.Controls.Components.Button"
-             xmlns:combobox="clr-namespace:CafeApp.Controls.Components.ComboBox"
              xmlns:input="clr-namespace:CafeApp.Controls.Components.Input"
+             xmlns:combobox="clr-namespace:CafeApp.Controls.Components.ComboBox"
              Width="400"
              x:Name="root">
     
@@ -14,17 +14,16 @@
                    Foreground="#194E84"
                    HorizontalAlignment="Center"/>
         
-        <!-- ComboBox будет скрываться при Title = "Авторизация" -->
-        <combobox:ComboBox Text="Роль:" 
-                          IsVisible="{Binding #root.ShowRoleSelector}"/>
+      
 
         <StackPanel Spacing="5">
-            <input:Input x:Name="UsernameInput" Text="Логин" />
-            <input:Input x:Name="PasswordInput" Text="Пароль" IsPassword="True"/>
+            <input:Input x:Name="UsernameInput" Text="Логин" InputWidth="400"/>
+            <input:Input x:Name="PasswordInput" Text="Пароль" IsPassword="True" InputWidth="400"/>
         </StackPanel>
 
-        <button:Button Text="Далее"
+        <button:Button x:Name="LoginButton"
+                       Text="Далее"
                        HorizontalAlignment="Stretch"
-                      Click="LoginButton_Click"/> 
+                       Click="LoginButton_Click"/> 
     </StackPanel>
 </UserControl>
