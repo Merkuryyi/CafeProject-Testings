@@ -29,26 +29,20 @@ namespace CafeApp.Database
                     {
                         command.Parameters.AddWithValue("@username", username);
                         command.Parameters.AddWithValue("@password", password);
-                        
-                        string filePath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
-                        string logMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB query: username='{username}', password='{password}'\n";
-                        File.AppendAllText(filePath, logMessage);
+                     
 
                         using (var reader = command.ExecuteReader()) 
                         {
                             if (reader.Read())
                             {
                                 string role = reader.GetString(0); // Получаем роль из первого столбца
-                                
-                                string resultMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB result: role='{role}'\n";
-                                File.AppendAllText(filePath, resultMessage);
-                                
+               
+                                          
                                 return role;
                             }
                             else
                             {
-                                string resultMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB result: user not found\n";
-                                File.AppendAllText(filePath, resultMessage);
+                               
                                 return null;
                             }
                         }
@@ -57,14 +51,48 @@ namespace CafeApp.Database
             }
             catch (Exception ex)
             {
-                string filePath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
-                string errorMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB ERROR: {ex.Message}\n";
-                File.AppendAllText(filePath, errorMessage);
-                
+              
                 Console.WriteLine($"Ошибка аутентификации: {ex.Message}");
                 return null;
             }
         }
+		public bool RegisterUser(string username, string password, string name, 
+                        string surname, string patronymic, string role)
+		{
+    		try
+    		{
+        		using (var conn = GetConnection())
+        		{
+            		// INSERT запрос для добавления пользователя
+            		string query = @"INSERT INTO ""user"" 
+                           (username, password_, role, name, surname, patronymic, employment_status) 
+                           VALUES (@username, @password, @role, @name, @surname, @patronymic, TRUE)";
+            
+            		using (var command = new NpgsqlCommand(query, conn))
+            		{
+                		command.Parameters.AddWithValue("@username", username);
+                		command.Parameters.AddWithValue("@password", password);
+               			command.Parameters.AddWithValue("@role", role);
+                		command.Parameters.AddWithValue("@name", name);
+                		command.Parameters.AddWithValue("@surname", surname);
+                		command.Parameters.AddWithValue("@patronymic", patronymic);
+
+                		int rowsAffected = command.ExecuteNonQuery();
+      
+                		return rowsAffected == 1;
+            		}
+        		}
+    		}
+    		catch (Exception ex)
+    		{
+        		string filePath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
+        		string errorMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB ERROR: {ex.Message}\n";
+        		File.AppendAllText(filePath, errorMessage);
+        
+        		Console.WriteLine($"Ошибка регистрации: {ex.Message}");
+        		return false;
+    		}
+		}
 
         public void Dispose()
         {

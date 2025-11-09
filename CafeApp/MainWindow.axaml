@@ -23,11 +23,10 @@
                            RadiusX="20" 
                            RadiusY="20"/>					
 				
-                <sidebar:Sidebar x:Name="SidebarControl"
-                           
-                                HorizontalAlignment="Stretch"
-                                VerticalAlignment="Stretch"
-                                Margin="40,40,25,40"/>
+                <sidebar:Sidebar x:Name="SidebarControl"        
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch"
+                        Margin="40,40,25,40"/>
             </Grid>
 
             <Grid Grid.Column="1" >

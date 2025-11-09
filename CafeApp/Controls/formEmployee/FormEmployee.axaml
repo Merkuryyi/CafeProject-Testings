@@ -8,7 +8,7 @@
              x:Name="root"  		
              x:DataType="local:FormEmployee">
     
-    <StackPanel Spacing="15">
+    <StackPanel Spacing="15" HorizontalAlignment="Stretch"  VerticalAlignment="Stretch">
 
         <!-- Горизонтальная панель для двух колонок -->
         <StackPanel Orientation="Horizontal" Spacing="50" HorizontalAlignment="Center" Margin="0,10,0,0">
@@ -24,7 +24,8 @@
                     <TextBlock Text="+"
                                FontSize="20"
                                FontWeight="Normal"
-                               Foreground="#194E84"/>
+                               Foreground="#194E84"
+								Cursor="Hand"/>
                     <Path Data="M21 15V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V15 M7 10L12 15L17 10 M12 15V3" 
                           Stroke="#194E84" 
                           StrokeThickness="2"
@@ -41,11 +42,7 @@
                    ComboBoxWidth="200"
                    Margin="0,0,0,20"
                    ItemsSource="{Binding Roles}"/>
-                <combobox:ComboBox x:Name="StatusComboBox" 
-                   Text="Статус" 
-                   Margin="0,0,0,20"
-                   ComboBoxWidth="200"
-                   ItemsSource="{Binding Status}" />
+                
             </StackPanel>
 
             <!-- Правая колонка: Договор + ФИО -->
@@ -75,7 +72,7 @@
             </StackPanel>
         </StackPanel>
         
-        <button:Button Text="Сохранить"
-            HorizontalAlignment="Stretch"/> 
+        <button:Button x:Name="SaveButton" Text="Сохранить"
+            HorizontalAlignment="Stretch" Click="SaveButton_Click"/> 
     </StackPanel>
 </UserControl>

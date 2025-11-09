@@ -37,18 +37,15 @@ namespace CafeApp.Controls
             set => SetValue(ShowRoleSelectorProperty, value);
         }
 
-        // Событие для кнопки входа
         public event EventHandler? LoginButtonClicked;
-        public event EventHandler<string>? LoginResult; // Теперь передаем строку (роль)
+        public event EventHandler<string>? LoginResult; 
 
         private void LoginButton_Click(object sender, RoutedEventArgs e)
         {
             var usernameInput = this.FindControl<Input>("UsernameInput");
             var passwordInput = this.FindControl<Input>("PasswordInput");
 
-            string username = usernameInput.Value?.ToString() ?? 
-                             usernameInput.Content?.ToString() ?? 
-                             usernameInput.Text ?? "";
+            string username = usernameInput.Value?.ToString() ?? "";
             
             string password = passwordInput.Value?.ToString() ?? 
                              passwordInput.Content?.ToString() ?? 
@@ -56,9 +53,6 @@ namespace CafeApp.Controls
 
             string? role = _databaseService.AuthenticateUser(username, password);
             
-            string filePath = "A:/Инженерно-техническая поддержка сопровождения ИС/debug.log";
-            string logMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Login result: role='{role}'\n";
-            File.AppendAllText(filePath, logMessage);
 
             // Передаем роль (или null если аутентификация не удалась)
             LoginResult?.Invoke(this, role ?? "");
