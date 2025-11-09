@@ -38,6 +38,9 @@ build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 [C:/Users/Terra/RiderProjects/CafeProject/CafeApp/Controls/Components/ComboBox/ComboBox.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 
+[C:/Users/Terra/RiderProjects/CafeProject/CafeApp/Controls/Components/DragAndDrop/DragAndDrop.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
 [C:/Users/Terra/RiderProjects/CafeProject/CafeApp/Controls/Components/Input/Input.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 

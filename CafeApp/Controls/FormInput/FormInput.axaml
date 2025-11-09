@@ -9,12 +9,10 @@
     
     <StackPanel Spacing="15">
         <TextBlock x:Name="TitleTextBlock" Text="{Binding #root.Title}"
-                   FontSize="24"
-                   FontWeight="Bold"
-                   Foreground="#194E84"
-                   HorizontalAlignment="Center"/>
-        
-      
+            FontSize="24"
+            FontWeight="Bold"
+            Foreground="#194E84"
+            HorizontalAlignment="Center"/>
 
         <StackPanel Spacing="5">
             <input:Input x:Name="UsernameInput" Text="Логин" InputWidth="400"/>
@@ -22,8 +20,8 @@
         </StackPanel>
 
         <button:Button x:Name="LoginButton"
-                       Text="Далее"
-                       HorizontalAlignment="Stretch"
-                       Click="LoginButton_Click"/> 
+            Text="Далее"
+            HorizontalAlignment="Stretch"
+            Click="LoginButton_Click"/> 
     </StackPanel>
 </UserControl>

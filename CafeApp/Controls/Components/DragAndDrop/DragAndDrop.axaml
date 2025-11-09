@@ -1,0 +1,27 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="CafeApp.Controls.Components.DragAndDrop.DragAndDrop"
+             x:Name="root"
+             Width="300"
+             Height="120">
+    <Grid>
+        <Rectangle Fill="#194E84" 
+            RadiusX="20" 
+            RadiusY="20"/>
+        
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+            <TextBlock Text="Перетащите сюда файл"
+                FontSize="20"
+                FontWeight="Normal"
+                Foreground="#D9D9D9"
+                HorizontalAlignment="Center"/>
+            
+            <TextBlock Text="+" x:Name="AddDocument"
+                FontSize="32"
+                FontWeight="Normal"
+                Foreground="#D9D9D9"
+                HorizontalAlignment="Center" Cursor="Hand"/>
+
+        </StackPanel>
+    </Grid>
+</UserControl>
