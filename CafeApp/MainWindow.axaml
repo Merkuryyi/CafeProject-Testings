@@ -2,6 +2,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:controls="clr-namespace:CafeApp.Controls"
         xmlns:sidebar="clr-namespace:CafeApp.Controls.Components.Sidebar"
+xmlns:list="clr-namespace:CafeApp.Controls.Components.List"
         x:Class="CafeApp.MainWindow"
         Title="CafeApp"
         Width="1000"
@@ -35,12 +36,21 @@
                        RadiusX="20" 
                        RadiusY="20"/>
 
-                <controls:FormEmployee x:Name="FormEmployeeControl"
-                          
-                            HorizontalAlignment="Stretch"
-                            VerticalAlignment="Center"
-                            Margin="0,40,25,40"
-                            IsVisible="True"/>
+                <controls:FormEmployee x:Name="FormEmployeeControl"     
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Center"
+                    Margin="0,40,25,40"
+                    IsVisible="True"/>
+
+				<list:List x:Name="ListControl"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Stretch"
+                    Margin="40,40,40,40"
+                    IsVisible="False"
+                    Title="Список сотрудников"
+                    ListHeight="400"/>
+
+
             </Grid>
         </Grid>
 

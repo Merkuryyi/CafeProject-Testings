@@ -2,6 +2,7 @@ using Avalonia.Controls;
 using CafeApp.Controls;
 using CafeApp.Controls.Components.Sidebar;
 using System;
+using CafeApp.Controls.Components.List;
 
 namespace CafeApp
 {
@@ -10,6 +11,7 @@ namespace CafeApp
         private Sidebar? _sidebarControl;
         private FormEmployee? _formEmployeeControl;
         private FormInput? _formInputControl;
+        private List? _listControl;
 
         public MainWindow()
         {
@@ -33,7 +35,17 @@ namespace CafeApp
         {
             _sidebarControl = this.FindControl<Sidebar>("SidebarControl");
             _sidebarControl.ItemSelected += OnSidebarItemSelected;
+    
+            _listControl = this.FindControl<List>("ListControl");
+    
+            // Устанавливаем параметры для List контрола
+            if (_listControl != null)
+            {
+                _listControl.Title = "Список сотрудников";
+                _listControl.ListHeight = 400;
+            }
         }
+
 
         // Теперь получаем роль вместо boolean
         private void OnLoginResult(object? sender, string role)
@@ -71,16 +83,40 @@ namespace CafeApp
         private void OnSidebarItemSelected(object? sender, string itemName)
         {
             _formEmployeeControl = this.FindControl<FormEmployee>("FormEmployeeControl");
+            _listControl = this.FindControl<List>("ListControl");
 
-            if (itemName == "RegistrationText")
-            {
-                _formEmployeeControl.IsVisible = true;
-                Console.WriteLine("Показана форма сотрудника");
-            }
-            else
-            {
+            // Сначала скрываем все контролы
+            if (_formEmployeeControl != null)
                 _formEmployeeControl.IsVisible = false;
-                Console.WriteLine($"Скрыта форма сотрудника, выбран: {itemName}");
+        
+            if (_listControl != null)
+                _listControl.IsVisible = false;
+
+            // Показываем нужный контрол в зависимости от выбора
+            switch (itemName)
+            {
+                case "RegistrationText":
+                    if (_formEmployeeControl != null)
+                    {
+                        _formEmployeeControl.IsVisible = true;
+                        Console.WriteLine("Показана форма сотрудника");
+                    }
+                    break;
+            
+                case "EmployeesText":
+                    if (_listControl != null)
+                    {
+                        // Обновляем параметры
+                        _listControl.Title = "Сотрудники";
+                        _listControl.ListHeight = 450;
+                        _listControl.IsVisible = true;
+                        Console.WriteLine("Показан список сотрудников");
+                    }
+                    break;
+            
+                default:
+                    Console.WriteLine($"Выбран пункт: {itemName}");
+                    break;
             }
         }
 

@@ -8,7 +8,7 @@ namespace CafeApp.Database
     public class DatabaseService : IDisposable
     {
         private NpgsqlConnection? _connection;
-        private string _connectionString = "Host=localhost;Username=postgres;Password=6645;Database=Cafe";
+        private string _connectionString = "Host=localhost;Username=postgres;Password=6645;Database=Cafe;Include Error Detail=true";
 
         public NpgsqlConnection GetConnection()
         {
@@ -53,42 +53,44 @@ namespace CafeApp.Database
             }
         }
 		public bool RegisterUser(string username, string password, string name, 
-                 string surname, string patronymic, string role)
-		{
-    		try
-    		{
-        		using (var conn = GetConnection())
-        		{
-            		// INSERT запрос для добавления пользователя
-            		string query = @"INSERT INTO ""user"" 
-                           (username, password_, role, name, surname, patronymic, employment_status) 
-                           VALUES (@username, @password, @role, @name, @surname, @patronymic, TRUE)";
-            
-            		using (var command = new NpgsqlCommand(query, conn))
-            		{
-                		command.Parameters.AddWithValue("@username", username);
-                		command.Parameters.AddWithValue("@password", password);
-               			command.Parameters.AddWithValue("@role", role);
-                		command.Parameters.AddWithValue("@name", name);
-                		command.Parameters.AddWithValue("@surname", surname);
-                		command.Parameters.AddWithValue("@patronymic", patronymic);
-
-                		int rowsAffected = command.ExecuteNonQuery();
-      
-                		return rowsAffected == 1;
-            		}
-        		}
-    		}
-    		catch (Exception ex)
-    		{
-        		string filePath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
-        		string errorMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB ERROR: {ex.Message}\n";
-        		File.AppendAllText(filePath, errorMessage);
+                 string surname, string patronymic, string role, string photoLink, string contractScanLink)
+{
+    try
+    {
+        using (var conn = GetConnection())
+        {
+            // INSERT запрос для добавления пользователя
+            string query = @"INSERT INTO users
+                       (username, password_, role, name, surname, patronymic, employment_status, photo_link, contract_scan_link) 
+                       VALUES (@username, @password, @role, @name, @surname, @patronymic, TRUE, @photoLink, @contractScanLink)";
         
-        		Console.WriteLine($"Ошибка регистрации: {ex.Message}");
-        		return false;
-    		}
-		}
+            using (var command = new NpgsqlCommand(query, conn))
+            {
+                command.Parameters.AddWithValue("@username", username);
+                command.Parameters.AddWithValue("@password", password);
+                command.Parameters.AddWithValue("@role", role.ToLower());
+                command.Parameters.AddWithValue("@name", name);
+                command.Parameters.AddWithValue("@surname", surname);
+                command.Parameters.AddWithValue("@patronymic", patronymic);
+                command.Parameters.AddWithValue("@photoLink", photoLink);
+                command.Parameters.AddWithValue("@contractScanLink", contractScanLink);
+
+                int rowsAffected = command.ExecuteNonQuery();
+  
+                return rowsAffected == 1;
+            }
+        }
+    }
+    catch (Exception ex)
+    {
+        string filePath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
+        string errorMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB ERROR: {ex.Message}\n";
+        File.AppendAllText(filePath, errorMessage);
+    
+        Console.WriteLine($"Ошибка регистрации: {ex.Message}");
+        return false;
+    }
+}
 
         public void Dispose()
         {
