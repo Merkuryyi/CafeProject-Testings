@@ -27,10 +27,9 @@
                             FontSize="20"
                             FontWeight="Normal"
                             Foreground="#194E84"
-                            Cursor="Hand"/>
+                            Cursor="Hand" />
                     </StackPanel>
-                    
-                    <!-- Поля под фото -->
+             
                     <input:Input x:Name="UsernameInput" Text="Логин" InputWidth="200"/>
                     <input:Input x:Name="PasswordInput" Text="Пароль" IsPassword="True" InputWidth="200"/>
                     <combobox:ComboBox x:Name="RoleComboBox" 
@@ -40,9 +39,9 @@
                        ItemsSource="{Binding Roles}"/>   
                 </StackPanel>
 
-                <!-- Правая колонка: Договор + ФИО -->
+            
                 <StackPanel Spacing="5">
-                    <!-- Трудовой договор и + в одной строке -->
+     
                     <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Left"  Margin="0,0,0,20">
                         <TextBlock Text="Трудовой договор"
                             FontSize="20"
@@ -54,7 +53,7 @@
                             Foreground="#194E84"/>
                     </StackPanel>
                     
-                    <!-- Поля под договором -->
+              
                     <input:Input x:Name="NameInput" Text="Фамилия" InputWidth="200"/>
                     <input:Input x:Name="SurnameInput" Text="Имя" InputWidth="200"/>
                     <input:Input x:Name="PatronymicInput" Text="Отчество" InputWidth="200"/>
@@ -65,10 +64,10 @@
                 HorizontalAlignment="Stretch" Click="SaveButton_Click"/> 
         </StackPanel>
 
-        <!-- DragAndDrop поверх всего контента -->
+
         <draganddrop:DragAndDrop x:Name="DragAndDrop" 
             HorizontalAlignment="Center" 
             VerticalAlignment="Center" 
-            IsVisible="False"/>
+            IsVisible="False" />
     </Grid>
 </UserControl>

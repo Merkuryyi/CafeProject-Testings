@@ -10,7 +10,7 @@
             RadiusY="20"/>
         
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-            <TextBlock Text="Перетащите сюда файл"
+            <TextBlock Text="Перетащите сюда файл PDF"
                 FontSize="20"
                 FontWeight="Normal"
                 Foreground="#D9D9D9"

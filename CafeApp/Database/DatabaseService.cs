@@ -35,14 +35,11 @@ namespace CafeApp.Database
                         {
                             if (reader.Read())
                             {
-                                string role = reader.GetString(0); // Получаем роль из первого столбца
-               
-                                          
+                                string role = reader.GetString(0);     
                                 return role;
                             }
                             else
                             {
-                               
                                 return null;
                             }
                         }
@@ -51,13 +48,12 @@ namespace CafeApp.Database
             }
             catch (Exception ex)
             {
-              
                 Console.WriteLine($"Ошибка аутентификации: {ex.Message}");
                 return null;
             }
         }
 		public bool RegisterUser(string username, string password, string name, 
-                        string surname, string patronymic, string role)
+                 string surname, string patronymic, string role)
 		{
     		try
     		{
