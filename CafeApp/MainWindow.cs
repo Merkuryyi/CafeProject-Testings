@@ -1,228 +1,169 @@
 using Avalonia.Controls;
 using CafeApp.Controls;
 using CafeApp.Controls.Components.Sidebar;
-using System;
 using CafeApp.Controls.Components.List;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using CafeApp.Database;
+using System;
+using System.Collections.Generic;
 
 namespace CafeApp
 {
     public partial class MainWindow : Window
     {
-        private Sidebar? _sidebarControl;
-        private FormEmployee? _formEmployeeControl;
-        private FormInput? _formInputControl;
-        private List? _employeesListControl;
-        private List? _ordersListControl;
-        private ObservableCollection<string> _employees;
-        private ObservableCollection<string> _orders;
-		private DatabaseService _databaseService;
+        private readonly ObservableCollection<string> _employees = new();
+        private readonly ObservableCollection<string> _orders = new();
+        private readonly ObservableCollection<string> _shifts = new();
+        private readonly DatabaseService _databaseService = new();
 
         public MainWindow()
         {
             InitializeComponent();
-            _employees = new ObservableCollection<string>();
-            _orders = new ObservableCollection<string>();
-			_databaseService = new DatabaseService();
             this.Opened += OnMainWindowOpened;
         }
 
-        private void OnMainWindowOpened(object? sender, EventArgs e)
+        private void OnMainWindowOpened(object? sender, System.EventArgs e)
         {
-            SubscribeToAuthEvents();
-            SubscribeToSidebarEvents();
+            SubscribeToEvents();
             LoadEmployeesData();
+        }
+
+        private void SubscribeToEvents()
+        {
+            var formInputControl = this.FindControl<FormInput>("FormInputControl");
+            if (formInputControl != null)
+                formInputControl.LoginResult += OnLoginResult;
+            
+            var formEmployeeControl = this.FindControl<FormEmployee>("FormEmployeeControl");
+            if (formEmployeeControl != null)
+                formEmployeeControl.SaveButtonClicked += (s, e) => LoadEmployeesData();
+            
+            var sidebarControl = this.FindControl<Sidebar>("SidebarControl");
+            if (sidebarControl != null)
+                sidebarControl.ItemSelected += OnSidebarItemSelected;
         }
 
         private void LoadEmployeesData()
-		{
-    		try
-    		{
-				_employees.Clear();
-        		var employeesFromDb = _databaseService.GetEmployeesList();
-        
-       			foreach (var employee in employeesFromDb)
-       		 	{
-            		_employees.Add(employee);
-        		}
-       			if (_employeesListControl != null)
-        		{
-            		_employeesListControl.Items = _employees;
-        		}
-    		}
-    		catch (Exception ex)
-    		{
-        		Console.WriteLine($"Ошибка загрузки сотрудников: {ex.Message}");
-    		}
-		}
+        {
+            _employees.Clear();
+            var data = _databaseService.GetEmployeesList();
+            
+            foreach (var item in data)
+                _employees.Add(item);
+            
+            var listControl = this.FindControl<List>("EmployeesListControl");
+            if (listControl != null)
+            {
+                listControl.Items = _employees;
+                listControl.Title = "Сотрудники";
+            }
+        }
 
         private void LoadOrdersData()
         {
-            try
-            {
-                _orders.Clear();
-                var ordersFromDb = _databaseService.GetOrdersSimpleInfo();
-                
-                foreach (var order in ordersFromDb)
-                {
-                    _orders.Add(order);
-                }
-                
-                if (_ordersListControl != null)
-                {
-                    _ordersListControl.Items = _orders;
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Ошибка загрузки заказов: {ex.Message}");
-            }
-        }
-
-        private void SubscribeToAuthEvents()
-        {
-            _formInputControl = this.FindControl<FormInput>("FormInputControl");
-            _formInputControl.LoginResult += OnLoginResult;
+           
+            _orders.Clear();
+            var data = _databaseService.GetOrdersSimpleInfo();
             
-            _formEmployeeControl = this.FindControl<FormEmployee>("FormEmployeeControl");
-            if (_formEmployeeControl != null)
+            foreach (var item in data)
+                _orders.Add(item);
+            
+            var listControl = this.FindControl<List>("OrdersListControl");
+            if (listControl != null)
             {
-                _formEmployeeControl.SaveButtonClicked += OnEmployeeSaved;
+                listControl.Items = _orders;
+                listControl.Title = "Список заказов";
             }
         }
 
-        private void SubscribeToSidebarEvents()
+        private void LoadShiftsData()
         {
-            _sidebarControl = this.FindControl<Sidebar>("SidebarControl");
-            _sidebarControl.ItemSelected += OnSidebarItemSelected;
-    
-            _employeesListControl = this.FindControl<List>("EmployeesListControl");
-            _ordersListControl = this.FindControl<List>("OrdersListControl");
-
-            if (_employeesListControl != null)
+           
+            _shifts.Clear();
+            var data = _databaseService.GetShiftsList();
+            
+            foreach (var item in data)
+                _shifts.Add(item);
+            
+            var listControl = this.FindControl<List>("ShiftsListControl");
+            if (listControl != null)
             {
-                _employeesListControl.Title = "Список сотрудников";
-                _employeesListControl.ListHeight = 400;
-                _employeesListControl.Items = _employees; 
+                listControl.Items = _shifts;
+                listControl.Title = "Список смен";
             }
-
-            if (_ordersListControl != null)
-            {
-                _ordersListControl.Title = "Список заказов";
-                _ordersListControl.ListHeight = 400;
-                _ordersListControl.Items = _orders;
-            }
+           
         }
 
-        // Обработчик сохранения сотрудника
-        private void OnEmployeeSaved(object? sender, EventArgs e)
-        {
-            LoadEmployeesData();
-        }
-
-        // Теперь получаем роль вместо boolean
         private void OnLoginResult(object? sender, string role)
         {
             if (!string.IsNullOrEmpty(role))
             {
-                ShowWithSidebar(role);
-            }
-            else
-            {
-                Console.WriteLine("Ошибка входа!");
-            }
-        }
-
-        // Метод для показа с сайдбаром с указанной ролью
-        public void ShowWithSidebar(string role)
-        {
-            var withSidebarPanel = this.FindControl<Grid>("WithSidebarPanel");
-            var withoutSidebarPanel = this.FindControl<Grid>("WithoutSidebarPanel");
-            
-            if (withSidebarPanel != null && withoutSidebarPanel != null)
-            {
-                // Устанавливаем роль в сайдбар
-                if (_sidebarControl != null)
-                {
-                    _sidebarControl.Role = role;
-                }
+                var sidebarControl = this.FindControl<Sidebar>("SidebarControl");
+                if (sidebarControl != null)
+                    sidebarControl.Role = role;
                 
-                withSidebarPanel.IsVisible = true;
-                withoutSidebarPanel.IsVisible = false;
+                var withSidebarPanel = this.FindControl<Grid>("WithSidebarPanel");
+                var withoutSidebarPanel = this.FindControl<Grid>("WithoutSidebarPanel");
+                
+                if (withSidebarPanel != null && withoutSidebarPanel != null)
+                {
+                    withSidebarPanel.IsVisible = true;
+                    withoutSidebarPanel.IsVisible = false;
+                }
             }
         }
 
         private void OnSidebarItemSelected(object? sender, string itemName)
         {
-            _formEmployeeControl = this.FindControl<FormEmployee>("FormEmployeeControl");
-            _employeesListControl = this.FindControl<List>("EmployeesListControl");
-            _ordersListControl = this.FindControl<List>("OrdersListControl");
-
-            // Сначала скрываем все контролы
-            if (_formEmployeeControl != null)
-                _formEmployeeControl.IsVisible = false;
-        
-            if (_employeesListControl != null)
-                _employeesListControl.IsVisible = false;
-            
-            if (_ordersListControl != null)
-                _ordersListControl.IsVisible = false;
-
-            // Показываем нужный контрол в зависимости от выбора
+            HideAllControls();
             switch (itemName)
             {
                 case "RegistrationText":
-                    if (_formEmployeeControl != null)
-                    {
-                        _formEmployeeControl.IsVisible = true;
-                        Console.WriteLine("Показана форма сотрудника");
-                    }
+                    var formEmployee = this.FindControl<FormEmployee>("FormEmployeeControl");
+                    if (formEmployee != null)
+                        formEmployee.IsVisible = true;
                     break;
-            
+                    
                 case "EmployeesText":
-                    if (_employeesListControl != null)
-                    {
-                        // Обновляем параметры
-                        _employeesListControl.Title = "Сотрудники";
-                        _employeesListControl.ListHeight = 450;
-                        _employeesListControl.Items = _employees;
-                        _employeesListControl.IsVisible = true;
-                        Console.WriteLine("Показан список сотрудников");
-                    }
+                    LoadEmployeesData();
+                    var employeesList = this.FindControl<List>("EmployeesListControl");
+                    if (employeesList != null)
+                        employeesList.IsVisible = true;
                     break;
-            
+                    
                 case "OrdersText":
-                    if (_ordersListControl != null)
-                    {
-                        // Загружаем актуальные данные заказов
-                        LoadOrdersData();
-                        
-                        // Обновляем параметры
-                        _ordersListControl.Title = "Список заказов";
-                        _ordersListControl.ListHeight = 450;
-                        _ordersListControl.Items = _orders;
-                        _ordersListControl.IsVisible = true;
-                        Console.WriteLine("Показан список заказов");
-                    }
+                    LoadOrdersData();
+                    var ordersList = this.FindControl<List>("OrdersListControl");
+                    if (ordersList != null)
+                        ordersList.IsVisible = true;
                     break;
-            
-                default:
-                    Console.WriteLine($"Выбран пункт: {itemName}");
+                    
+                case "ShiftsText":
+                    LoadShiftsData();
+                    var shiftsList = this.FindControl<List>("ShiftsListControl");
+                    if (shiftsList != null)
+                        shiftsList.IsVisible = true;
                     break;
             }
         }
 
-        public void ShowWithoutSidebar()
+        private void HideAllControls()
         {
-            var withSidebarPanel = this.FindControl<Grid>("WithSidebarPanel");
-            var withoutSidebarPanel = this.FindControl<Grid>("WithoutSidebarPanel");
-            if (withSidebarPanel != null && withoutSidebarPanel != null)
-            {
-                withSidebarPanel.IsVisible = false;
-                withoutSidebarPanel.IsVisible = true;
-            }
+            var formEmployee = this.FindControl<FormEmployee>("FormEmployeeControl");
+            if (formEmployee != null)
+                formEmployee.IsVisible = false;
+                
+            var employeesList = this.FindControl<List>("EmployeesListControl");
+            if (employeesList != null)
+                employeesList.IsVisible = false;
+                
+            var ordersList = this.FindControl<List>("OrdersListControl");
+            if (ordersList != null)
+                ordersList.IsVisible = false;
+                
+            var shiftsList = this.FindControl<List>("ShiftsListControl");
+            if (shiftsList != null)
+                shiftsList.IsVisible = false;
         }
     }
 }

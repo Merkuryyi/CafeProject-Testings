@@ -2,7 +2,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:controls="clr-namespace:CafeApp.Controls"
         xmlns:sidebar="clr-namespace:CafeApp.Controls.Components.Sidebar"
-xmlns:list="clr-namespace:CafeApp.Controls.Components.List"
+		xmlns:list="clr-namespace:CafeApp.Controls.Components.List"
         x:Class="CafeApp.MainWindow"
         Title="CafeApp"
         Width="1000"
@@ -10,14 +10,12 @@ xmlns:list="clr-namespace:CafeApp.Controls.Components.List"
         Background="#062B58">
     
     <Grid Name="MainGrid">
-        <!-- Когда сайдбар ЕСТЬ -->
         <Grid x:Name="WithSidebarPanel" IsVisible="False">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="400"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <!-- Левая колонка: фон + сайдбар -->
             <Grid Grid.Column="0">
                 <Rectangle Fill="#F2F2F2"
                            Margin="30,30,15,30"
@@ -58,22 +56,28 @@ xmlns:list="clr-namespace:CafeApp.Controls.Components.List"
                     Title="Список заказов"
                     ListHeight="400"/>
 
+				<list:List x:Name="ShiftsListControl"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Stretch"
+                    Margin="40,40,40,40"
+                    IsVisible="False"
+                    Title="Список смен"
+                    ListHeight="400"/>
 
             </Grid>
         </Grid>
 
-        <!-- Когда сайдбара НЕТ -->
         <Grid x:Name="WithoutSidebarPanel" IsVisible="True">
             <Rectangle Fill="#F2F2F2"
-                       Margin="30"
-                       HorizontalAlignment="Stretch"
-                       VerticalAlignment="Stretch"
-                       RadiusX="20" 
-                       RadiusY="20"/>
+               Margin="30"
+               HorizontalAlignment="Stretch"
+               VerticalAlignment="Stretch"
+               RadiusX="20" 
+               RadiusY="20"/>
             <controls:FormInput x:Name="FormInputControl"
-                            Title="Авторизация"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"/>
+               Title="Авторизация"
+               HorizontalAlignment="Center"
+               VerticalAlignment="Center"/>
         </Grid>
     </Grid>
 </Window>

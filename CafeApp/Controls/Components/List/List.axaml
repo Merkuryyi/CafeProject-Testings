@@ -5,13 +5,11 @@
              Height="{Binding #root.ListHeight}">
    
     <StackPanel Spacing="10">
-        <!-- Заголовок использует свойство Title -->
         <TextBlock Text="{Binding #root.Title}"
                    FontSize="24"
                    Foreground="#194E84"
                    FontWeight="Bold"/>
         
-        <!-- Список сотрудников -->
         <ItemsControl ItemsSource="{Binding #root.Items}">
             <ItemsControl.ItemTemplate>
                 <DataTemplate>

@@ -14,7 +14,6 @@ namespace CafeApp.Controls.Components.Sidebar
         public static readonly StyledProperty<string> RoleProperty =
             AvaloniaProperty.Register<Sidebar, string>(nameof(Role), "Администратор");
         
-
         private Border _activeBorder;
         private TextBlock _activeTextBlock;
 
@@ -22,8 +21,6 @@ namespace CafeApp.Controls.Components.Sidebar
         {
             InitializeComponent();
             UpdateVisibility();
-            
-            // Делаем "Регистрацию" активной после полной загрузки
             this.AttachedToVisualTree += (s, e) => SelectFirstAvailableItem();
         }
 
@@ -39,7 +36,6 @@ namespace CafeApp.Controls.Components.Sidebar
             if (change.Property == RoleProperty)
             {
                 UpdateVisibility();
-                // При изменении роли также выбираем регистрацию, если она доступна
                 SelectFirstAvailableItem();
             }
         }
@@ -54,18 +50,10 @@ namespace CafeApp.Controls.Components.Sidebar
             }
             else if (roleLower == "повар")
             {
-                // Для повара выбираем первый доступный пункт
-                if (IsItemVisible("OrdersText"))
-                    SelectItem("OrdersText");
-                else if (IsItemVisible("OrdersText"))
                     SelectItem("OrdersText");
             }
             else if (roleLower == "официант")
             {
-                // Для официанта выбираем первый доступный пункт
-                if (IsItemVisible("OrdersText"))
-                    SelectItem("OrdersText");
-                else if (IsItemVisible("OrdersText"))
                     SelectItem("OrdersText");
             }
         }
@@ -107,14 +95,11 @@ namespace CafeApp.Controls.Components.Sidebar
                 
                 if (clickedBorder != null)
                 {
-                    // Сбрасываем стиль у предыдущего активного элемента
                     if (_activeBorder != null && _activeTextBlock != null)
                     {
                         _activeBorder.Background = new Avalonia.Media.SolidColorBrush(Avalonia.Media.Colors.Transparent);
                         _activeTextBlock.Foreground = new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.Parse("#194E84"));
                     }
-
-                    // Устанавливаем новый активный элемент
                     _activeBorder = clickedBorder;
                     _activeTextBlock = clickedTextBlock;
                     
@@ -137,8 +122,6 @@ namespace CafeApp.Controls.Components.Sidebar
                 _activeTextBlock = null;
             }
         }
-
-        // Метод для программного выбора элемента
         public void SelectItem(string itemName)
         {
             var textBlock = this.FindControl<TextBlock>(itemName);
@@ -147,8 +130,6 @@ namespace CafeApp.Controls.Components.Sidebar
                 TextBlock_PointerPressed(textBlock, null);
             }
         }
-
-        // Событие для уведомления о выборе элемента
         public event EventHandler<string> ItemSelected;
 
         public string Text

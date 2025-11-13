@@ -63,7 +63,6 @@ namespace CafeApp.Controls.Components.DragAndDrop
         {
             try
             {
-                // Используем абсолютный путь к папке проекта
                 string projectDirectory = Directory.GetCurrentDirectory();
                 string targetDirectory = Path.Combine(projectDirectory, 
                     _fileType == "photo" ? "images/EmployeePhoto" : "images/EmploymentContract");
@@ -71,10 +70,7 @@ namespace CafeApp.Controls.Components.DragAndDrop
                 Directory.CreateDirectory(targetDirectory);
                 string fileName = Path.GetFileName(sourceFilePath);
                 string targetFilePath = Path.Combine(targetDirectory, fileName);
-
                 File.Copy(sourceFilePath, targetFilePath, true);
-                
-                // Логируем для отладки
                 string logMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - File copied from {sourceFilePath} to {targetFilePath}\n";
                 File.AppendAllText(Path.Combine(projectDirectory, "debug.log"), logMessage);
 
@@ -83,7 +79,6 @@ namespace CafeApp.Controls.Components.DragAndDrop
             }
             catch (Exception ex)
             {
-                // Логируем ошибку
                 string projectDirectory = Directory.GetCurrentDirectory();
                 string errorMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Error: {ex.Message}\n";
                 File.AppendAllText(Path.Combine(projectDirectory, "debug.log"), errorMessage);
