@@ -3,6 +3,9 @@ using CafeApp.Controls;
 using CafeApp.Controls.Components.Sidebar;
 using System;
 using CafeApp.Controls.Components.List;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using CafeApp.Database;
 
 namespace CafeApp
 {
@@ -11,11 +14,18 @@ namespace CafeApp
         private Sidebar? _sidebarControl;
         private FormEmployee? _formEmployeeControl;
         private FormInput? _formInputControl;
-        private List? _listControl;
+        private List? _employeesListControl;
+        private List? _ordersListControl;
+        private ObservableCollection<string> _employees;
+        private ObservableCollection<string> _orders;
+		private DatabaseService _databaseService;
 
         public MainWindow()
         {
             InitializeComponent();
+            _employees = new ObservableCollection<string>();
+            _orders = new ObservableCollection<string>();
+			_databaseService = new DatabaseService();
             this.Opened += OnMainWindowOpened;
         }
 
@@ -23,12 +33,64 @@ namespace CafeApp
         {
             SubscribeToAuthEvents();
             SubscribeToSidebarEvents();
+            LoadEmployeesData();
+        }
+
+        private void LoadEmployeesData()
+		{
+    		try
+    		{
+				_employees.Clear();
+        		var employeesFromDb = _databaseService.GetEmployeesList();
+        
+       			foreach (var employee in employeesFromDb)
+       		 	{
+            		_employees.Add(employee);
+        		}
+       			if (_employeesListControl != null)
+        		{
+            		_employeesListControl.Items = _employees;
+        		}
+    		}
+    		catch (Exception ex)
+    		{
+        		Console.WriteLine($"Ошибка загрузки сотрудников: {ex.Message}");
+    		}
+		}
+
+        private void LoadOrdersData()
+        {
+            try
+            {
+                _orders.Clear();
+                var ordersFromDb = _databaseService.GetOrdersSimpleInfo();
+                
+                foreach (var order in ordersFromDb)
+                {
+                    _orders.Add(order);
+                }
+                
+                if (_ordersListControl != null)
+                {
+                    _ordersListControl.Items = _orders;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Ошибка загрузки заказов: {ex.Message}");
+            }
         }
 
         private void SubscribeToAuthEvents()
         {
             _formInputControl = this.FindControl<FormInput>("FormInputControl");
             _formInputControl.LoginResult += OnLoginResult;
+            
+            _formEmployeeControl = this.FindControl<FormEmployee>("FormEmployeeControl");
+            if (_formEmployeeControl != null)
+            {
+                _formEmployeeControl.SaveButtonClicked += OnEmployeeSaved;
+            }
         }
 
         private void SubscribeToSidebarEvents()
@@ -36,23 +98,36 @@ namespace CafeApp
             _sidebarControl = this.FindControl<Sidebar>("SidebarControl");
             _sidebarControl.ItemSelected += OnSidebarItemSelected;
     
-            _listControl = this.FindControl<List>("ListControl");
-    
-            // Устанавливаем параметры для List контрола
-            if (_listControl != null)
+            _employeesListControl = this.FindControl<List>("EmployeesListControl");
+            _ordersListControl = this.FindControl<List>("OrdersListControl");
+
+            if (_employeesListControl != null)
             {
-                _listControl.Title = "Список сотрудников";
-                _listControl.ListHeight = 400;
+                _employeesListControl.Title = "Список сотрудников";
+                _employeesListControl.ListHeight = 400;
+                _employeesListControl.Items = _employees; 
+            }
+
+            if (_ordersListControl != null)
+            {
+                _ordersListControl.Title = "Список заказов";
+                _ordersListControl.ListHeight = 400;
+                _ordersListControl.Items = _orders;
             }
         }
 
+        // Обработчик сохранения сотрудника
+        private void OnEmployeeSaved(object? sender, EventArgs e)
+        {
+            LoadEmployeesData();
+        }
 
         // Теперь получаем роль вместо boolean
         private void OnLoginResult(object? sender, string role)
         {
             if (!string.IsNullOrEmpty(role))
             {
-                ShowWithSidebar(role); // Передаем роль в сайдбар
+                ShowWithSidebar(role);
             }
             else
             {
@@ -79,18 +154,21 @@ namespace CafeApp
             }
         }
 
-        // Остальной код без изменений...
         private void OnSidebarItemSelected(object? sender, string itemName)
         {
             _formEmployeeControl = this.FindControl<FormEmployee>("FormEmployeeControl");
-            _listControl = this.FindControl<List>("ListControl");
+            _employeesListControl = this.FindControl<List>("EmployeesListControl");
+            _ordersListControl = this.FindControl<List>("OrdersListControl");
 
             // Сначала скрываем все контролы
             if (_formEmployeeControl != null)
                 _formEmployeeControl.IsVisible = false;
         
-            if (_listControl != null)
-                _listControl.IsVisible = false;
+            if (_employeesListControl != null)
+                _employeesListControl.IsVisible = false;
+            
+            if (_ordersListControl != null)
+                _ordersListControl.IsVisible = false;
 
             // Показываем нужный контрол в зависимости от выбора
             switch (itemName)
@@ -104,13 +182,29 @@ namespace CafeApp
                     break;
             
                 case "EmployeesText":
-                    if (_listControl != null)
+                    if (_employeesListControl != null)
                     {
                         // Обновляем параметры
-                        _listControl.Title = "Сотрудники";
-                        _listControl.ListHeight = 450;
-                        _listControl.IsVisible = true;
+                        _employeesListControl.Title = "Сотрудники";
+                        _employeesListControl.ListHeight = 450;
+                        _employeesListControl.Items = _employees;
+                        _employeesListControl.IsVisible = true;
                         Console.WriteLine("Показан список сотрудников");
+                    }
+                    break;
+            
+                case "OrdersText":
+                    if (_ordersListControl != null)
+                    {
+                        // Загружаем актуальные данные заказов
+                        LoadOrdersData();
+                        
+                        // Обновляем параметры
+                        _ordersListControl.Title = "Список заказов";
+                        _ordersListControl.ListHeight = 450;
+                        _ordersListControl.Items = _orders;
+                        _ordersListControl.IsVisible = true;
+                        Console.WriteLine("Показан список заказов");
                     }
                     break;
             

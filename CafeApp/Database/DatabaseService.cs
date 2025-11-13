@@ -2,6 +2,7 @@
 using System;
 using System.Data;
 using System.IO;
+using System.Collections.Generic;
 
 namespace CafeApp.Database
 {
@@ -23,13 +24,11 @@ namespace CafeApp.Database
             {
                 using (var conn = GetConnection())
                 {
-                    // ИСПРАВЛЕН ЗАПРОС: таблица называется "user", а не "users"
-                    string query = @"SELECT role FROM ""users"" WHERE username = @username AND password_ = @password AND employment_status = true";
+                    string query = @"SELECT role FROM users WHERE username = @username AND password_ = @password AND employment_status = true";
                     using (var command = new NpgsqlCommand(query, conn))
                     {
                         command.Parameters.AddWithValue("@username", username);
                         command.Parameters.AddWithValue("@password", password);
-                     
 
                         using (var reader = command.ExecuteReader()) 
                         {
@@ -52,45 +51,128 @@ namespace CafeApp.Database
                 return null;
             }
         }
-		public bool RegisterUser(string username, string password, string name, 
-                 string surname, string patronymic, string role, string photoLink, string contractScanLink)
-{
-    try
-    {
-        using (var conn = GetConnection())
-        {
-            // INSERT запрос для добавления пользователя
-            string query = @"INSERT INTO users
-                       (username, password_, role, name, surname, patronymic, employment_status, photo_link, contract_scan_link) 
-                       VALUES (@username, @password, @role, @name, @surname, @patronymic, TRUE, @photoLink, @contractScanLink)";
-        
-            using (var command = new NpgsqlCommand(query, conn))
-            {
-                command.Parameters.AddWithValue("@username", username);
-                command.Parameters.AddWithValue("@password", password);
-                command.Parameters.AddWithValue("@role", role.ToLower());
-                command.Parameters.AddWithValue("@name", name);
-                command.Parameters.AddWithValue("@surname", surname);
-                command.Parameters.AddWithValue("@patronymic", patronymic);
-                command.Parameters.AddWithValue("@photoLink", photoLink);
-                command.Parameters.AddWithValue("@contractScanLink", contractScanLink);
 
-                int rowsAffected = command.ExecuteNonQuery();
+        public bool RegisterUser(string username, string password, string name, 
+                 string surname, string patronymic, string role, string photoLink, string contractScanLink)
+        {
+            try
+            {
+                using (var conn = GetConnection())
+                {
+                    string query = @"INSERT INTO users
+                           (username, password_, role, name, surname, patronymic, employment_status, photo_link, contract_scan_link) 
+                           VALUES (@username, @password, @role, @name, @surname, @patronymic, TRUE, @photoLink, @contractScanLink)";
+        
+                    using (var command = new NpgsqlCommand(query, conn))
+                    {
+                        command.Parameters.AddWithValue("@username", username);
+                        command.Parameters.AddWithValue("@password", password);
+                        command.Parameters.AddWithValue("@role", role.ToLower());
+                        command.Parameters.AddWithValue("@name", name);
+                        command.Parameters.AddWithValue("@surname", surname);
+                        command.Parameters.AddWithValue("@patronymic", patronymic);
+                        command.Parameters.AddWithValue("@photoLink", photoLink);
+                        command.Parameters.AddWithValue("@contractScanLink", contractScanLink);
+
+                        int rowsAffected = command.ExecuteNonQuery();
   
-                return rowsAffected == 1;
+                        return rowsAffected == 1;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                string filePath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
+                string errorMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB ERROR: {ex.Message}\n";
+                File.AppendAllText(filePath, errorMessage);
+    
+                Console.WriteLine($"Ошибка регистрации: {ex.Message}");
+                return false;
             }
         }
-    }
-    catch (Exception ex)
-    {
-        string filePath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
-        string errorMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB ERROR: {ex.Message}\n";
-        File.AppendAllText(filePath, errorMessage);
+
+        // Новый метод для получения списка сотрудников
+        public List<string> GetEmployeesList()
+        {
+            var employees = new List<string>();
+            
+            try
+            {
+                using (var conn = GetConnection())
+                {
+                    string query = @"SELECT surname, name, patronymic
+                                    FROM users 
+                                    WHERE employment_status = true 
+                                    ORDER BY surname, name";
+                    
+                    using (var command = new NpgsqlCommand(query, conn))
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            string surname = reader.GetString(0);
+                            string name = reader.GetString(1);
+                            string patronymic = reader.IsDBNull(2) ? "" : reader.GetString(2);
+                            string employeeInfo = $"{surname} {name} {patronymic}";
+                            employees.Add(employeeInfo);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                string filePath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
+                string errorMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB ERROR (GetEmployeesList): {ex.Message}\n";
+                File.AppendAllText(filePath, errorMessage);
     
-        Console.WriteLine($"Ошибка регистрации: {ex.Message}");
-        return false;
-    }
-}
+                Console.WriteLine($"Ошибка получения списка сотрудников: {ex.Message}");
+            }
+
+            return employees;
+        }
+        public List<string> GetOrdersSimpleInfo()
+        {
+            var orders = new List<string>();
+            
+            try
+            {
+                using (var conn = GetConnection())
+                {
+                    string query = @"SELECT 
+                                        table_id,
+                                        created_at,
+                                        status
+                                    FROM ""order""
+                                    ORDER BY created_at DESC";
+                    
+                    using (var command = new NpgsqlCommand(query, conn))
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            int tableId = reader.GetInt32(0);
+                            DateTime createdAt = reader.GetDateTime(1);
+                            string status = reader.GetString(2);
+
+                            // Форматируем строку: "Стол №X - 2024-01-15 14:30 - статус"
+                            string orderInfo = $"Стол №{tableId} - {createdAt:yyyy-MM-dd HH:mm} - {status}";
+                            orders.Add(orderInfo);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                string filePath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
+                string errorMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB ERROR (GetOrdersSimpleInfo): {ex.Message}\n";
+                File.AppendAllText(filePath, errorMessage);
+    
+                Console.WriteLine($"Ошибка получения списка заказов: {ex.Message}");
+            }
+
+            return orders;
+        }
+
 
         public void Dispose()
         {

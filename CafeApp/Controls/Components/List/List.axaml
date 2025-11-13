@@ -15,9 +15,7 @@
         <ItemsControl ItemsSource="{Binding #root.Items}">
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <Border Background="#F8F9FA"
-                            CornerRadius="8"
-                            Padding="15,10"
+                    <Border  Padding="15,10"
                             Margin="0,5">
                         <TextBlock Text="{Binding}"
                                    FontSize="20"

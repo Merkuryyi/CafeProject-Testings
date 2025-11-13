@@ -42,12 +42,20 @@ xmlns:list="clr-namespace:CafeApp.Controls.Components.List"
                     Margin="0,40,25,40"
                     IsVisible="True"/>
 
-				<list:List x:Name="ListControl"
+				<list:List x:Name="EmployeesListControl"
                     HorizontalAlignment="Stretch"
                     VerticalAlignment="Stretch"
                     Margin="40,40,40,40"
                     IsVisible="False"
                     Title="Список сотрудников"
+                    ListHeight="400"/>
+
+ 				<list:List x:Name="OrdersListControl"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Stretch"
+                    Margin="40,40,40,40"
+                    IsVisible="False"
+                    Title="Список заказов"
                     ListHeight="400"/>
 
 

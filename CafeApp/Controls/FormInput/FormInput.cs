@@ -36,8 +36,7 @@ namespace CafeApp.Controls
             get => GetValue(ShowRoleSelectorProperty);
             set => SetValue(ShowRoleSelectorProperty, value);
         }
-
-        public event EventHandler? LoginButtonClicked;
+        
         public event EventHandler<string>? LoginResult; 
 
         private void LoginButton_Click(object sender, RoutedEventArgs e)
