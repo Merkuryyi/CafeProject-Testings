@@ -41,6 +41,8 @@ namespace CafeApp
             var sidebarControl = this.FindControl<Sidebar>("SidebarControl");
             if (sidebarControl != null)
                 sidebarControl.ItemSelected += OnSidebarItemSelected;
+
+            SubscribeToListEvents();
         }
 
         private void LoadEmployeesData()
@@ -61,7 +63,6 @@ namespace CafeApp
 
         private void LoadOrdersData()
         {
-           
             _orders.Clear();
             var data = _databaseService.GetOrdersSimpleInfo();
             
@@ -78,7 +79,6 @@ namespace CafeApp
 
         private void LoadShiftsData()
         {
-           
             _shifts.Clear();
             var data = _databaseService.GetShiftsList();
             
@@ -91,7 +91,6 @@ namespace CafeApp
                 listControl.Items = _shifts;
                 listControl.Title = "Список смен";
             }
-           
         }
 
         private void OnLoginResult(object? sender, string role)
@@ -147,23 +146,126 @@ namespace CafeApp
             }
         }
 
+        private void SubscribeToListEvents()
+        {
+            var employeesList = this.FindControl<List>("EmployeesListControl");
+            if (employeesList != null)
+            {
+                employeesList.ItemClicked += OnListItemClicked;
+                employeesList.AddButtonClicked += OnListAddButtonClicked;
+            }
+        
+            var ordersList = this.FindControl<List>("OrdersListControl");
+            if (ordersList != null)
+            {
+                ordersList.ItemClicked += OnListItemClicked;
+                ordersList.AddButtonClicked += OnListAddButtonClicked;
+            }
+        
+            var shiftsList = this.FindControl<List>("ShiftsListControl");
+            if (shiftsList != null)
+            {
+                shiftsList.ItemClicked += OnListItemClicked;
+                shiftsList.AddButtonClicked += OnListAddButtonClicked;
+            }
+        }
+
+        private void OnListItemClicked(object sender, object clickedItem)
+        {
+            var listControl = sender as List;
+            if (listControl == null) return;
+    
+            var title = listControl.Title?.ToLower() ?? "";
+    
+            if (title.Contains("заказ"))
+            {
+                // Показываем контрол Order при клике на существующий заказ
+                ShowOrderControl();
+            }
+            // ... остальные случаи ...
+        }
+
+        private void OnListAddButtonClicked(object sender, EventArgs e)
+        {
+            var listControl = sender as List;
+            if (listControl == null) return;
+    
+            var title = listControl.Title?.ToLower() ?? "";
+    
+            if (title.Contains("заказ"))
+            {
+                // Показываем форму создания нового заказа
+                ShowOrderControl();
+            }
+            else if (title.Contains("сотрудник"))
+            {
+                // Показываем форму регистрации сотрудника
+                ShowEmployeeRegistration();
+            }
+            else if (title.Contains("смен"))
+            {
+                // Показываем форму создания смены
+                ShowShiftCreation();
+            }
+        }
+
+        private void ShowOrderControl()
+        {    
+            // Скрываем все контролы
+            HideAllControls();
+    
+            // Показываем контрол Order
+            var orderControl = this.FindControl<Order>("OrderControl");
+            if (orderControl != null)
+            {
+                orderControl.IsVisible = true;
+            }
+        }
+
+        private void ShowEmployeeRegistration()
+        {
+            // Скрываем все контролы
+            HideAllControls();
+    
+            // Показываем форму регистрации сотрудника
+            var formEmployee = this.FindControl<FormEmployee>("FormEmployeeControl");
+            if (formEmployee != null)
+            {
+                formEmployee.IsVisible = true;
+            }
+        }
+
+        private void ShowShiftCreation()
+        {
+            // Скрываем все контролы
+            HideAllControls();
+    
+            // Здесь можно показать форму создания смены
+            // Пока просто покажем сообщение
+            Console.WriteLine("Создание новой смены");
+        }
+
         private void HideAllControls()
         {
             var formEmployee = this.FindControl<FormEmployee>("FormEmployeeControl");
             if (formEmployee != null)
                 formEmployee.IsVisible = false;
-                
+        
             var employeesList = this.FindControl<List>("EmployeesListControl");
             if (employeesList != null)
                 employeesList.IsVisible = false;
-                
+        
             var ordersList = this.FindControl<List>("OrdersListControl");
             if (ordersList != null)
                 ordersList.IsVisible = false;
-                
+        
             var shiftsList = this.FindControl<List>("ShiftsListControl");
             if (shiftsList != null)
                 shiftsList.IsVisible = false;
+        
+            var orderControl = this.FindControl<Order>("OrderControl");
+            if (orderControl != null)
+                orderControl.IsVisible = false;
         }
     }
 }

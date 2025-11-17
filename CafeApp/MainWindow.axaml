@@ -29,40 +29,46 @@
             </Grid>
 
             <Grid Grid.Column="1" >
+                <!-- Белый фон с внутренними отступами -->
                 <Rectangle Fill="#F2F2F2"
                        Margin="15,30,30,30"
                        RadiusX="20" 
                        RadiusY="20"/>
 
-                <controls:FormEmployee x:Name="FormEmployeeControl"     
-                    HorizontalAlignment="Stretch"
-                    VerticalAlignment="Center"
-                    Margin="0,40,25,40"
-                    IsVisible="True"/>
+                <!-- Контейнер для контента с отступами от фона -->
+                <StackPanel Margin="40" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                    
+                    <controls:FormEmployee x:Name="FormEmployeeControl"     
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Center"
+                        IsVisible="True"/>
 
-				<list:List x:Name="EmployeesListControl"
-                    HorizontalAlignment="Stretch"
-                    VerticalAlignment="Stretch"
-                    Margin="40,40,40,40"
-                    IsVisible="False"
-                    Title="Список сотрудников"
-                    ListHeight="400"/>
+                    <list:List x:Name="EmployeesListControl"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch"
+                        IsVisible="False"
+                        Title="Список сотрудников"
+                        ListHeight="400"/>
 
- 				<list:List x:Name="OrdersListControl"
-                    HorizontalAlignment="Stretch"
-                    VerticalAlignment="Stretch"
-                    Margin="40,40,40,40"
-                    IsVisible="False"
-                    Title="Список заказов"
-                    ListHeight="400"/>
+                    <list:List x:Name="OrdersListControl"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch"
+                        IsVisible="False"
+                        Title="Список заказов"
+                        ListHeight="400"/>
 
-				<list:List x:Name="ShiftsListControl"
-                    HorizontalAlignment="Stretch"
-                    VerticalAlignment="Stretch"
-                    Margin="40,40,40,40"
-                    IsVisible="False"
-                    Title="Список смен"
-                    ListHeight="400"/>
+                    <list:List x:Name="ShiftsListControl"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch"
+                        IsVisible="False"
+                        Title="Список смен"
+                        ListHeight="400"/>
+
+                    <controls:Order x:Name="OrderControl" 
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch"
+                        IsVisible="False"/>
+                </StackPanel>
 
             </Grid>
         </Grid>

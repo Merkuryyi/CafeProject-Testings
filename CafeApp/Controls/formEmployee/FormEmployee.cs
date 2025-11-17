@@ -189,7 +189,6 @@ namespace CafeApp.Controls
     addPhotoEmployee.Text = "+";
     addEmploymentContract.Text = "+";
 
-    // Сбрасываем пути к файлам
     _photoFilePath = "";
     _contractFilePath = "";
 }

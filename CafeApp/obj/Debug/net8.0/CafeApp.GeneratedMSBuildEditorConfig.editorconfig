@@ -50,10 +50,16 @@ build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 [C:/Users/Terra/RiderProjects/CafeProject/CafeApp/Controls/Components/Sidebar/Sidebar.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 
+[C:/Users/Terra/RiderProjects/CafeProject/CafeApp/Controls/Components/Table/Table.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
 [C:/Users/Terra/RiderProjects/CafeProject/CafeApp/Controls/formEmployee/FormEmployee.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 
 [C:/Users/Terra/RiderProjects/CafeProject/CafeApp/Controls/FormInput/FormInput.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[C:/Users/Terra/RiderProjects/CafeProject/CafeApp/Controls/Order/Order.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 
 [C:/Users/Terra/RiderProjects/CafeProject/CafeApp/MainWindow.axaml]

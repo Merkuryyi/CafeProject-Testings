@@ -1,0 +1,64 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:combobox="clr-namespace:CafeApp.Controls.Components.ComboBox"
+             xmlns:input="clr-namespace:CafeApp.Controls.Components.Input"
+             xmlns:controls="clr-namespace:CafeApp.Controls"
+             x:Class="CafeApp.Controls.Order"
+             x:Name="root"
+             x:DataType="controls:Order">
+    
+    <StackPanel Spacing="30">
+        <!-- Секция заказа -->
+        <Border Padding="15">
+            <StackPanel Spacing="15">
+                <TextBlock Text="Заказ"
+                           FontSize="20"
+                           Foreground="#194E84"
+                           FontWeight="Bold"/>
+                
+                <StackPanel Orientation="Horizontal" Spacing="25" HorizontalAlignment="Left">
+                    <combobox:ComboBox x:Name="StatusComboBox" 
+                               Text="Статус" 
+                               ComboBoxWidth="200"
+                               ItemsSource="{Binding StatusOrder}"/>  
+                    <combobox:ComboBox x:Name="WaiterComboBox" 
+                               Text="Официант" 
+                               ComboBoxWidth="160"
+                               ItemsSource="{Binding ListWaiter}"/> 
+                    <input:Input x:Name="TableInput" Text="Столик" InputWidth="50"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- Секция меню -->
+        <Border Padding="15">
+             
+                <StackPanel Spacing="15">
+                <StackPanel Orientation="Horizontal" Spacing="15">
+                    <TextBlock Text="Меню"
+                           FontSize="20"
+                           Foreground="#194E84"
+                           FontWeight="Bold"/>
+                    <TextBlock Text="+"
+                           FontSize="20" Cursor="Hand"
+                           Foreground="#194E84"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Spacing="25" HorizontalAlignment="Left">
+                    <combobox:ComboBox x:Name="CategoryComboBox" 
+                           Text="Категория" 
+                           ComboBoxWidth="200"
+                           ItemsSource="{Binding CategoryMenu}" />  
+                    
+                    <combobox:ComboBox x:Name="NameMenuItem" 
+                               Text="Название" 
+                               ComboBoxWidth="160"
+                               ItemsSource="{Binding FilteredMenuItems}"/>  
+                    
+                    <input:Input x:Name="CountInput" Text="Кол." InputWidth="50"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+        <button:Button x:Name="SaveButton" Text="Сохранить"
+                HorizontalAlignment="Stretch" Click="SaveButton_Click"/> 
+    </StackPanel>
+</UserControl>

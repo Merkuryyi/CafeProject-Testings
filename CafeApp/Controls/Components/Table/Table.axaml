@@ -1,0 +1,82 @@
+﻿<!-- Controls/Components/Table/Table.axaml -->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="CafeApp.Controls.Components.Table.Table"
+             x:Name="root">
+    
+    <StackPanel Spacing="10">
+        <!-- Заголовок таблицы -->
+        <TextBlock Text="{Binding #root.Title}"
+                   FontSize="24"
+                   Foreground="#194E84"
+                   FontWeight="Bold"
+                   HorizontalAlignment="Center"/>
+        
+        <!-- Контейнер таблицы -->
+        <Border BorderBrush="#194E84" 
+                BorderThickness="2"
+                CornerRadius="5">
+            <Grid>
+                <!-- Заголовки колонок -->
+                <ItemsControl ItemsSource="{Binding #root.Columns}"
+                              Margin="0,0,0,10">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal" 
+                                        Spacing="10"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Height="{Binding #root.HeaderHeight}"
+                                    Width="200"
+                                    Background="#194E84"
+                                    CornerRadius="3"
+                                    Margin="10,10,0,0">
+                                <TextBlock Text="{Binding}"
+                                           Foreground="White"
+                                           FontWeight="Bold"
+                                           FontSize="16"
+                                           VerticalAlignment="Center"
+                                           HorizontalAlignment="Center"/>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <!-- Данные таблицы -->
+                <ItemsControl ItemsSource="{Binding #root.ItemsSource}"
+                              Margin="0,60,0,0">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <ItemsControl ItemsSource="{Binding}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel Orientation="Horizontal" 
+                                                    Spacing="10"/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Height="{Binding #root.RowHeight}"
+                                                Width="200"
+                                                Background="#F0F8FF"
+                                                CornerRadius="3"
+                                                Margin="10,10,0,0">
+                                            <TextBlock Text="{Binding}"
+                                                       Foreground="#194E84"
+                                                       FontSize="14"
+                                                       VerticalAlignment="Center"
+                                                       HorizontalAlignment="Center"
+                                                       TextWrapping="Wrap"/>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </Grid>
+        </Border>
+    </StackPanel>
+</UserControl>

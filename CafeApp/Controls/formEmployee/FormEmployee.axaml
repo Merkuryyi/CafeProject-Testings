@@ -10,14 +10,10 @@
              x:DataType="local:FormEmployee">
     
     <Grid>
-        <!-- Основной контент -->
         <StackPanel Spacing="15" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-            <!-- Горизонтальная панель для двух колонок -->
             <StackPanel Orientation="Horizontal" Spacing="50" HorizontalAlignment="Center" Margin="0,10,0,0">
-                
-                <!-- Левая колонка: Фото + Логин + Пароль -->
+              
                 <StackPanel Spacing="5">
-                    <!-- Фото сотрудника и + в одной строке -->
                     <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Left"  Margin="0,0,0,20">
                         <TextBlock Text="Фото сотрудника" 
                             FontSize="20"
@@ -61,7 +57,7 @@
             </StackPanel>
             
             <button:Button x:Name="SaveButton" Text="Сохранить"
-                HorizontalAlignment="Stretch" Click="SaveButton_Click"/> 
+                HorizontalAlignment="Stretch"/> 
         </StackPanel>
 
 
