@@ -3,6 +3,7 @@ using System;
 using System.Data;
 using System.IO;
 using System.Collections.Generic;
+using CafeApp.Models;
 
 namespace CafeApp.Database
 {
@@ -191,6 +192,156 @@ namespace CafeApp.Database
             }
             return shifts;
         }
+        public int GetWaiterIdByName(string fullName)
+        {
+            try
+            {
+                using (var conn = GetConnection())
+                {
+                    string[] nameParts = fullName.Split(' ');
+                    if (nameParts.Length < 2)
+                        return -1;
+
+                    string surname = nameParts[0];
+                    string name = nameParts[1];
+                    
+                    string query = @"SELECT user_id FROM users 
+                                   WHERE surname = @surname AND name = @name 
+                                   AND role = 'официант' AND employment_status = true";
+                    
+                    using (var command = new NpgsqlCommand(query, conn))
+                    {
+                        command.Parameters.AddWithValue("@surname", surname);
+                        command.Parameters.AddWithValue("@name", name);
+                        
+                        var result = command.ExecuteScalar();
+                        return result != null ? Convert.ToInt32(result) : -1;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                string filePath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
+                string errorMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB ERROR (GetWaiterIdByName): {ex.Message}\n";
+                File.AppendAllText(filePath, errorMessage);
+                return -1;
+            }
+        }
+        public int CreateOrder(int tableId, int waiterId, int shiftId, int customerCount, string status, List<OrderItem> orderItems)
+        {
+            try
+            {
+                using (var conn = GetConnection())
+                using (var transaction = conn.BeginTransaction())
+                {
+                    try
+                    {
+                        // 1. Вставляем основной заказ
+                        string orderQuery = @"
+                            INSERT INTO ""order"" 
+                            (table_id, waiter_id, shift_id, customer_count, status, created_at) 
+                            VALUES (@tableId, @waiterId, @shiftId, @customerCount, @status, @createdAt)
+                            RETURNING order_id";
+
+                        int orderId;
+                        using (var orderCommand = new NpgsqlCommand(orderQuery, conn, transaction))
+                        {
+                            orderCommand.Parameters.AddWithValue("@tableId", tableId);
+                            orderCommand.Parameters.AddWithValue("@waiterId", waiterId);
+                            orderCommand.Parameters.AddWithValue("@shiftId", shiftId);
+                            orderCommand.Parameters.AddWithValue("@customerCount", customerCount);
+                            orderCommand.Parameters.AddWithValue("@status", status);
+                            orderCommand.Parameters.AddWithValue("@createdAt", DateTime.Now);
+
+                            orderId = Convert.ToInt32(orderCommand.ExecuteScalar());
+                        }
+
+                        // 2. Вставляем позиции заказа
+                        string orderItemQuery = @"
+                            INSERT INTO order_item 
+                            (order_id, menu_item_id, quantity, price) 
+                            VALUES (@orderId, @menuItemId, @quantity, @price)";foreach (var item in orderItems)
+                        {
+                            using (var itemCommand = new NpgsqlCommand(orderItemQuery, conn, transaction))
+                            {
+                                itemCommand.Parameters.AddWithValue("@orderId", orderId);
+                                itemCommand.Parameters.AddWithValue("@menuItemId", item.MenuItemId);
+                                itemCommand.Parameters.AddWithValue("@quantity", item.Quantity);
+                                itemCommand.Parameters.AddWithValue("@price", item.Price);
+
+                                itemCommand.ExecuteNonQuery();
+                            }
+                        }
+
+                        transaction.Commit();
+                        return orderId;
+                    }
+                    catch (Exception)
+                    {
+                        transaction.Rollback();
+                        throw;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                string filePath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
+                string errorMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB ERROR (CreateOrder): {ex.Message}\n";
+                File.AppendAllText(filePath, errorMessage);
+                return -1;
+            }
+        }
+        public int GetMenuItemIdByName(string menuItemName)
+        {
+            try
+            {
+                using (var conn = GetConnection())
+                {
+                    string query = "SELECT menu_item_id FROM menu_item WHERE name = @name";
+                    
+                    using (var command = new NpgsqlCommand(query, conn))
+                    {
+                        command.Parameters.AddWithValue("@name", menuItemName);
+                        
+                        var result = command.ExecuteScalar();
+                        return result != null ? Convert.ToInt32(result) : -1;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                string filePath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
+                string errorMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB ERROR (GetMenuItemIdByName): {ex.Message}\n";
+                File.AppendAllText(filePath, errorMessage);
+                return -1;
+            }
+        }
+        public decimal GetMenuItemPrice(int menuItemId)
+        {
+            try
+            {
+                using (var conn = GetConnection())
+                {
+                    string query = "SELECT price FROM menu_item WHERE menu_item_id = @id";
+                    
+                    using (var command = new NpgsqlCommand(query, conn))
+                    {
+                        command.Parameters.AddWithValue("@id", menuItemId);
+                        
+                        var result = command.ExecuteScalar();
+                        return result != null ? Convert.ToDecimal(result) : 0;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                string filePath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
+                string errorMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB ERROR (GetMenuItemPrice): {ex.Message}\n";
+                File.AppendAllText(filePath, errorMessage);
+                return 0;
+            }
+        }
+
         
         public void Dispose()
         {

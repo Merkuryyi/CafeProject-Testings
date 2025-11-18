@@ -49,149 +49,149 @@ namespace CafeApp.Controls
         public event EventHandler? SaveButtonClicked;
 
         private void SaveButton_Click(object sender, RoutedEventArgs e)
-{
-    var usernameInput = this.FindControl<Input>("UsernameInput");
-    var passwordInput = this.FindControl<Input>("PasswordInput");
-    var nameInput = this.FindControl<Input>("NameInput");
-    var surnameInput = this.FindControl<Input>("SurnameInput");
-    var patronymicInput = this.FindControl<Input>("PatronymicInput");
-    var roleComboBox = this.FindControl<global::CafeApp.Controls.Components.ComboBox.ComboBox>("RoleComboBox");
-   
-    string username = usernameInput.Value?.ToString() ?? 
-                     usernameInput.Content?.ToString() ?? 
-                     usernameInput.Text ?? "";
-    
-    string password = passwordInput.Value?.ToString() ?? 
-                     passwordInput.Content?.ToString() ?? 
-                     passwordInput.Text ?? "";
-    string name = nameInput.Value?.ToString() ?? 
-                 nameInput.Content?.ToString() ?? 
-                 nameInput.Text ?? "";
-
-    string surname = surnameInput.Value?.ToString() ?? 
-                    surnameInput.Content?.ToString() ?? 
-                    surnameInput.Text ?? "";
-
-    string patronymic = patronymicInput.Value?.ToString() ?? 
-                       patronymicInput.Content?.ToString() ?? 
-                       patronymicInput.Text ?? "";
-
-    var roleInnerComboBox = roleComboBox?.FindControl<Avalonia.Controls.ComboBox>("MainComboBox");
-    string selectedRole = roleInnerComboBox?.SelectedItem?.ToString() ?? "";
-
-    // Проверка что все поля заполнены
-    if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password) || 
-        string.IsNullOrEmpty(name) || string.IsNullOrEmpty(surname) ||
-        string.IsNullOrEmpty(selectedRole) || string.IsNullOrEmpty(_photoFilePath) ||
-        string.IsNullOrEmpty(_contractFilePath))
-    {
-        string logMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - ERROR: Not all fields are filled\n";
-        File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", logMessage);
-        return;
-    }
-
-    try
-    {
-        string projectDirectory = Directory.GetCurrentDirectory();
-        string photoLink = "";
-        string contractScanLink = "";
-        
-        // Копируем фото с использованием FileStream
-        if (!string.IsNullOrEmpty(_photoFilePath))
         {
-            string photoTargetDir = Path.Combine(projectDirectory, "images/EmployeePhoto");
-            Directory.CreateDirectory(photoTargetDir);
-            string photoFileName = Path.GetFileName(_photoFilePath);
-            string photoTargetPath = Path.Combine(photoTargetDir, photoFileName);
+            var usernameInput = this.FindControl<Input>("UsernameInput");
+            var passwordInput = this.FindControl<Input>("PasswordInput");
+            var nameInput = this.FindControl<Input>("NameInput");
+            var surnameInput = this.FindControl<Input>("SurnameInput");
+            var patronymicInput = this.FindControl<Input>("PatronymicInput");
+            var roleComboBox = this.FindControl<global::CafeApp.Controls.Components.ComboBox.ComboBox>("RoleComboBox");
+           
+            string username = usernameInput.Value?.ToString() ?? 
+                             usernameInput.Content?.ToString() ?? 
+                             usernameInput.Text ?? "";
             
-            // Используем FileStream для обхода блокировки
-            using (var sourceStream = new FileStream(_photoFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
-            using (var targetStream = new FileStream(photoTargetPath, FileMode.Create, FileAccess.Write))
+            string password = passwordInput.Value?.ToString() ?? 
+                             passwordInput.Content?.ToString() ?? 
+                             passwordInput.Text ?? "";
+            string name = nameInput.Value?.ToString() ?? 
+                         nameInput.Content?.ToString() ?? 
+                         nameInput.Text ?? "";
+
+            string surname = surnameInput.Value?.ToString() ?? 
+                            surnameInput.Content?.ToString() ?? 
+                            surnameInput.Text ?? "";
+
+            string patronymic = patronymicInput.Value?.ToString() ?? 
+                               patronymicInput.Content?.ToString() ?? 
+                               patronymicInput.Text ?? "";
+
+            var roleInnerComboBox = roleComboBox?.FindControl<Avalonia.Controls.ComboBox>("MainComboBox");
+            string selectedRole = roleInnerComboBox?.SelectedItem?.ToString() ?? "";
+
+            // Проверка что все поля заполнены
+            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password) || 
+                string.IsNullOrEmpty(name) || string.IsNullOrEmpty(surname) ||
+                string.IsNullOrEmpty(selectedRole) || string.IsNullOrEmpty(_photoFilePath) ||
+                string.IsNullOrEmpty(_contractFilePath))
             {
-                sourceStream.CopyTo(targetStream);
+                string logMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - ERROR: Not all fields are filled\n";
+                File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", logMessage);
+                return;
             }
-            photoLink = $"CafeApp/images/EmployeePhoto/{photoFileName}";
-        }
 
-        // Копируем договор с использованием FileStream
-        if (!string.IsNullOrEmpty(_contractFilePath))
-        {
-            string contractTargetDir = Path.Combine(projectDirectory, "images/EmploymentContract");
-            Directory.CreateDirectory(contractTargetDir);
-            string contractFileName = Path.GetFileName(_contractFilePath);
-            string contractTargetPath = Path.Combine(contractTargetDir, contractFileName);
-            
-            // Используем FileStream для обхода блокировки
-            using (var sourceStream = new FileStream(_contractFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
-            using (var targetStream = new FileStream(contractTargetPath, FileMode.Create, FileAccess.Write))
+            try
             {
-                sourceStream.CopyTo(targetStream);
+                string projectDirectory = Directory.GetCurrentDirectory();
+                string photoLink = "";
+                string contractScanLink = "";
+                
+                // Копируем фото с использованием FileStream
+                if (!string.IsNullOrEmpty(_photoFilePath))
+                {
+                    string photoTargetDir = Path.Combine(projectDirectory, "images/EmployeePhoto");
+                    Directory.CreateDirectory(photoTargetDir);
+                    string photoFileName = Path.GetFileName(_photoFilePath);
+                    string photoTargetPath = Path.Combine(photoTargetDir, photoFileName);
+                    
+                    // Используем FileStream для обхода блокировки
+                    using (var sourceStream = new FileStream(_photoFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                    using (var targetStream = new FileStream(photoTargetPath, FileMode.Create, FileAccess.Write))
+                    {
+                        sourceStream.CopyTo(targetStream);
+                    }
+                    photoLink = $"CafeApp/images/EmployeePhoto/{photoFileName}";
+                }
+
+                // Копируем договор с использованием FileStream
+                if (!string.IsNullOrEmpty(_contractFilePath))
+                {
+                    string contractTargetDir = Path.Combine(projectDirectory, "images/EmploymentContract");
+                    Directory.CreateDirectory(contractTargetDir);
+                    string contractFileName = Path.GetFileName(_contractFilePath);
+                    string contractTargetPath = Path.Combine(contractTargetDir, contractFileName);
+                    
+                    // Используем FileStream для обхода блокировки
+                    using (var sourceStream = new FileStream(_contractFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                    using (var targetStream = new FileStream(contractTargetPath, FileMode.Create, FileAccess.Write))
+                    {
+                        sourceStream.CopyTo(targetStream);
+                    }
+                    contractScanLink = $"CafeApp/images/EmploymentContract/{contractFileName}";
+                }
+
+                // Регистрируем пользователя в БД
+                bool isRegistered = _databaseService.RegisterUser(username, password, name, surname, patronymic, selectedRole, photoLink, contractScanLink);
+
+                string logMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Form data saved:\n" +
+                                   $"Username: '{username}'\n" +
+                                   $"Password: '{password}'\n"+
+                                   $"Name: '{name}'\n" +
+                                   $"Surname: '{surname}'\n" +
+                                   $"Patronymic: '{patronymic}'\n" +
+                                   $"Role: '{selectedRole}'\n" +
+                                   $"Photo: '{photoLink}'\n" +
+                                   $"Contract: '{contractScanLink}'\n" +
+                                   $"DB Registration: {isRegistered}\n";
+                File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", logMessage);
+
+                if (isRegistered)
+                {
+                    // Очищаем поля после успешной регистрации
+                    ClearForm();
+                    SaveButtonClicked?.Invoke(this, EventArgs.Empty);
+                }
             }
-            contractScanLink = $"CafeApp/images/EmploymentContract/{contractFileName}";
+            catch (Exception ex)
+            {
+                string errorMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - ERROR saving files: {ex.Message}\n";
+                File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", errorMessage);
+            }
         }
-
-        // Регистрируем пользователя в БД
-        bool isRegistered = _databaseService.RegisterUser(username, password, name, surname, patronymic, selectedRole, photoLink, contractScanLink);
-
-        string logMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Form data saved:\n" +
-                           $"Username: '{username}'\n" +
-                           $"Password: '{password}'\n"+
-                           $"Name: '{name}'\n" +
-                           $"Surname: '{surname}'\n" +
-                           $"Patronymic: '{patronymic}'\n" +
-                           $"Role: '{selectedRole}'\n" +
-                           $"Photo: '{photoLink}'\n" +
-                           $"Contract: '{contractScanLink}'\n" +
-                           $"DB Registration: {isRegistered}\n";
-        File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", logMessage);
-
-        if (isRegistered)
-        {
-            // Очищаем поля после успешной регистрации
-            ClearForm();
-            SaveButtonClicked?.Invoke(this, EventArgs.Empty);
-        }
-    }
-    catch (Exception ex)
-    {
-        string errorMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - ERROR saving files: {ex.Message}\n";
-        File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", errorMessage);
-    }
-}
 
         private void ClearForm()
-{
-    // Очищаем поля ввода
-    var usernameInput = this.FindControl<Input>("UsernameInput");
-    var passwordInput = this.FindControl<Input>("PasswordInput");
-    var nameInput = this.FindControl<Input>("NameInput");
-    var surnameInput = this.FindControl<Input>("SurnameInput");
-    var patronymicInput = this.FindControl<Input>("PatronymicInput");
-    var roleComboBox = this.FindControl<global::CafeApp.Controls.Components.ComboBox.ComboBox>("RoleComboBox");
-    var roleInnerComboBox = roleComboBox?.FindControl<Avalonia.Controls.ComboBox>("MainComboBox");
+        {
+            // Очищаем поля ввода
+            var usernameInput = this.FindControl<Input>("UsernameInput");
+            var passwordInput = this.FindControl<Input>("PasswordInput");
+            var nameInput = this.FindControl<Input>("NameInput");
+            var surnameInput = this.FindControl<Input>("SurnameInput");
+            var patronymicInput = this.FindControl<Input>("PatronymicInput");
+            var roleComboBox = this.FindControl<global::CafeApp.Controls.Components.ComboBox.ComboBox>("RoleComboBox");
+            var roleInnerComboBox = roleComboBox?.FindControl<Avalonia.Controls.ComboBox>("MainComboBox");
 
-    // Очищаем значения полей ввода (Value), а не заголовки (Text)
-    usernameInput.Value = "";
-    passwordInput.Value = "";
-    nameInput.Value = "";
-    surnameInput.Value = "";
-    patronymicInput.Value = "";
+            // Очищаем значения полей ввода (Value), а не заголовки (Text)
+            usernameInput.Value = "";
+            passwordInput.Value = "";
+            nameInput.Value = "";
+            surnameInput.Value = "";
+            patronymicInput.Value = "";
 
-    // Сбрасываем ComboBox
-    if (roleInnerComboBox != null)
-    {
-        roleInnerComboBox.SelectedIndex = -1;
-    }
+            // Сбрасываем ComboBox
+            if (roleInnerComboBox != null)
+            {
+                roleInnerComboBox.SelectedIndex = -1;
+            }
 
-    // Возвращаем плюсики
-    var addPhotoEmployee = this.FindControl<TextBlock>("AddPhotoEmployee");
-    var addEmploymentContract = this.FindControl<TextBlock>("AddEmploymentContract");
-    addPhotoEmployee.Text = "+";
-    addEmploymentContract.Text = "+";
+            // Возвращаем плюсики
+            var addPhotoEmployee = this.FindControl<TextBlock>("AddPhotoEmployee");
+            var addEmploymentContract = this.FindControl<TextBlock>("AddEmploymentContract");
+            addPhotoEmployee.Text = "+";
+            addEmploymentContract.Text = "+";
 
-    _photoFilePath = "";
-    _contractFilePath = "";
-}
+            _photoFilePath = "";
+            _contractFilePath = "";
+        }
 
         protected override void OnInitialized()
         {

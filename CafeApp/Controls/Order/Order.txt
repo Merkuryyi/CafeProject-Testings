@@ -9,6 +9,7 @@
              x:DataType="controls:Order">
     
     <StackPanel Spacing="30">
+        <!-- Секция заказа -->
         <Border Padding="15">
             <StackPanel Spacing="15">
                 <TextBlock Text="Заказ"
@@ -55,12 +56,17 @@
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal" Spacing="25" HorizontalAlignment="Left" Margin="0,10,0,0">
+                                    <combobox:ComboBox x:Name="CategoryComboBox"
+                                        Text="Категория" 
+                                        ComboBoxWidth="200"
+                                        ItemsSource="{Binding #root.CategoryMenu}"/>  
+                                    
                                     <combobox:ComboBox 
                                         Text="Название" 
-                                        ComboBoxWidth="200"
-                                        ItemsSource="{Binding #root.AllMenuItems}"/>  
+                                        ComboBoxWidth="160"
+                                        ItemsSource="{Binding #root.FilteredMenuItems}"/>  
                                     
-                                    <input:Input Text="Кол." InputWidth="160"/>
+                                    <input:Input Text="Кол." InputWidth="50"/>
                                 </StackPanel>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
