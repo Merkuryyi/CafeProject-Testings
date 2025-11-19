@@ -54,7 +54,7 @@ namespace CafeApp.Controls.Components.Sidebar
             }
             else if (roleLower == "официант")
             {
-                    SelectItem("OrdersText");
+                SelectItem("OrdersText");
             }
         }
 

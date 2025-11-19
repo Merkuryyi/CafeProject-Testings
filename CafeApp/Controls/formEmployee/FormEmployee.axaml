@@ -57,7 +57,7 @@
             </StackPanel>
             
             <button:Button x:Name="SaveButton" Text="Сохранить"
-                HorizontalAlignment="Stretch"/> 
+                HorizontalAlignment="Stretch" Click="SaveButton_Click"/> 
         </StackPanel>
 
 

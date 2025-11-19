@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using CafeApp.Database;
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace CafeApp
 {
@@ -169,6 +170,11 @@ namespace CafeApp
                 shiftsList.AddButtonClicked += OnListAddButtonClicked;
             }
         }
+        private string GetCurrentRole()
+        {
+            var sidebarControl = this.FindControl<Sidebar>("SidebarControl");
+            return sidebarControl?.Role ?? "";
+        }
 
         private void OnListItemClicked(object sender, object clickedItem)
         {
@@ -179,10 +185,12 @@ namespace CafeApp
     
             if (title.Contains("заказ"))
             {
-                // Показываем контрол Order при клике на существующий заказ
-                ShowOrderControl();
+                var orderControl = this.FindControl<Order>("OrderControl");
+                orderControl.Title = "Редактирование заказа";
+                orderControl.Role = GetCurrentRole();
+                ShowControl(orderControl);
             }
-            // ... остальные случаи ...
+          
         }
 
         private void OnListAddButtonClicked(object sender, EventArgs e)
@@ -192,58 +200,36 @@ namespace CafeApp
     
             var title = listControl.Title?.ToLower() ?? "";
     
-            if (title.Contains("заказ"))
+            if (title.Contains("заказ") && GetCurrentRole() != "повар")
             {
-                // Показываем форму создания нового заказа
-                ShowOrderControl();
+                var orderControl = this.FindControl<Order>("OrderControl");
+                orderControl.Title = "Заказ";
+                orderControl.Role = GetCurrentRole();
+                ShowControl(orderControl);
             }
             else if (title.Contains("сотрудник"))
             {
                 // Показываем форму регистрации сотрудника
-                ShowEmployeeRegistration();
+                var formEmployee = this.FindControl<FormEmployee>("FormEmployeeControl");
+                ShowControl(formEmployee);
             }
             else if (title.Contains("смен"))
             {
                 // Показываем форму создания смены
-                ShowShiftCreation();
+              //  ShowControl();
             }
         }
 
-        private void ShowOrderControl()
+        private void ShowControl(Control control)
         {    
             // Скрываем все контролы
             HideAllControls();
     
-            // Показываем контрол Order
-            var orderControl = this.FindControl<Order>("OrderControl");
-            if (orderControl != null)
-            {
-                orderControl.IsVisible = true;
-            }
+            // Показываем контрол Orde
+            control.IsVisible = true;
+            
         }
-
-        private void ShowEmployeeRegistration()
-        {
-            // Скрываем все контролы
-            HideAllControls();
-    
-            // Показываем форму регистрации сотрудника
-            var formEmployee = this.FindControl<FormEmployee>("FormEmployeeControl");
-            if (formEmployee != null)
-            {
-                formEmployee.IsVisible = true;
-            }
-        }
-
-        private void ShowShiftCreation()
-        {
-            // Скрываем все контролы
-            HideAllControls();
-    
-            // Здесь можно показать форму создания смены
-            // Пока просто покажем сообщение
-            Console.WriteLine("Создание новой смены");
-        }
+        
 
         private void HideAllControls()
         {
@@ -266,6 +252,11 @@ namespace CafeApp
             var orderControl = this.FindControl<Order>("OrderControl");
             if (orderControl != null)
                 orderControl.IsVisible = false;
+           // var editOrderControl = this.FindControl<EditOrder>("EditOrderControl");
+           // if (editOrderControl != null)
+              //  editOrderControl.IsVisible = false;
+            
+           
         }
     }
 }

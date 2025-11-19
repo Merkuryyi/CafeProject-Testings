@@ -30,4 +30,9 @@
     <PackageReference Include="Npgsql" Version="9.0.4" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="images\EmployeePhoto\" />
+    <Folder Include="images\EmploymentContract\" />
+  </ItemGroup>
+
 </Project>

@@ -1,23 +1,23 @@
 ﻿<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="CafeApp.Controls.Components.List.List"
-             x:Name="root"
-             Height="{Binding #root.ListHeight}">
+             x:Name="root">
    
     <StackPanel Spacing="10">
         <StackPanel Orientation="Horizontal" Spacing="25" HorizontalAlignment="Left">
             <TextBlock Text="{Binding #root.Title}"
-                   FontSize="24"
-                   Foreground="#194E84"
-                   FontWeight="Bold"/>
+                       FontSize="24"
+                       Foreground="#194E84"
+                       FontWeight="Bold"/>
             <TextBlock Text="+" x:Name="AddOrder"
-                            FontSize="20"
-                            FontWeight="Normal"
-                            Foreground="#194E84"
-                            Cursor="Hand" />
+                       FontSize="20"
+                       FontWeight="Normal"
+                       Foreground="#194E84"
+                       Cursor="Hand" />
         </StackPanel>
-        <!-- Добавляем ScrollViewer для прокрутки -->
+        
         <ScrollViewer VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled"
                       MaxHeight="{Binding #root.ListHeight}">
             <ItemsControl ItemsSource="{Binding #root.Items}">
                 <ItemsControl.ItemTemplate>

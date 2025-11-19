@@ -68,6 +68,11 @@
                         HorizontalAlignment="Stretch"
                         VerticalAlignment="Stretch"
                         IsVisible="False"/>
+                    
+                    <controls:EditOrder x:Name="EditOrderControl" 
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch"
+                        IsVisible="False"/>
                 </StackPanel>
 
             </Grid>
