@@ -24,21 +24,30 @@ namespace CafeApp.Controls
         public ObservableCollection<string> AllMenuItems { get; set; }
         public ObservableCollection<string> ListWaiter { get; set; }
         public ObservableCollection<OrderMenuItem> OrderMenuItems { get; set; }
+        
         public static readonly StyledProperty<string> TitleProperty =
             AvaloniaProperty.Register<Order, string>(nameof(Title), "Заказ");
         
+        // ИСПРАВЛЕНО: Исправлено имя свойства для RoleProperty
         public static readonly StyledProperty<string> RoleProperty =
-            AvaloniaProperty.Register<Order, string>(nameof(Title), "Заказ");
+            AvaloniaProperty.Register<Order, string>(nameof(Role), "администратор");
+        
         public string Title
         {
             get => GetValue(TitleProperty);
             set => SetValue(TitleProperty, value);
         }
+        
         public string Role
         {
             get => GetValue(RoleProperty);
-            set => SetValue(RoleProperty, value);
+            set 
+            { 
+                SetValue(RoleProperty, value);
+                UpdateStatusOrder(); // ДОБАВЛЕНО: Обновляем статусы при изменении роли
+            }
         }
+
         public event EventHandler? SaveButtonClicked;
 
         public Order()
@@ -59,29 +68,61 @@ namespace CafeApp.Controls
                 dataRepository.MenuItems.OrderBy(m => m.Name).Select(m => m.Name)
             );
 
-            StatusOrder = new ObservableCollection<string> 
-            {
-                "принят", "оплачен"
-            };
-            /*   if ()
-            {
-                
-            }
-            ObservableCollection<string> StatusOrdeWaiter = new ObservableCollection<string> 
-            {
-                "Принят", "Оплачен"
-            };
-            ObservableCollection<string> StatusOrderCook = new ObservableCollection<string> 
-            {
-                "Готовится", "Готов"
-            };*/
-         
-
+            // Инициализируем StatusOrder пустой коллекцией
+            StatusOrder = new ObservableCollection<string>();
+            
             OrderMenuItems = new ObservableCollection<OrderMenuItem> { new OrderMenuItem() };
             
             this.DataContext = this;
+
+            // ДОБАВЛЕНО: Логируем начальную роль
+            string logMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Order constructor: Role='{Role}'\n";
+            File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", logMessage);
+            
+            // Обновляем статусы на основе начальной роли
+            UpdateStatusOrder();
         }
-     
+
+        // ДОБАВЛЕН МЕТОД: Обновление статусов в зависимости от роли
+        private void UpdateStatusOrder()
+        {
+            if (StatusOrder == null) return;
+
+            StatusOrder.Clear();
+
+            string logMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - UpdateStatusOrder: Role='{Role}'\n";
+            File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", logMessage);
+
+            if (Role == "администратор")
+            {
+                StatusOrder.Add("принят");
+                StatusOrder.Add("оплачен");
+                StatusOrder.Add("готовится");
+                StatusOrder.Add("готов");
+            }
+            else if (Role == "повар")
+            {
+                StatusOrder.Add("готовится");
+                StatusOrder.Add("готов");
+            }
+            else if (Role == "официант")
+            {
+                StatusOrder.Add("принят");
+                StatusOrder.Add("оплачен");
+            }
+            else
+            {
+                // Роль по умолчанию
+                StatusOrder.Add("принят");
+                StatusOrder.Add("оплачен");
+            }
+
+            // ДОБАВЛЕНО: Логируем обновленные статусы
+            logMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - StatusOrder updated: {string.Join(", ", StatusOrder)}\n";
+            File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", logMessage);
+        }
+
+        // Остальные методы без изменений...
         private void OnAddMenuItemClicked(object sender, PointerPressedEventArgs e)
         {
             OrderMenuItems.Add(new OrderMenuItem());
@@ -119,7 +160,6 @@ namespace CafeApp.Controls
                 int orderId = _databaseService.CreateOrder(tableId, waiterId, 1, 1, status, orderItems);
                 if (orderId > 0)
                 {
-                    
                     ClearForm();
                     SaveButtonClicked?.Invoke(this, EventArgs.Empty);
                 }
@@ -129,8 +169,6 @@ namespace CafeApp.Controls
                 File.AppendAllText("debug.log", $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - ERROR: {ex.Message}\n");
             }
         }
-        
-        
 
         private string GetComboBoxValue(string comboBoxName)
         {
@@ -138,6 +176,7 @@ namespace CafeApp.Controls
             var innerComboBox = comboBox?.FindControl<ComboBox>("MainComboBox");
             return innerComboBox?.SelectedItem?.ToString() ?? "";
         }
+
         private List<OrderItem> CollectOrderItemsFromUI()
         {
             var orderItems = new List<OrderItem>();
@@ -145,13 +184,11 @@ namespace CafeApp.Controls
             var itemsControl = this.FindControl<ItemsControl>("MenuItemsControl");
             if (itemsControl == null) return orderItems;
 
-            // Проходим по всем контейнерам ItemsControl
             for (int i = 0; i < itemsControl.ItemCount; i++)
             {
                 var container = itemsControl.ItemContainerGenerator.ContainerFromIndex(i);
                 if (container != null)
                 {
-                    // Находим ComboBox с блюдами и Input с количеством
                     var menuComboBox = container.FindControl<global::CafeApp.Controls.Components.ComboBox.ComboBox>("MenuItemComboBox");
                     var quantityInput = container.FindControl<global::CafeApp.Controls.Components.Input.Input>("QuantityInput");
 
@@ -188,6 +225,7 @@ namespace CafeApp.Controls
 
             return orderItems;
         }
+
         private string GetComboBoxValue(global::CafeApp.Controls.Components.ComboBox.ComboBox comboBox)
         {
             if (comboBox == null) return string.Empty;

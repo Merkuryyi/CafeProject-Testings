@@ -188,9 +188,11 @@ namespace CafeApp
                 var orderControl = this.FindControl<Order>("OrderControl");
                 orderControl.Title = "Редактирование заказа";
                 orderControl.Role = GetCurrentRole();
+                string logMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Form data saved:\n" +
+                                    $"rolуe: '{orderControl.Role}'\n";
+                File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", logMessage);
                 ShowControl(orderControl);
             }
-          
         }
 
         private void OnListAddButtonClicked(object sender, EventArgs e)
