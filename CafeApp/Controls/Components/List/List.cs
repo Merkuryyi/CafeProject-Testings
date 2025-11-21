@@ -18,8 +18,8 @@ namespace CafeApp.Controls.Components.List
         public static readonly StyledProperty<IEnumerable> ItemsProperty =
             AvaloniaProperty.Register<List, IEnumerable>(nameof(Items));
 
-        // Событие для клика на элементе списка
-        public event EventHandler<object> ItemClicked;
+        // Событие для клика на элементе списка (теперь передает ListItem)
+        public event EventHandler<ListItem> ItemClicked;
         
         // Событие для клика на кнопке "+"
         public event EventHandler AddButtonClicked;
@@ -51,7 +51,6 @@ namespace CafeApp.Controls.Components.List
         {
             base.OnInitialized();
             
-            // Подписываемся на клик по "+"
             var addButton = this.FindControl<TextBlock>("AddOrder");
             if (addButton != null)
             {
@@ -62,16 +61,15 @@ namespace CafeApp.Controls.Components.List
         private void OnItemPointerPressed(object sender, PointerPressedEventArgs e)
         {
             var textBlock = sender as TextBlock;
-            if (textBlock?.DataContext != null)
+            if (textBlock?.DataContext is ListItem listItem)
             {
-                // Вызываем событие клика по элементу списка
-                ItemClicked?.Invoke(this, textBlock.DataContext);
+                // Вызываем событие клика по элементу списка с ListItem
+                ItemClicked?.Invoke(this, listItem);
             }
         }
 
         private void OnAddButtonPressed(object sender, PointerPressedEventArgs e)
         {
-            // Вызываем событие клика по кнопке "+"
             AddButtonClicked?.Invoke(this, EventArgs.Empty);
         }
     }

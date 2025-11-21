@@ -12,9 +12,9 @@ namespace CafeApp
 {
     public partial class MainWindow : Window
     {
-        private readonly ObservableCollection<string> _employees = new();
-        private readonly ObservableCollection<string> _orders = new();
-        private readonly ObservableCollection<string> _shifts = new();
+        private readonly ObservableCollection<ListItem> _employees = new();
+        private readonly ObservableCollection<ListItem> _orders = new();
+        private readonly ObservableCollection<ListItem> _shifts = new();
         private readonly DatabaseService _databaseService = new();
 
         public MainWindow()
@@ -65,7 +65,7 @@ namespace CafeApp
         private void LoadOrdersData()
         {
             _orders.Clear();
-            var data = _databaseService.GetOrdersSimpleInfo();
+            var data = _databaseService.GetOrdersList();
             
             foreach (var item in data)
                 _orders.Add(item);
@@ -170,28 +170,69 @@ namespace CafeApp
                 shiftsList.AddButtonClicked += OnListAddButtonClicked;
             }
         }
+
         private string GetCurrentRole()
         {
             var sidebarControl = this.FindControl<Sidebar>("SidebarControl");
             return sidebarControl?.Role ?? "";
         }
 
-        private void OnListItemClicked(object sender, object clickedItem)
+        private void OnListItemClicked(object sender, ListItem clickedItem)
         {
             var listControl = sender as List;
             if (listControl == null) return;
-    
+
             var title = listControl.Title?.ToLower() ?? "";
-    
+
             if (title.Contains("заказ"))
             {
-                var orderControl = this.FindControl<Order>("OrderControl");
-                orderControl.Title = "Редактирование заказа";
-                orderControl.Role = GetCurrentRole();
-                string logMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Form data saved:\n" +
-                                    $"rolуe: '{orderControl.Role}'\n";
+                   var orderControl = this.FindControl<Order>("OrderControl");
+               
+                    orderControl.Title = "Редактирование заказа";
+                    orderControl.Role = GetCurrentRole();
+                    // Загружаем данные заказа по ID
+
+                    int orderId = clickedItem.Id;
+                 
+                    
+                    string logMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Loading order ID: {orderId}\n" +
+                                       $"Role: {GetCurrentRole()}\n";
+                    File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", logMessage);
+                    orderControl.LoadOrderData(orderId, GetCurrentRole());
+                    ShowControl(orderControl);
+                
+            }
+            else if (title.Contains("сотрудник"))
+            {
+               
+                var formEmployee = this.FindControl<FormEmployee>("FormEmployeeControl");
+                if (formEmployee != null)
+                {
+                    // TODO: Реализовать метод загрузки данных сотрудника по ID
+                    // formEmployee.LoadEmployeeData(clickedItem.Id);
+                    formEmployee.Title = "Редактирование сотрудника";
+                    ShowControl(formEmployee);
+                    
+                    string logMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Loading employee ID: {clickedItem.Id}\n";
+                    File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", logMessage);
+                }
+            }
+            else if (title.Contains("смен"))
+            {
+                // Обработка клика на смене
+                // TODO: Реализовать форму редактирования смены
+                string logMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Loading shift ID: {clickedItem.Id}\n";
                 File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", logMessage);
-                ShowControl(orderControl);
+                
+                // Показываем сообщение, что функционал в разработке
+                var dialog = new Window()
+                {
+                    Title = "Информация",
+                    Content = new TextBlock { Text = "Редактирование смен в разработке" },
+                    SizeToContent = SizeToContent.WidthAndHeight,
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner
+                };
+                dialog.ShowDialog(this);
             }
         }
 
@@ -199,39 +240,80 @@ namespace CafeApp
         {
             var listControl = sender as List;
             if (listControl == null) return;
-    
+
             var title = listControl.Title?.ToLower() ?? "";
-    
-            if (title.Contains("заказ") && GetCurrentRole() != "повар")
+            var currentRole = GetCurrentRole();
+
+            if (title.Contains("заказ") && currentRole != "повар")
             {
                 var orderControl = this.FindControl<Order>("OrderControl");
-                orderControl.Title = "Заказ";
-                orderControl.Role = GetCurrentRole();
-                ShowControl(orderControl);
+                if (orderControl != null)
+                {
+                    orderControl.ClearForm();
+                    orderControl.Title = "Новый заказ";
+                    orderControl.Role = currentRole;
+                    orderControl.OrderId = -1; // Сбрасываем ID для нового заказа
+                    ShowControl(orderControl);
+                    
+                    string logMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Creating new order\n" +
+                                       $"Role: {currentRole}\n";
+                    File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", logMessage);
+                }
             }
-            else if (title.Contains("сотрудник"))
+            else if (title.Contains("сотрудник") && currentRole == "администратор")
             {
                 // Показываем форму регистрации сотрудника
                 var formEmployee = this.FindControl<FormEmployee>("FormEmployeeControl");
-                ShowControl(formEmployee);
+                if (formEmployee != null)
+                {
+                    formEmployee.ClearForm();
+                    formEmployee.Title = "Регистрация сотрудника";
+                    ShowControl(formEmployee);
+                }
             }
-            else if (title.Contains("смен"))
+            else if (title.Contains("смен") && currentRole == "администратор")
             {
-                // Показываем форму создания смены
-              //  ShowControl();
+                // TODO: Реализовать форму создания смены
+                string logMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Creating new shift\n";
+                File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", logMessage);
+                
+                // Показываем сообщение, что функционал в разработке
+                var dialog = new Window()
+                {
+                    Title = "Информация",
+                    Content = new TextBlock { Text = "Создание смен в разработке" },
+                    SizeToContent = SizeToContent.WidthAndHeight,
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner
+                };
+                dialog.ShowDialog(this);
+            }
+            else
+            {
+                // Сообщение о недостаточных правах
+                string logMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Access denied for role: {currentRole}\n";
+                File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", logMessage);
+                
+                var dialog = new Window()
+                {
+                    Title = "Ошибка доступа",
+                    Content = new TextBlock { Text = "Недостаточно прав для выполнения этой операции" },
+                    SizeToContent = SizeToContent.WidthAndHeight,
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner
+                };
+                dialog.ShowDialog(this);
             }
         }
 
         private void ShowControl(Control control)
         {    
+            if (control == null) return;
+            
             // Скрываем все контролы
             HideAllControls();
     
-            // Показываем контрол Orde
+            // Показываем нужный контрол
             control.IsVisible = true;
-            
         }
-        
 
         private void HideAllControls()
         {
@@ -254,11 +336,18 @@ namespace CafeApp
             var orderControl = this.FindControl<Order>("OrderControl");
             if (orderControl != null)
                 orderControl.IsVisible = false;
-           // var editOrderControl = this.FindControl<EditOrder>("EditOrderControl");
-           // if (editOrderControl != null)
-              //  editOrderControl.IsVisible = false;
-            
-           
+        }
+    }
+
+    // Класс ListItem должен быть в том же namespace
+    public class ListItem
+    {
+        public int Id { get; set; }
+        public string DisplayText { get; set; } = "";
+        
+        public override string ToString()
+        {
+            return DisplayText;
         }
     }
 }

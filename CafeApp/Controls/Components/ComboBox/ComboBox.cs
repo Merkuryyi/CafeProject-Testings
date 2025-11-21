@@ -16,6 +16,12 @@ namespace CafeApp.Controls.Components.ComboBox
         public static readonly StyledProperty<IEnumerable> ItemsSourceProperty =
             AvaloniaProperty.Register<ComboBox, IEnumerable>(nameof(ItemsSource));
 
+        public static readonly StyledProperty<object> SelectedItemProperty =
+            AvaloniaProperty.Register<ComboBox, object>(nameof(SelectedItem));
+
+        public static readonly StyledProperty<int> SelectedIndexProperty =
+            AvaloniaProperty.Register<ComboBox, int>(nameof(SelectedIndex), -1);
+
         public ComboBox()
         {
             InitializeComponent();
@@ -42,6 +48,18 @@ namespace CafeApp.Controls.Components.ComboBox
         {
             get => GetValue(ItemsSourceProperty);
             set => SetValue(ItemsSourceProperty, value);
+        }
+
+        public object SelectedItem
+        {
+            get => GetValue(SelectedItemProperty);
+            set => SetValue(SelectedItemProperty, value);
+        }
+
+        public int SelectedIndex
+        {
+            get => GetValue(SelectedIndexProperty);
+            set => SetValue(SelectedIndexProperty, value);
         }
     }
 }

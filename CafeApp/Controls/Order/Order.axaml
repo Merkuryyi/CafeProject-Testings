@@ -12,7 +12,7 @@
         <Border Padding="15">
             <StackPanel Spacing="15">
                 <TextBlock Text="{Binding #root.Title}" x:Name="OrderTitleTextBlock"
-                           FontSize="20"
+                           FontSize="20" 
                            Foreground="#194E84"
                            FontWeight="Bold"/>
                 
@@ -26,23 +26,23 @@
                                ComboBoxWidth="160"
                                ItemsSource="{Binding ListWaiter}" IsVisible="True"/> 
                     <input:Input x:Name="TableInput" Text="Столик" InputWidth="50" IsVisible="True"/>
-                    <StackPanel Spacing="5">
+                    <StackPanel Spacing="5" x:Name="WaiterPanel" IsVisible="False">
                         <TextBlock Text="Официант"
                                    FontSize="14"
-                                   Foreground="#194E84" IsVisible="False"/>
+                                   Foreground="#194E84" />
                         <TextBlock x:Name="WaiterTextBlock"
-                                   Text="Иван Иванов"
+                                   Text=""
                                    FontSize="14"
-                                   Foreground="#194E84" IsVisible="False"/>
+                                   Foreground="#194E84"/>
                     </StackPanel>
-                    <StackPanel Spacing="5">
+                    <StackPanel Spacing="5" x:Name="TablePanel" IsVisible="False" >
                         <TextBlock Text="Столик" 
                                    FontSize="14"
-                                   Foreground="#194E84" IsVisible="False"/>
+                                   Foreground="#194E84"/>
                         <TextBlock x:Name="TableTextBlock"
-                                   Text="5"
+                                   Text=""
                                    FontSize="14"
-                                   Foreground="#194E84" IsVisible="False"/>
+                                   Foreground="#194E84" />
                     </StackPanel>
                 </StackPanel>
             </StackPanel>
@@ -64,22 +64,60 @@
                                Text="-"
                                FontSize="20" 
                                Cursor="Hand"
-                               Foreground="#194E84" IsVisible="True"/>
+                               Foreground="#194E84"/>
                 </StackPanel>
                 
-                <ScrollViewer VerticalScrollBarVisibility="Auto" MaxHeight="200">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" MaxHeight="200" x:Name="MenuScrollViewer" >
                     <ItemsControl x:Name="MenuItemsControl" ItemsSource="{Binding OrderMenuItems}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <StackPanel x:Name="MenuItemStackPanel" Orientation="Horizontal" Spacing="25" HorizontalAlignment="Left" Margin="0,10,0,0">
+                                <StackPanel x:Name="MenuItemStackPanel" 
+                                            Orientation="Horizontal" 
+                                            Spacing="25" 
+                                            HorizontalAlignment="Left" 
+                                            Margin="0,10,0,0">
                                     <combobox:ComboBox x:Name="MenuItemComboBox"
                                         Text="Название" 
                                         ComboBoxWidth="200"
-                                        ItemsSource="{Binding #root.AllMenuItems}" IsVisible="True"/>  
+                                        ItemsSource="{Binding #root.AllMenuItems}"
+                                        SelectedItem="{Binding SelectedMenuItem, Mode=TwoWay}"/>  
                                     
                                     <input:Input x:Name="QuantityInput" 
                                         Text="Кол." 
-                                        InputWidth="160" IsVisible="True"/>
+                                        InputWidth="160"
+                                        Value="{Binding Quantity, Mode=TwoWay}"/>  
+                                </StackPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+                <ScrollViewer VerticalScrollBarVisibility="Auto" MaxHeight="200" x:Name="MenuScrollViewerFalse" IsVisible="False">
+                    <ItemsControl x:Name="MenuItemsControlFalse" ItemsSource="{Binding OrderMenuItems}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel x:Name="MenuItemStackPanel" 
+                                            Orientation="Horizontal" 
+                                            Spacing="25" 
+                                            HorizontalAlignment="Left" 
+                                            Margin="0,10,0,0">
+                                    <StackPanel Spacing="5" x:Name="MenuItemNamePanel" >
+                                        <TextBlock Text="Название" 
+                                                   FontSize="14"
+                                                   Foreground="#194E84"/>
+                                        <TextBlock x:Name="NameMenuItem"
+                                                   Text="{Binding SelectedMenuItem}" 
+                                                   FontSize="14"
+                                                   Foreground="#194E84" />
+                                    </StackPanel>
+                                    <StackPanel Spacing="5" x:Name="MenuItemQuantityPanel" >
+                                        <TextBlock Text="Количество" 
+                                                   FontSize="14"
+                                                   Foreground="#194E84"/>
+                                        <TextBlock x:Name="QuantityMenuItem"
+                                                   Text="{Binding Quantity}" 
+                                                   FontSize="14"
+                                                   Foreground="#194E84" />
+                                    </StackPanel>
                                 </StackPanel>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>

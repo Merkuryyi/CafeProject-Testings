@@ -40,6 +40,8 @@
                   Padding="15,0"
                   VerticalContentAlignment="Center"
                   PlaceholderText="Выберите"
-                  ItemsSource="{Binding #root.ItemsSource}"/>
+                  ItemsSource="{Binding #root.ItemsSource}"
+                  SelectedItem="{Binding #root.SelectedItem, Mode=TwoWay}"
+                  SelectedIndex="{Binding #root.SelectedIndex, Mode=TwoWay}"/>
     </StackPanel>
 </UserControl>

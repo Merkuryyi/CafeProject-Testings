@@ -20,7 +20,13 @@ namespace CafeApp.Controls
 
         public List<string> Roles { get; set; }
         public List<string> Status { get; set; }
-
+        public static readonly StyledProperty<string> TitleProperty =
+            AvaloniaProperty.Register<FormEmployee, string>(nameof(Title), "Регистрация сотрудника");
+        public string Title
+        {
+            get => GetValue(TitleProperty);
+            set => SetValue(TitleProperty, value);
+        }
         public FormEmployee()
         {
             InitializeComponent();
@@ -159,7 +165,7 @@ namespace CafeApp.Controls
             }
         }
 
-        private void ClearForm()
+        public void ClearForm()
         {
             // Очищаем поля ввода
             var usernameInput = this.FindControl<Input>("UsernameInput");

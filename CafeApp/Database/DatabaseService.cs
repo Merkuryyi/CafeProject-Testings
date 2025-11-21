@@ -88,28 +88,42 @@ namespace CafeApp.Database
                 return false;
             }
         }
-        public List<string> GetEmployeesList()
+        public List<ListItem> GetEmployeesList()
         {
-            var employees = new List<string>();
+            var employees = new List<ListItem>();
             try
             {
                 using (var conn = GetConnection())
                 {
-                    string query = @"SELECT surname, name, patronymic
-                                    FROM users 
-                                    WHERE employment_status = true 
-                                    ORDER BY surname, name";
-                    
+                    string query = @"SELECT 
+                                user_id,
+                                surname, 
+                                name, 
+                                patronymic,
+                                role
+                            FROM users 
+                            WHERE employment_status = true 
+                            ORDER BY surname, name";
+            
                     using (var command = new NpgsqlCommand(query, conn))
                     using (var reader = command.ExecuteReader())
                     {
                         while (reader.Read())
                         {
-                            string surname = reader.GetString(0);
-                            string name = reader.GetString(1);
-                            string patronymic = reader.IsDBNull(2) ? "" : reader.GetString(2);
-                            string employeeInfo = $"{surname} {name} {patronymic}";
-                            employees.Add(employeeInfo);
+                            int userId = reader.GetInt32(0);
+                            string surname = reader.GetString(1);
+                            string name = reader.GetString(2);
+                            string patronymic = reader.IsDBNull(3) ? "" : reader.GetString(3);
+                            string role = reader.GetString(4);
+                    
+                            string fullName = $"{surname} {name} {patronymic}".Trim();
+                            string displayText = $"{fullName} - {role}";
+                    
+                            employees.Add(new ListItem
+                            {
+                                Id = userId,
+                                DisplayText = displayText
+                            });
                         }
                     }
                 }
@@ -122,30 +136,38 @@ namespace CafeApp.Database
             }
             return employees;
         }
-        public List<string> GetOrdersSimpleInfo()
+        public List<ListItem> GetOrdersList()
         {
-            var orders = new List<string>();
+            var orders = new List<ListItem>();
             try
             {
                 using (var conn = GetConnection())
                 {
                     string query = @"SELECT 
-                                        table_id,
-                                        created_at,
-                                        status
-                                    FROM ""order""
-                                    ORDER BY created_at DESC";
-                    
+                                order_id,
+                                table_id,
+                                created_at,
+                                status
+                            FROM ""order""
+                            ORDER BY created_at DESC";
+            
                     using (var command = new NpgsqlCommand(query, conn))
                     using (var reader = command.ExecuteReader())
                     {
                         while (reader.Read())
                         {
-                            int tableId = reader.GetInt32(0);
-                            DateTime createdAt = reader.GetDateTime(1);
-                            string status = reader.GetString(2);
-                            string orderInfo = $"Стол №{tableId} - {createdAt:yyyy-MM-dd HH:mm} - {status}";
-                            orders.Add(orderInfo);
+                            int orderId = reader.GetInt32(0);
+                            int tableId = reader.GetInt32(1);
+                            DateTime createdAt = reader.GetDateTime(2);
+                            string status = reader.GetString(3);
+                    
+                            string displayText = $"Стол №{tableId} - {createdAt:yyyy-MM-dd HH:mm} - {status}";
+                    
+                            orders.Add(new ListItem
+                            {
+                                Id = orderId,
+                                DisplayText = displayText
+                            });
                         }
                     }
                 }
@@ -153,20 +175,25 @@ namespace CafeApp.Database
             catch (Exception ex)
             {
                 string filePath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
-                string errorMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB ERROR (GetOrdersSimpleInfo): {ex.Message}\n";
+                string errorMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB ERROR (GetOrdersList): {ex.Message}\n";
                 File.AppendAllText(filePath, errorMessage);
             }
             return orders;
         }
-        public List<string> GetShiftsList()
+        public List<ListItem> GetShiftsList()
         {
-            var shifts = new List<string>();
+            var shifts = new List<ListItem>();
             try
             {
                 using (var conn = GetConnection())
                 {
-                    string query = @"SELECT shift_id, shift_date, start_time, end_time
-                            FROM shift ORDER BY shift_date DESC, start_time DESC";
+                    string query = @"SELECT 
+                                shift_id, 
+                                shift_date, 
+                                start_time, 
+                                end_time
+                            FROM shift 
+                            ORDER BY shift_date DESC, start_time DESC";
             
                     using (var command = new NpgsqlCommand(query, conn))
                     using (var reader = command.ExecuteReader())
@@ -177,8 +204,14 @@ namespace CafeApp.Database
                             DateTime shiftDate = reader.GetDateTime(1);
                             TimeSpan startTime = reader.GetTimeSpan(2);
                             TimeSpan endTime = reader.GetTimeSpan(3);
-                            string shiftInfo = $"Смена {shiftId} - {shiftDate:yyyy-MM-dd} ({startTime:hh\\:mm} - {endTime:hh\\:mm})";
-                            shifts.Add(shiftInfo);
+                    
+                            string displayText = $"Смена {shiftId} - {shiftDate:yyyy-MM-dd} ({startTime:hh\\:mm} - {endTime:hh\\:mm})";
+                    
+                            shifts.Add(new ListItem
+                            {
+                                Id = shiftId,
+                                DisplayText = displayText
+                            });
                         }
                     }
                 }
@@ -188,7 +221,6 @@ namespace CafeApp.Database
                 string filePath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
                 string errorMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB ERROR (GetShiftsList): {ex.Message}\n";
                 File.AppendAllText(filePath, errorMessage);
-                Console.WriteLine($"Ошибка получения списка смен: {ex.Message}");
             }
             return shifts;
         }
@@ -259,8 +291,8 @@ namespace CafeApp.Database
                         // 2. Вставляем позиции заказа
                         string orderItemQuery = @"
                             INSERT INTO order_item 
-                            (order_id, menu_item_id, quantity, price) 
-                            VALUES (@orderId, @menuItemId, @quantity, @price)";foreach (var item in orderItems)
+                            (order_id, menu_item_id, quantity) 
+                            VALUES (@orderId, @menuItemId, @quantity)";foreach (var item in orderItems)
                         {
                             using (var itemCommand = new NpgsqlCommand(orderItemQuery, conn, transaction))
                             {
@@ -297,7 +329,7 @@ namespace CafeApp.Database
             {
                 using (var conn = GetConnection())
                 {
-                    string query = "SELECT menu_item_id FROM menu_item WHERE name = @name";
+                    string query = "SELECT item_id FROM menu_item WHERE name = @name";
                     
                     using (var command = new NpgsqlCommand(query, conn))
                     {
@@ -348,5 +380,104 @@ namespace CafeApp.Database
             _connection?.Close();
             _connection?.Dispose();
         }
+        public OrderInfo GetOrderById(int orderId)
+        {
+            var orderInfo = new OrderInfo();
+            
+            try
+            {
+                using (var conn = GetConnection())
+                {
+                 
+                    string orderQuery = @"
+                        SELECT 
+                            o.order_id,
+                            o.table_id,
+                            o.waiter_id,
+                            o.status,
+                            o.created_at,
+                            u.surname || ' ' || u.name || COALESCE(' ' || u.patronymic, '') as waiter_name
+                        FROM ""order"" o
+                        JOIN ""users"" u ON o.waiter_id = u.user_id
+                        WHERE o.order_id = @orderId";
+                    
+                    using (var orderCommand = new NpgsqlCommand(orderQuery, conn))
+                    {
+                        orderCommand.Parameters.AddWithValue("@orderId", orderId);
+                        
+                        using (var reader = orderCommand.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                orderInfo.OrderId = reader.GetInt32(0);
+                                orderInfo.TableId = reader.GetInt32(1);
+                                orderInfo.WaiterId = reader.GetInt32(2);
+                                orderInfo.Status = reader.GetString(3);
+                                orderInfo.CreatedAt = reader.GetDateTime(4);
+                                orderInfo.WaiterName = reader.GetString(5);
+                            }
+                            else
+                            {
+                                return orderInfo; // Заказ не найден
+                            }
+                        }
+                    }
+
+                    // Получаем позиции заказа
+                    string itemsQuery = @"
+                        SELECT 
+                            mi.name,
+                            oi.quantity,
+                            oi.price
+                        FROM order_item oi
+                        JOIN menu_item mi ON oi.menu_item_id = mi.item_id
+                        WHERE oi.order_id = @orderId";
+                    
+                    using (var itemsCommand = new NpgsqlCommand(itemsQuery, conn))
+                    {
+                        itemsCommand.Parameters.AddWithValue("@orderId", orderId);
+                        
+                        using (var reader = itemsCommand.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                var item = new OrderItemInfo
+                                {
+                                    MenuItemName = reader.GetString(0),
+                                    Quantity = reader.GetInt32(1),
+                                    Price = reader.GetDecimal(2)
+                                };
+                                orderInfo.Items.Add(item);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                string filePath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
+                string errorMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB ERROR (GetOrderById): {ex.Message}\n";
+                File.AppendAllText(filePath, errorMessage);
+            }
+            
+            return orderInfo;
+        }
+    }
+    public class OrderInfo
+    {
+        public int OrderId { get; set; }
+        public int TableId { get; set; }
+        public int WaiterId { get; set; }
+        public string WaiterName { get; set; } = "";
+        public string Status { get; set; } = "";
+        public DateTime CreatedAt { get; set; }
+        public List<OrderItemInfo> Items { get; set; } = new List<OrderItemInfo>();
+    }
+
+    public class OrderItemInfo
+    {
+        public string MenuItemName { get; set; } = "";
+        public int Quantity { get; set; }
+        public decimal Price { get; set; }
     }
 }
