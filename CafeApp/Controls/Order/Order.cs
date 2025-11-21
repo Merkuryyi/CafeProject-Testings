@@ -39,9 +39,7 @@ namespace CafeApp.Controls
             set
             {
                 SetValue(TitleProperty, value);
-              
             } 
-            
         }
         
         public string Role
@@ -52,8 +50,6 @@ namespace CafeApp.Controls
                 SetValue(RoleProperty, value);
                 UpdateStatusOrder();
                 HideComponentsOrder();
-
-
             }
         }
         public int OrderId
@@ -62,18 +58,14 @@ namespace CafeApp.Controls
             set => SetValue(OrderIdProperty, value);
         }
         
-      
         public void HideComponentsOrder()
         {
             if (this.Title == "Редактирование заказа")
             {
                 var tableInput = this.FindControl<Input>("TableInput");
-                //var quantityInput = this.FindControl<Input>("QuantityInput");
-        
                 var statusComboBox = this.FindControl<global::CafeApp.Controls.Components.ComboBox.ComboBox>("StatusComboBox");
                 statusComboBox.ItemsSource = StatusOrder;
-      
-            
+                
                 var waiterComboBox = this.FindControl<global::CafeApp.Controls.Components.ComboBox.ComboBox>("WaiterComboBox");
                 waiterComboBox.ItemsSource = ListWaiter;
                 
@@ -88,75 +80,57 @@ namespace CafeApp.Controls
                 {
                     waiterComboBox.IsVisible = false;
                     tableInput.IsVisible = false;
-
-
                     addMenuItemButton.IsVisible = false;
                     removeMenuItemButton.IsVisible = false;
-
                     waiterPanel.IsVisible = true;
                     tablePanel.IsVisible = true;
                     scrollViewerFalse.IsVisible = true;
-
                     scrollViewer.IsVisible = false;
                 }
-            
             }
-            
         }
         public void LoadOrderData(int orderId, string role)
         {
             try
             {
                 this.OrderId = orderId;
-                HideComponentsOrder();
-                var orderInfo = _databaseService.GetOrderById(orderId);
-               
-                    File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", 
-                        $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Order not found: {orderId}\n");
-
-                    if (Role == "администратор")
-                    {
-                        var statusComboBox = this.FindControl<global::CafeApp.Controls.Components.ComboBox.ComboBox>("StatusComboBox");
-                        statusComboBox.ItemsSource = StatusOrder;
-                        statusComboBox.SelectedItem = orderInfo.Status;
-                        
-
-                        // Заполняем официанта
-                        var waiterComboBox = this.FindControl<global::CafeApp.Controls.Components.ComboBox.ComboBox>("WaiterComboBox");
-                        waiterComboBox.ItemsSource = ListWaiter;
-                        waiterComboBox.SelectedItem = orderInfo.WaiterName;
-                       
-
-                        // Заполняем столик
-                        var tableInput = this.FindControl<Input>("TableInput");
-                        tableInput.Value = orderInfo.TableId.ToString();
-                        
-
-                        // Заполняем элементы меню
-                        OrderMenuItems.Clear();
-                        foreach (var item in orderInfo.Items)
-                        {
-                            OrderMenuItems.Add(new OrderMenuItem
-                            {
-                                SelectedMenuItem = item.MenuItemName,
-                                Quantity = item.Quantity
-                            });
-            
-                            File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", 
-                                $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Added menu item: {item.MenuItemName}, Quantity: {item.Quantity}\n");
-                        }
-                        OrderMenuItems.Add(new OrderMenuItem());
-                        
-                    }
-                    else
-                    {
-                        
-                    }
-
+                this.Role = role;
+                this.Title = "Редактирование заказа";
                 
+                var orderInfo = _databaseService.GetOrderById(orderId);
+                if (Role == "администратор")
+                {
+                    var waiterComboBox = this.FindControl<global::CafeApp.Controls.Components.ComboBox.ComboBox>("WaiterComboBox");
+                    waiterComboBox.ItemsSource = ListWaiter;
+                    waiterComboBox.SelectedItem = orderInfo.WaiterName;
 
-                File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", 
-                    $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Order loaded successfully. Total items: {OrderMenuItems.Count}\n");
+                    var tableInput = this.FindControl<Input>("TableInput");
+                    tableInput.Value = orderInfo.TableId.ToString();
+                }
+                else
+                {
+                    var waiterTextBlock = this.FindControl<TextBlock>("WaiterTextBlock");
+                    var tableTextBlock = this.FindControl<TextBlock>("TableTextBlock");
+
+                    if (waiterTextBlock != null)
+                        waiterTextBlock.Text = orderInfo.WaiterName;
+                    
+                    if (tableTextBlock != null)
+                        tableTextBlock.Text = orderInfo.TableId.ToString();
+                }
+                var statusComboBox = this.FindControl<global::CafeApp.Controls.Components.ComboBox.ComboBox>("StatusComboBox");
+                statusComboBox.ItemsSource = StatusOrder;
+                statusComboBox.SelectedItem = orderInfo.Status;
+                OrderMenuItems.Clear();
+                foreach (var item in orderInfo.Items)
+                {
+                    OrderMenuItems.Add(new OrderMenuItem
+                    {
+                        SelectedMenuItem = item.MenuItemName,
+                        Quantity = item.Quantity
+                    });
+                }
+                HideComponentsOrder();
             }
             catch (Exception ex)
             {
@@ -185,24 +159,15 @@ namespace CafeApp.Controls
             );
 
             StatusOrder = new ObservableCollection<string>();
-            
             OrderMenuItems = new ObservableCollection<OrderMenuItem> { new OrderMenuItem() };
-            
             this.DataContext = this;
-
-            string logMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Order constructor: Role='{Role}'\n";
-            File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", logMessage);
-            
             UpdateStatusOrder();
      
         }
 
         private void UpdateStatusOrder()
         {
-            if (StatusOrder == null) return;
-
             StatusOrder.Clear();
-
             string logMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - UpdateStatusOrder: Role='{Role}'\n";
             File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", logMessage);
 
@@ -229,13 +194,8 @@ namespace CafeApp.Controls
                 StatusOrder.Add("принят");
                 StatusOrder.Add("оплачен");
             }
-
-            // ДОБАВЛЕНО: Логируем обновленные статусы
-          //  logMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - StatusOrder updated: {string.Join(", ", StatusOrder)}\n";
-          //  File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", logMessage);
         }
 
-        // Остальные методы без изменений...
         private void OnAddMenuItemClicked(object sender, PointerPressedEventArgs e)
         {
             OrderMenuItems.Add(new OrderMenuItem());
@@ -253,25 +213,75 @@ namespace CafeApp.Controls
         {
             try
             {
-                string status = GetComboBoxValue("StatusComboBox");
-                string waiterName = GetComboBoxValue("WaiterComboBox");
-                var tableInput = this.FindControl<Input>("TableInput");
-             
-                string tableNumber =  tableInput.Value?.ToString() ?? 
-                                      tableInput.Content?.ToString() ?? 
-                                      tableInput.Text ?? "";
-                int.TryParse(tableNumber, out int tableId);
-             
-                string logMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Form data saved:\n" +
-                                    $"tableId: '{tableId}'\n" +
-                                    $"waiterId: '{1}'\n"+
-                                    $"status: '{status}'\n" +
-                                    $"orderItems: '{1}'\n";
-                File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", logMessage);
-                int waiterId = _databaseService.GetWaiterIdByName(waiterName);
+                string status = "";
+                string waiterName = "";
+                int tableId = 0;
+
+                if (Role == "администратор")
+                {
+                    status = GetComboBoxValue("StatusComboBox");
+                    waiterName = GetComboBoxValue("WaiterComboBox");
+                    var tableInput = this.FindControl<Input>("TableInput");
+                    string tableNumber = tableInput.Value?.ToString() ?? tableInput.Text ?? "";
+                    
+                    if (string.IsNullOrEmpty(status) || string.IsNullOrEmpty(waiterName) || string.IsNullOrEmpty(tableNumber))
+                    {
+                        return;
+                    }
+                    
+                    int.TryParse(tableNumber, out tableId);
+                }
+                else
+                {
+                    status = GetComboBoxValue("StatusComboBox");
+                    var waiterTextBlock = this.FindControl<TextBlock>("WaiterTextBlock");
+                    var tableTextBlock = this.FindControl<TextBlock>("TableTextBlock");
+                    waiterName = waiterTextBlock?.Text ?? "";
+                    string tableNumber = tableTextBlock?.Text ?? "";
+                    
+                    if (string.IsNullOrEmpty(waiterName) || string.IsNullOrEmpty(tableNumber))
+                    {
+                        return;
+                    }
+                    int.TryParse(tableNumber, out tableId);
+                   
+                }
+
                 var orderItems = CollectOrderItemsFromUI();
-                int orderId = _databaseService.CreateOrder(tableId, waiterId, 1, 1, status, orderItems);
-                if (orderId > 0)
+
+                string logMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Form data before save:\n" +
+                                   $"Title: '{Title}'\n" +
+                                   $"OrderId: '{OrderId}'\n" +
+                                   $"Role: '{Role}'\n" +
+                                   $"tableId: '{tableId}'\n" +
+                                   $"waiterName: '{waiterName}'\n" +
+                                   $"status: '{status}'\n" +
+                                   $"orderItems count: '{orderItems.Count}'\n";
+
+                File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", logMessage);
+
+                if (orderItems.Count == 0)
+                {
+                    File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", 
+                        $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - ERROR: Нет блюд для сохранения\n");
+                    return;
+                }
+
+                int waiterId = _databaseService.GetWaiterIdByName(waiterName);
+                
+                bool success;
+                
+                if (Title == "Редактирование заказа" && OrderId > 0)
+                {
+                    success = _databaseService.UpdateOrder(OrderId, tableId, waiterId, status, orderItems);
+                }
+                else
+                {
+                    int newOrderId = _databaseService.CreateOrder(tableId, waiterId, 1, 1, status, orderItems);
+                    success = newOrderId > 0;
+                }
+
+                if (success)
                 {
                     ClearForm();
                     SaveButtonClicked?.Invoke(this, EventArgs.Empty);
@@ -279,7 +289,8 @@ namespace CafeApp.Controls
             }
             catch (Exception ex)
             {
-                File.AppendAllText("debug.log", $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - ERROR: {ex.Message}\n");
+                File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", 
+                    $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - ERROR in SaveButton_Click: {ex.Message}\n{ex.StackTrace}\n");
             }
         }
 
@@ -294,7 +305,6 @@ namespace CafeApp.Controls
         {
             var orderItems = new List<OrderItem>();
     
-            // Используем напрямую коллекцию OrderMenuItems, так как данные уже привязаны
             foreach (var menuItem in OrderMenuItems)
             {
                 if (!string.IsNullOrEmpty(menuItem.SelectedMenuItem) && menuItem.Quantity > 0)
@@ -302,16 +312,12 @@ namespace CafeApp.Controls
                     int menuItemId = _databaseService.GetMenuItemIdByName(menuItem.SelectedMenuItem);
                     if (menuItemId != -1)
                     {
-                        decimal price = _databaseService.GetMenuItemPrice(menuItemId);
                         orderItems.Add(new OrderItem
                         {
                             MenuItemId = menuItemId,
                             Quantity = menuItem.Quantity,
-                            Price = price
                         });
                 
-                        File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", 
-                            $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Добавлено блюдо: {menuItem.SelectedMenuItem}, Количество={menuItem.Quantity}, Цена={price}\n");
                     }
                     else
                     {
@@ -320,26 +326,32 @@ namespace CafeApp.Controls
                     }
                 }
             }
-
-            File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", 
-                $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Всего собрано блюд: {orderItems.Count}\n");
-    
             return orderItems;
         }
-
-    
-
+        
         public void ClearForm()
         {
             OrderMenuItems.Clear();
             OrderMenuItems.Add(new OrderMenuItem());
-            
+    
             var tableInput = this.FindControl<global::CafeApp.Controls.Components.Input.Input>("TableInput");
             if (tableInput != null)
                 tableInput.Text = "";
-                
+            
+            var waiterTextBlock = this.FindControl<TextBlock>("WaiterTextBlock");
+            var tableTextBlock = this.FindControl<TextBlock>("TableTextBlock");
+    
+            if (waiterTextBlock != null)
+                waiterTextBlock.Text = "";
+    
+            if (tableTextBlock != null)
+                tableTextBlock.Text = "";
+        
             ClearComboBox("StatusComboBox");
             ClearComboBox("WaiterComboBox");
+    
+            this.OrderId = -1;
+            this.Title = "Заказ";
         }
 
         private void ClearComboBox(string comboBoxName)

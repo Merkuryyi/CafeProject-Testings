@@ -80,12 +80,12 @@
                                         Text="Название" 
                                         ComboBoxWidth="200"
                                         ItemsSource="{Binding #root.AllMenuItems}"
-                                        SelectedItem="{Binding SelectedMenuItem, Mode=TwoWay}"/>  
+                                        SelectedItem="{Binding SelectedMenuItem}"/>  
                                     
                                     <input:Input x:Name="QuantityInput" 
                                         Text="Кол." 
                                         InputWidth="160"
-                                        Value="{Binding Quantity, Mode=TwoWay}"/>  
+                                        Value="{Binding Quantity}"/>  
                                 </StackPanel>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>

@@ -180,6 +180,87 @@ namespace CafeApp.Database
             }
             return orders;
         }
+        public string GetOrderStatus(int orderId)
+        {
+            try
+            {
+                using (var conn = GetConnection())
+                {
+                    string query = "SELECT status FROM \"order\" WHERE order_id = @orderId";
+            
+                    using (var command = new NpgsqlCommand(query, conn))
+                    {
+                        command.Parameters.AddWithValue("@orderId", orderId);
+                
+                        var result = command.ExecuteScalar();
+                        return result?.ToString() ?? "";
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                string filePath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
+                string errorMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB ERROR (GetOrderStatus): {ex.Message}\n";
+                File.AppendAllText(filePath, errorMessage);
+                return "";
+            }
+        }
+        public List<ListItem> GetCurrentShiftOrdersList()
+        {
+            var orders = new List<ListItem>();
+            try
+            {
+                using (var conn = GetConnection())
+                {
+                    // Получаем текущую дату
+                    DateTime currentDate = DateTime.Today;
+                    
+                    // Находим текущую смену (предполагаем, что смена сегодняшняя)
+                    string query = @"SELECT 
+                                o.order_id,
+                                o.table_id,
+                                o.created_at,
+                                o.status,
+                                s.shift_id
+                            FROM ""order"" o
+                            JOIN shift s ON o.shift_id = s.shift_id
+                            WHERE s.shift_date = @currentDate
+                            ORDER BY o.created_at DESC";
+                    
+                    using (var command = new NpgsqlCommand(query, conn))
+                    {
+                        command.Parameters.AddWithValue("@currentDate", currentDate);
+                        
+                        using (var reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                int orderId = reader.GetInt32(0);
+                                int tableId = reader.GetInt32(1);
+                                DateTime createdAt = reader.GetDateTime(2);
+                                string status = reader.GetString(3);
+                                int shiftId = reader.GetInt32(4);
+                        
+                                string displayText = $"Стол №{tableId} - {createdAt:HH:mm} - {status}";
+                        
+                                orders.Add(new ListItem
+                                {
+                                    Id = orderId,
+                                    DisplayText = displayText
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                string filePath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
+                string errorMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB ERROR (GetCurrentShiftOrdersList): {ex.Message}\n";
+                File.AppendAllText(filePath, errorMessage);
+            }
+            return orders;
+        }
         public List<ListItem> GetShiftsList()
         {
             var shifts = new List<ListItem>();
@@ -388,7 +469,6 @@ namespace CafeApp.Database
             {
                 using (var conn = GetConnection())
                 {
-                 
                     string orderQuery = @"
                         SELECT 
                             o.order_id,
@@ -415,20 +495,24 @@ namespace CafeApp.Database
                                 orderInfo.Status = reader.GetString(3);
                                 orderInfo.CreatedAt = reader.GetDateTime(4);
                                 orderInfo.WaiterName = reader.GetString(5);
+                                
+                                File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", 
+                                    $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Order found: ID={orderInfo.OrderId}, Status={orderInfo.Status}, Waiter={orderInfo.WaiterName}\n");
                             }
                             else
                             {
-                                return orderInfo; // Заказ не найден
+                                File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", 
+                                    $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - No order found with ID: {orderId}\n");
+                                return orderInfo;
                             }
                         }
                     }
 
-                    // Получаем позиции заказа
+                    // Получаем позиции заказа - ВАРИАНТ 1: Без цены
                     string itemsQuery = @"
                         SELECT 
                             mi.name,
-                            oi.quantity,
-                            oi.price
+                            oi.quantity
                         FROM order_item oi
                         JOIN menu_item mi ON oi.menu_item_id = mi.item_id
                         WHERE oi.order_id = @orderId";
@@ -439,28 +523,183 @@ namespace CafeApp.Database
                         
                         using (var reader = itemsCommand.ExecuteReader())
                         {
+                            int itemCount = 0;
                             while (reader.Read())
                             {
                                 var item = new OrderItemInfo
                                 {
                                     MenuItemName = reader.GetString(0),
-                                    Quantity = reader.GetInt32(1),
-                                    Price = reader.GetDecimal(2)
+                                    Quantity = reader.GetInt32(1)
                                 };
                                 orderInfo.Items.Add(item);
+                                itemCount++;
+                                
+                                File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", 
+                                    $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Order item: {item.MenuItemName}, Quantity: {item.Quantity}\n");
                             }
+                            File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", 
+                                $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Found {itemCount} order items\n");
                         }
                     }
                 }
             }
             catch (Exception ex)
             {
-                string filePath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
-                string errorMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB ERROR (GetOrderById): {ex.Message}\n";
+                string filePath = @"A:/Инженерно-техническая поддержка сопровождения ИС/debug.log";
+                string errorMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB ERROR (GetOrderById): {ex.Message}\n{ex.StackTrace}\n";
                 File.AppendAllText(filePath, errorMessage);
             }
             
             return orderInfo;
+        }
+        public bool UpdateOrder(int orderId, int tableId, int waiterId, string status, List<OrderItem> orderItems)
+        {
+            try
+            {
+                using (var conn = GetConnection())
+                {
+                    File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", 
+                        $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - UpdateOrder started. Connection state: {conn.State}\n");
+                    
+                    using (var transaction = conn.BeginTransaction())
+                    {
+                        try
+                        {
+                            // 1. Обновляем основной заказ
+                            string orderQuery = @"
+                                UPDATE ""order"" 
+                                SET table_id = @tableId, 
+                                    waiter_id = @waiterId, 
+                                    status = @status
+                                WHERE order_id = @orderId";
+                            
+                            using (var orderCommand = new NpgsqlCommand(orderQuery, conn, transaction))
+                            {
+                                orderCommand.Parameters.AddWithValue("@orderId", orderId);
+                                orderCommand.Parameters.AddWithValue("@tableId", tableId);
+                                orderCommand.Parameters.AddWithValue("@waiterId", waiterId);
+                                orderCommand.Parameters.AddWithValue("@status", status);
+                                
+                                int rowsAffected = orderCommand.ExecuteNonQuery();
+                                
+                                File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", 
+                                    $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Updated main order: ID={orderId}, Rows affected: {rowsAffected}\n");
+                                
+                                if (rowsAffected == 0)
+                                {
+                                    File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", 
+                                        $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - WARNING: No rows affected in order update!\n");
+                                }
+                            }
+
+                            // 2. Удаляем старые позиции заказа
+                            string deleteItemsQuery = "DELETE FROM order_item WHERE order_id = @orderId";
+                            using (var deleteCommand = new NpgsqlCommand(deleteItemsQuery, conn, transaction))
+                            {
+                                deleteCommand.Parameters.AddWithValue("@orderId", orderId);
+                                int deletedRows = deleteCommand.ExecuteNonQuery();
+                                
+                                File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", 
+                                    $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Deleted old order items: {deletedRows} rows\n");
+                            }
+
+                            // 3. Добавляем новые позиции заказа
+                            string insertItemQuery = @"
+                                INSERT INTO order_item 
+                                (order_id, menu_item_id, quantity) 
+                                VALUES (@orderId, @menuItemId, @quantity)";
+                            
+                            int itemsCount = 0;
+                            foreach (var item in orderItems)
+                            {
+                                using (var itemCommand = new NpgsqlCommand(insertItemQuery, conn, transaction))
+                                {
+                                    itemCommand.Parameters.AddWithValue("@orderId", orderId);
+                                    itemCommand.Parameters.AddWithValue("@menuItemId", item.MenuItemId);
+                                    itemCommand.Parameters.AddWithValue("@quantity", item.Quantity);
+
+                                    int itemRows = itemCommand.ExecuteNonQuery();
+                                    itemsCount++;
+                                    
+                                    File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", 
+                                        $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Inserted item: {item.MenuItemId}, rows affected: {itemRows}\n");
+                                }
+                            }
+
+                            // Явно коммитим транзакцию
+                            transaction.Commit();
+                            
+                            File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", 
+                                $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - TRANSACTION COMMITTED. Order ID: {orderId}, Items added: {itemsCount}\n");
+                            
+                            // Проверяем изменения сразу после коммита
+                            VerifyChangesInDatabase(orderId, conn);
+                            
+                            return true;
+                        }
+                        catch (Exception ex)
+                        {
+                            File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", 
+                                $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - ERROR in update transaction: {ex.Message}\n{ex.StackTrace}\n");
+                            transaction.Rollback();
+                            File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", 
+                                $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - TRANSACTION ROLLED BACK\n");
+                            throw;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", 
+                    $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB ERROR (UpdateOrder): {ex.Message}\n{ex.StackTrace}\n");
+                return false;
+            }
+        }
+
+        // Метод для проверки изменений
+        private void VerifyChangesInDatabase(int orderId, NpgsqlConnection conn)
+        {
+            try
+            {
+                // Проверяем обновленный заказ
+                string checkOrderQuery = "SELECT table_id, waiter_id, status FROM \"order\" WHERE order_id = @orderId";
+                using (var checkCommand = new NpgsqlCommand(checkOrderQuery, conn))
+                {
+                    checkCommand.Parameters.AddWithValue("@orderId", orderId);
+                    using (var reader = checkCommand.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", 
+                                $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - VERIFY ORDER: Table={reader.GetInt32(0)}, Waiter={reader.GetInt32(1)}, Status={reader.GetString(2)}\n");
+                        }
+                        else
+                        {
+                            File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", 
+                                $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - VERIFY ORDER: Order not found!\n");
+                        }
+                    }
+                }
+
+                // Проверяем позиции заказа
+                string checkItemsQuery = @"
+                    SELECT COUNT(*) FROM order_item 
+                    WHERE order_id = @orderId";
+                using (var checkCommand = new NpgsqlCommand(checkItemsQuery, conn))
+                {
+                    checkCommand.Parameters.AddWithValue("@orderId", orderId);
+                    int itemCount = Convert.ToInt32(checkCommand.ExecuteScalar());
+                    
+                    File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", 
+                        $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - VERIFY ITEMS: {itemCount} items in database\n");
+                }
+            }
+            catch (Exception ex)
+            {
+                File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", 
+                    $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - ERROR in verification: {ex.Message}\n");
+            }
         }
     }
     public class OrderInfo
