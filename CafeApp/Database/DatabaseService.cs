@@ -566,11 +566,12 @@ namespace CafeApp.Database
                         try
                         {
                             // 1. Обновляем основной заказ
-                            string orderQuery = @"
+                             string orderQuery = @"
                                 UPDATE ""order"" 
                                 SET table_id = @tableId, 
                                     waiter_id = @waiterId, 
-                                    status = @status
+                                    status = @status,
+                                    created_at = @createdAt  -- ДОБАВЛЕНО: обновляем время
                                 WHERE order_id = @orderId";
                             
                             using (var orderCommand = new NpgsqlCommand(orderQuery, conn, transaction))
@@ -579,6 +580,7 @@ namespace CafeApp.Database
                                 orderCommand.Parameters.AddWithValue("@tableId", tableId);
                                 orderCommand.Parameters.AddWithValue("@waiterId", waiterId);
                                 orderCommand.Parameters.AddWithValue("@status", status);
+                                orderCommand.Parameters.AddWithValue("@createdAt", DateTime.Now);
                                 
                                 int rowsAffected = orderCommand.ExecuteNonQuery();
                                 
@@ -633,7 +635,7 @@ namespace CafeApp.Database
                                 $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - TRANSACTION COMMITTED. Order ID: {orderId}, Items added: {itemsCount}\n");
                             
                             // Проверяем изменения сразу после коммита
-                            VerifyChangesInDatabase(orderId, conn);
+                           
                             
                             return true;
                         }

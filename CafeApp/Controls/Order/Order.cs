@@ -20,7 +20,7 @@ namespace CafeApp.Controls
         private readonly DatabaseService _databaseService;
 
         public ObservableCollection<string> StatusOrder { get; set; }
-     
+        public List<string> PaymentSelection { get; set; }
         public ObservableCollection<string> AllMenuItems { get; set; }
         public ObservableCollection<string> ListWaiter { get; set; }
         public ObservableCollection<OrderMenuItem> OrderMenuItems { get; set; }
@@ -86,6 +86,8 @@ namespace CafeApp.Controls
                     tablePanel.IsVisible = true;
                     scrollViewerFalse.IsVisible = true;
                     scrollViewer.IsVisible = false;
+                    
+                    
                 }
             }
         }
@@ -144,7 +146,13 @@ namespace CafeApp.Controls
         public Order()
         {
             InitializeComponent();
+            PaymentSelection = new List<string> 
+            {
+                "наличная", 
+                "безналичная"
+            };
             
+           
             _databaseService = new DatabaseService();
             var dataRepository = new DataRepository(_databaseService);
             
@@ -161,8 +169,10 @@ namespace CafeApp.Controls
             StatusOrder = new ObservableCollection<string>();
             OrderMenuItems = new ObservableCollection<OrderMenuItem> { new OrderMenuItem() };
             this.DataContext = this;
-            UpdateStatusOrder();
-     
+            
+           
+            
+        
         }
 
         private void UpdateStatusOrder()
@@ -170,7 +180,7 @@ namespace CafeApp.Controls
             StatusOrder.Clear();
             string logMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - UpdateStatusOrder: Role='{Role}'\n";
             File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", logMessage);
-
+            
             if (Role == "администратор")
             {
                 StatusOrder.Add("принят");
@@ -190,9 +200,14 @@ namespace CafeApp.Controls
             }
             else
             {
-             
                 StatusOrder.Add("принят");
                 StatusOrder.Add("оплачен");
+            }
+
+            if (GetComboBoxValue("StatusComboBox") != "оплачен")
+            {
+                var paymentSelectionComboBox = this.FindControl<global::CafeApp.Controls.Components.ComboBox.ComboBox>("PaymentSelectionComboBox");
+                paymentSelectionComboBox.IsVisible = false;
             }
         }
 
@@ -216,6 +231,14 @@ namespace CafeApp.Controls
                 string status = "";
                 string waiterName = "";
                 int tableId = 0;
+                
+                if (GetComboBoxValue("StatusComboBox") == "оплачен")
+                {
+                    var paymentSelectionComboBox = this.FindControl<global::CafeApp.Controls.Components.ComboBox.ComboBox>("PaymentSelectionComboBox");
+                    paymentSelectionComboBox.IsVisible = true;
+                }
+              
+                
 
                 if (Role == "администратор")
                 {
@@ -225,10 +248,8 @@ namespace CafeApp.Controls
                     string tableNumber = tableInput.Value?.ToString() ?? tableInput.Text ?? "";
                     
                     if (string.IsNullOrEmpty(status) || string.IsNullOrEmpty(waiterName) || string.IsNullOrEmpty(tableNumber))
-                    {
-                        return;
-                    }
-                    
+                    { return; }
+                  
                     int.TryParse(tableNumber, out tableId);
                 }
                 else
@@ -240,12 +261,11 @@ namespace CafeApp.Controls
                     string tableNumber = tableTextBlock?.Text ?? "";
                     
                     if (string.IsNullOrEmpty(waiterName) || string.IsNullOrEmpty(tableNumber))
-                    {
-                        return;
-                    }
+                    { return; }
                     int.TryParse(tableNumber, out tableId);
-                   
                 }
+                if (status == "оплачен" && string.IsNullOrEmpty(GetComboBoxValue("PaymentSelectionComboBox")))
+                { { return; } }
 
                 var orderItems = CollectOrderItemsFromUI();
 
@@ -257,35 +277,32 @@ namespace CafeApp.Controls
                                    $"waiterName: '{waiterName}'\n" +
                                    $"status: '{status}'\n" +
                                    $"orderItems count: '{orderItems.Count}'\n";
-
                 File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", logMessage);
 
                 if (orderItems.Count == 0)
-                {
-                    File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", 
-                        $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - ERROR: Нет блюд для сохранения\n");
-                    return;
-                }
+                { return; }
 
                 int waiterId = _databaseService.GetWaiterIdByName(waiterName);
-                
                 bool success;
-                
+
                 if (Title == "Редактирование заказа" && OrderId > 0)
                 {
+                   
                     success = _databaseService.UpdateOrder(OrderId, tableId, waiterId, status, orderItems);
+                    
                 }
                 else
                 {
                     int newOrderId = _databaseService.CreateOrder(tableId, waiterId, 1, 1, status, orderItems);
                     success = newOrderId > 0;
                 }
-
                 if (success)
                 {
                     ClearForm();
-                    SaveButtonClicked?.Invoke(this, EventArgs.Empty);
+                     
                 }
+
+                
             }
             catch (Exception ex)
             {
@@ -315,7 +332,7 @@ namespace CafeApp.Controls
                         orderItems.Add(new OrderItem
                         {
                             MenuItemId = menuItemId,
-                            Quantity = menuItem.Quantity,
+                            Quantity = menuItem.Quantity ?? 0,
                         });
                 
                     }
@@ -349,6 +366,7 @@ namespace CafeApp.Controls
         
             ClearComboBox("StatusComboBox");
             ClearComboBox("WaiterComboBox");
+            ClearComboBox("PaymentSelectionComboBox");
     
             this.OrderId = -1;
             this.Title = "Заказ";
@@ -377,12 +395,23 @@ namespace CafeApp.Controls
                 
             if (saveButton != null)
                 saveButton.PointerPressed += SaveButton_Click;
+            var paymentSelectionComboBox = this.FindControl<global::CafeApp.Controls.Components.ComboBox.ComboBox>("PaymentSelectionComboBox");
+
+            if (GetComboBoxValue("StatusComboBox") == "оплачен")
+            {
+                paymentSelectionComboBox.IsVisible = true;
+            }
+            else
+            {
+                paymentSelectionComboBox.IsVisible = false;
+            }
+          
         }
     }
 
     public class OrderMenuItem
     {
         public string SelectedMenuItem { get; set; } = "";
-        public int Quantity { get; set; } = 1;
+        public int? Quantity { get; set; }
     }
 }
