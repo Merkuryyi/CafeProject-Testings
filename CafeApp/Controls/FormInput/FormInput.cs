@@ -4,6 +4,7 @@ using Avalonia.Markup.Xaml;
 using Avalonia.Interactivity;
 using System;
 using CafeApp.Database;
+using CafeApp.Models;
 using CafeApp.Controls.Components.Input;
 using System.IO;
 
@@ -45,16 +46,22 @@ namespace CafeApp.Controls
             var passwordInput = this.FindControl<Input>("PasswordInput");
 
             string username = usernameInput.Value?.ToString() ?? "";
-            
+    
             string password = passwordInput.Value?.ToString() ?? 
-                             passwordInput.Content?.ToString() ?? 
-                             passwordInput.Text ?? "";
+                              passwordInput.Content?.ToString() ?? 
+                              passwordInput.Text ?? "";
 
-            string? role = _databaseService.AuthenticateUser(username, password);
-            
-
-            // Передаем роль (или null если аутентификация не удалась)
-            LoginResult?.Invoke(this, role ?? "");
+            // Получаем данные пользователя
+            var (role, userId, fullName) = _databaseService.AuthenticateUser(username, password);
+    
+            if (!string.IsNullOrEmpty(role) && userId.HasValue)
+            {
+                // Сохраняем данные в статическом классе
+                CurrentUser.SetUser(userId.Value, role, username, fullName ?? "");
+                LoginResult?.Invoke(this, "SUCCESS");
+            }
+         
         }
+
     }
 }

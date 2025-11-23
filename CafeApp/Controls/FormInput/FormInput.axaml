@@ -8,11 +8,12 @@
              x:Name="root">
     
     <StackPanel Spacing="15">
+        <TextBlock x:Name="UserIdTextBlock" IsVisible="False" Text="0"/>
         <TextBlock x:Name="TitleTextBlock" Text="{Binding #root.Title}"
-            FontSize="24"
-            FontWeight="Bold"
-            Foreground="#194E84"
-            HorizontalAlignment="Center"/>
+                   FontSize="24"
+                   FontWeight="Bold"
+                   Foreground="#194E84"
+                   HorizontalAlignment="Center"/>
 
         <StackPanel Spacing="5">
             <input:Input x:Name="UsernameInput" Text="Логин" InputWidth="400"/>

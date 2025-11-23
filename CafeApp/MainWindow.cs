@@ -4,6 +4,7 @@ using CafeApp.Controls.Components.Sidebar;
 using CafeApp.Controls.Components.List;
 using System.Collections.ObjectModel;
 using CafeApp.Database;
+using CafeApp.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -54,7 +55,6 @@ namespace CafeApp
             var listControl = this.FindControl<List>("EmployeesListControl");
             listControl.Items = _employees;
             listControl.Title = "Сотрудники";
-            
         }
 
         private void LoadOrdersData()
@@ -93,16 +93,52 @@ namespace CafeApp
         {
             if (!string.IsNullOrEmpty(role))
             {
+                string userInfo = CurrentUser.GetUserInfo();
+                
+                string logPath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
+                File.AppendAllText(logPath, $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - MAIN WINDOW: {userInfo}\n");
+        
+                UpdateUserInterface();
+        
                 var sidebarControl = this.FindControl<Sidebar>("SidebarControl");
                 if (sidebarControl != null)
-                    sidebarControl.Role = role;
-                
+                    sidebarControl.Role = CurrentUser.Role; // Используем CurrentUser.Role вместо role
+        
                 var withSidebarPanel = this.FindControl<Grid>("WithSidebarPanel");
                 var withoutSidebarPanel = this.FindControl<Grid>("WithoutSidebarPanel");
-                
+        
                 withSidebarPanel.IsVisible = true;
                 withoutSidebarPanel.IsVisible = false;
-                
+            }
+        }
+        
+        private void UpdateUserInterface()
+        {
+            // Показываем информацию о пользователе
+            var userInfoTextBlock = this.FindControl<TextBlock>("UserInfoTextBlock");
+            if (userInfoTextBlock != null)
+            {
+                userInfoTextBlock.Text = $"{CurrentUser.FullName} ({CurrentUser.Role})";
+            }
+    
+            // Настраиваем видимость элементов по роли
+            var adminPanel = this.FindControl<StackPanel>("AdminPanel");
+            if (adminPanel != null)
+            {
+                adminPanel.IsVisible = CurrentUser.IsAdmin;
+            }
+    
+            var waiterPanel = this.FindControl<StackPanel>("WaiterPanel");
+            if (waiterPanel != null)
+            {
+                waiterPanel.IsVisible = CurrentUser.IsWaiter;
+            }
+    
+            // Также можно обновить Sidebar
+            var sidebarControl = this.FindControl<Sidebar>("SidebarControl");
+            if (sidebarControl != null)
+            {
+                sidebarControl.Role = CurrentUser.Role;
             }
         }
 
@@ -179,14 +215,11 @@ namespace CafeApp
 
             if (title.Contains("заказ"))
             {
-                var orderControl = this.FindControl<Order>("OrderControl");
+                var orderControl = this.FindControl<CafeApp.Controls.Order>("OrderControl");
                 if (orderControl != null)
                 {
                     orderControl.Role = GetCurrentRole();
                     int orderId = clickedItem.Id;
-                   
-                    
-                    
                     orderControl.LoadOrderData(orderId, GetCurrentRole()); 
                     ShowControl(orderControl);
                 }
@@ -225,13 +258,14 @@ namespace CafeApp
 
             if (title.Contains("заказ") && currentRole != "повар" ) //&& currentRole != "администратор"
             {
-                var orderControl = this.FindControl<Order>("OrderControl");
+                var orderControl = this.FindControl<CafeApp.Controls.Order>("OrderControl");
                 if (orderControl != null)
                 {
                     orderControl.ClearForm();
                     orderControl.Title = "Новый заказ";
                     orderControl.Role = currentRole;
                     orderControl.OrderId = -1;
+                    orderControl.ResetToEditMode();
                     ShowControl(orderControl);
                 }
             }
@@ -271,7 +305,7 @@ namespace CafeApp
             if (shiftsList != null)
                 shiftsList.IsVisible = false;
         
-            var orderControl = this.FindControl<Order>("OrderControl");
+            var orderControl = this.FindControl<CafeApp.Controls.Order>("OrderControl");
             if (orderControl != null)
                 orderControl.IsVisible = false;
         }
@@ -283,8 +317,6 @@ namespace CafeApp
         public string DisplayText { get; set; } = "";
         
         public override string ToString()
-        {
-            return DisplayText;
-        }
+        { return DisplayText; }
     }
 }

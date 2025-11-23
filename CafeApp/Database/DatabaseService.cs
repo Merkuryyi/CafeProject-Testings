@@ -19,13 +19,18 @@ namespace CafeApp.Database
             return _connection;
         }
 
-        public string? AuthenticateUser(string username, string password)
+        public (string? Role, int? UserId, string? FullName) AuthenticateUser(string username, string password)
         {
             try
             {
                 using (var conn = GetConnection())
                 {
-                    string query = @"SELECT role FROM users WHERE username = @username AND password_ = @password AND employment_status = true";
+                    string query = @"SELECT role, user_id, surname || ' ' || name || 
+                           COALESCE(' ' || patronymic, '') as full_name 
+                           FROM users 
+                           WHERE username = @username AND password_ = @password 
+                           AND employment_status = true";
+            
                     using (var command = new NpgsqlCommand(query, conn))
                     {
                         command.Parameters.AddWithValue("@username", username);
@@ -36,11 +41,13 @@ namespace CafeApp.Database
                             if (reader.Read())
                             {
                                 string role = reader.GetString(0);     
-                                return role;
+                                int userId = reader.GetInt32(1);
+                                string fullName = reader.GetString(2);
+                                return (role, userId, fullName);
                             }
                             else
                             {
-                                return null;
+                                return (null, null, null);
                             }
                         }
                     }
@@ -48,7 +55,9 @@ namespace CafeApp.Database
             }
             catch (Exception ex)
             {
-                return null;
+                string logPath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
+                File.AppendAllText(logPath, $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - AUTH ERROR: {ex.Message}\n");
+                return (null, null, null);
             }
         }
 
@@ -373,25 +382,33 @@ namespace CafeApp.Database
                         string orderItemQuery = @"
                             INSERT INTO order_item 
                             (order_id, menu_item_id, quantity) 
-                            VALUES (@orderId, @menuItemId, @quantity)";foreach (var item in orderItems)
+                            VALUES (@orderId, @menuItemId, @quantity)";
+
+                        foreach (var item in orderItems)
                         {
                             using (var itemCommand = new NpgsqlCommand(orderItemQuery, conn, transaction))
                             {
                                 itemCommand.Parameters.AddWithValue("@orderId", orderId);
                                 itemCommand.Parameters.AddWithValue("@menuItemId", item.MenuItemId);
                                 itemCommand.Parameters.AddWithValue("@quantity", item.Quantity);
-                                itemCommand.Parameters.AddWithValue("@price", item.Price);
-
                                 itemCommand.ExecuteNonQuery();
                             }
                         }
 
                         transaction.Commit();
+                        
+                        string filePath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
+                        string successMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Order created successfully: ID={orderId}, Table={tableId}, Items={orderItems.Count}\n";
+                        File.AppendAllText(filePath, successMessage);
+                        
                         return orderId;
                     }
-                    catch (Exception)
+                    catch (Exception ex)
                     {
                         transaction.Rollback();
+                        string filePath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
+                        string errorMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB ERROR in transaction (CreateOrder): {ex.Message}\n{ex.StackTrace}\n";
+                        File.AppendAllText(filePath, errorMessage);
                         throw;
                     }
                 }
@@ -399,11 +416,39 @@ namespace CafeApp.Database
             catch (Exception ex)
             {
                 string filePath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
-                string errorMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB ERROR (CreateOrder): {ex.Message}\n";
+                string errorMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB ERROR (CreateOrder): {ex.Message}\n{ex.StackTrace}\n";
                 File.AppendAllText(filePath, errorMessage);
                 return -1;
             }
         }
+        public int GetCurrentShiftId()
+        {
+            try
+            {
+                using (var conn = GetConnection())
+                {
+                    string query = @"
+                SELECT shift_id FROM shift 
+                WHERE shift_date = CURRENT_DATE 
+                AND start_time <= CURRENT_TIME 
+                AND end_time >= CURRENT_TIME 
+                LIMIT 1";
+            
+                    using (var command = new NpgsqlCommand(query, conn))
+                    {
+                        var result = command.ExecuteScalar();
+                        return result != null ? Convert.ToInt32(result) : -1;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                File.AppendAllText(@"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log", 
+                    $"Error getting current shift: {ex.Message}\n");
+                return -1;
+            }
+        }
+
         public int GetMenuItemIdByName(string menuItemName)
         {
             try
@@ -811,51 +856,32 @@ namespace CafeApp.Database
                 return false;
             }
         }
-
-        private void VerifyChangesInDatabase(int orderId, NpgsqlConnection conn)
+        public decimal GetMenuItemPriceByName(string menuItemName)
         {
             try
             {
-                // Проверяем обновленный заказ
-                string checkOrderQuery = "SELECT table_id, waiter_id, status FROM \"order\" WHERE order_id = @orderId";
-                using (var checkCommand = new NpgsqlCommand(checkOrderQuery, conn))
-                {
-                    checkCommand.Parameters.AddWithValue("@orderId", orderId);
-                    using (var reader = checkCommand.ExecuteReader())
-                    {
-                        if (reader.Read())
-                        {
-                            File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", 
-                                $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - VERIFY ORDER: Table={reader.GetInt32(0)}, Waiter={reader.GetInt32(1)}, Status={reader.GetString(2)}\n");
-                        }
-                        else
-                        {
-                            File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", 
-                                $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - VERIFY ORDER: Order not found!\n");
-                        }
-                    }
-                }
-
-                // Проверяем позиции заказа
-                string checkItemsQuery = @"
-                    SELECT COUNT(*) FROM order_item 
-                    WHERE order_id = @orderId";
-                using (var checkCommand = new NpgsqlCommand(checkItemsQuery, conn))
-                {
-                    checkCommand.Parameters.AddWithValue("@orderId", orderId);
-                    int itemCount = Convert.ToInt32(checkCommand.ExecuteScalar());
-                    
-                    File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", 
-                        $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - VERIFY ITEMS: {itemCount} items in database\n");
-                }
+                using var connection = GetConnection();
+        
+                var query = "SELECT price FROM menu_item WHERE name = @Name";
+                using var command = new NpgsqlCommand(query, connection);
+                command.Parameters.AddWithValue("@Name", menuItemName);
+        
+                var result = command.ExecuteScalar();
+                return result != null ? Convert.ToDecimal(result) : 0;
             }
             catch (Exception ex)
             {
-                File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", 
-                    $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - ERROR in verification: {ex.Message}\n");
+                string filePath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
+                string errorMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB ERROR (GetMenuItemPriceByName): {ex.Message}\n";
+                File.AppendAllText(filePath, errorMessage);
+                return 0;
             }
         }
+
+        
+       
     }
+    
     public class OrderInfo
     {
         public int OrderId { get; set; }

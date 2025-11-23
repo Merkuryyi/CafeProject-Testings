@@ -29,13 +29,11 @@
             </Grid>
 
             <Grid Grid.Column="1" >
-                <!-- Белый фон с внутренними отступами -->
                 <Rectangle Fill="#F2F2F2"
                        Margin="15,30,30,30"
                        RadiusX="20" 
                        RadiusY="20"/>
-
-                <!-- Контейнер для контента с отступами от фона -->
+                
                 <StackPanel Margin="40" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                     
                     <controls:FormEmployee x:Name="FormEmployeeControl"     
@@ -89,6 +87,7 @@
                Title="Авторизация"
                HorizontalAlignment="Center"
                VerticalAlignment="Center"/>
+            
         </Grid>
     </Grid>
 </Window>

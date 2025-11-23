@@ -11,18 +11,15 @@ namespace CafeApp.Excel
         {
             try
             {
-                // Создаем рабочую книгу
                 using (var workbook = new XLWorkbook())
                 {
                     var worksheet = workbook.Worksheets.Add("Кассовый чек");
 
-                    // Заголовок
                     worksheet.Cell("A1").Value = "КАССОВЫЙ ЧЕК";
                     worksheet.Cell("A1").Style.Font.Bold = true;
                     worksheet.Cell("A1").Style.Font.FontSize = 16;
                     worksheet.Range("A1:E1").Merge();
 
-                    // Основная информация
                     worksheet.Cell("A3").Value = $"Номер заказа: {receiptOrder.OrderId}";
                     worksheet.Cell("A4").Value = $"Дата: {receiptOrder.OrderDate:dd.MM.yyyy HH:mm}";
                     worksheet.Cell("A5").Value = $"Стол: №{receiptOrder.TableId}";

@@ -11,17 +11,24 @@
     <StackPanel >
         <Border Padding="15,15,15,0">
             <StackPanel Spacing="10" HorizontalAlignment="Left">
-                <TextBlock Text="{Binding #root.Title}" x:Name="OrderTitleTextBlock"
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                    <TextBlock Text="{Binding #root.Title}" x:Name="OrderTitleTextBlock"
                            FontSize="20" 
                            Foreground="#194E84"
-                           FontWeight="Bold"/>
-                
+                           FontWeight="Bold"  Margin="0,0,25,25"/>
+                    <TextBlock Text="{Binding TotalPrice, StringFormat='{}{0} руб.'}" 
+                               x:Name="PriceTextBlock"
+                               FontSize="20" 
+                               Foreground="#194E84"
+                               FontWeight="Bold"  
+                               Margin="0,0,0,25"/>
+                </StackPanel>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
                     <combobox:ComboBox x:Name="StatusComboBox" 
-                               Text="Статус" 
-                               ComboBoxWidth="200"
-                               Margin="0,0,25,0"
-                               ItemsSource="{Binding StatusOrder}" IsVisible="True"/>  
+                           Text="Статус" 
+                           ComboBoxWidth="200"
+                           Margin="0,0,25,0"
+                           ItemsSource="{Binding StatusOrder}" IsVisible="True"/>  
                     <StackPanel  x:Name="StatusPanel" IsVisible="False">
                         <TextBlock Text="Статус"
                                    FontSize="14"
@@ -38,7 +45,7 @@
                                Margin="0,0,25,0"
                                ComboBoxWidth="160"
                                ItemsSource="{Binding ListWaiter}" IsVisible="True"/> 
-                    <input:Input x:Name="TableInput" Text="Столик" InputWidth="50" IsVisible="True"/>
+                    <input:Input x:Name="TableInput" Text="Столик" InputWidth="50" IsVisible="True"  Margin="0,0,25,0"/>
                     <StackPanel  x:Name="WaiterPanel" IsVisible="False">
                         <TextBlock Text="Официант"
                                    FontSize="14"
@@ -78,8 +85,6 @@
                                    Foreground="#194E84"/>
                     </StackPanel>
                 </StackPanel>
-                
-                
             </StackPanel>
              
         </Border>
@@ -113,15 +118,27 @@
                                             HorizontalAlignment="Left" 
                                             Margin="0,10,0,0">
                                     <combobox:ComboBox x:Name="MenuItemComboBox"
-                                        Text="Название" 
-                                        ComboBoxWidth="200"
-                                        ItemsSource="{Binding #root.AllMenuItems}"
-                                        SelectedItem="{Binding SelectedMenuItem}"/>  
-                                    
+                                                       Text="Название" 
+                                                       ComboBoxWidth="200"
+                                                       ItemsSource="{Binding #root.AllMenuItems}"
+                                                       SelectedItem="{Binding SelectedMenuItem, Mode=TwoWay}">
+                                        <combobox:ComboBox.Styles>
+                                            <Style Selector="ComboBox">
+                                                <Setter Property="SelectedItem" Value="{Binding SelectedMenuItem, Mode=TwoWay}"/>
+                                            </Style>
+                                        </combobox:ComboBox.Styles>
+                                    </combobox:ComboBox>
+                    
                                     <input:Input x:Name="QuantityInput" 
-                                        Text="Кол." 
-                                        InputWidth="160"
-                                        Value="{Binding Quantity}"/>  
+                                                 Text="Кол." 
+                                                 InputWidth="160"
+                                                 Value="{Binding Quantity, Mode=TwoWay}">
+                                        <input:Input.Styles>
+                                            <Style Selector="TextBox">
+                                                <Setter Property="Text" Value="{Binding Quantity, Mode=TwoWay}"/>
+                                            </Style>
+                                        </input:Input.Styles>
+                                    </input:Input>  
                                 </StackPanel>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
