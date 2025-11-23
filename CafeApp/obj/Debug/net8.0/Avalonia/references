@@ -22,6 +22,11 @@ C:\Users\Terra\.nuget\packages\avalonia\11.3.6\ref\net8.0\Avalonia.Vulkan.dll
 C:\Users\Terra\.nuget\packages\avalonia.win32\11.3.6\lib\net8.0\Avalonia.Win32.Automation.dll
 C:\Users\Terra\.nuget\packages\avalonia.win32\11.3.6\lib\net8.0\Avalonia.Win32.dll
 C:\Users\Terra\.nuget\packages\avalonia.x11\11.3.6\lib\net8.0\Avalonia.X11.dll
+C:\Users\Terra\.nuget\packages\closedxml\0.105.0\lib\netstandard2.1\ClosedXML.dll
+C:\Users\Terra\.nuget\packages\closedxml.parser\2.0.0\lib\netstandard2.1\ClosedXML.Parser.dll
+C:\Users\Terra\.nuget\packages\documentformat.openxml\3.1.1\lib\net8.0\DocumentFormat.OpenXml.dll
+C:\Users\Terra\.nuget\packages\documentformat.openxml.framework\3.1.1\lib\net8.0\DocumentFormat.OpenXml.Framework.dll
+C:\Users\Terra\.nuget\packages\excelnumberformat\1.1.0\lib\netstandard2.0\ExcelNumberFormat.dll
 C:\Users\Terra\.nuget\packages\harfbuzzsharp\8.3.1.1\lib\net8.0\HarfBuzzSharp.dll
 C:\Users\Terra\.nuget\packages\microcom.runtime\0.11.0\lib\net5.0\MicroCom.Runtime.dll
 C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.13\ref\net8.0\Microsoft.CSharp.dll
@@ -42,6 +47,8 @@ C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.13\ref\net8.0\Micros
 C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.13\ref\net8.0\mscorlib.dll
 C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.13\ref\net8.0\netstandard.dll
 C:\Users\Terra\.nuget\packages\npgsql\9.0.4\lib\net8.0\Npgsql.dll
+C:\Users\Terra\.nuget\packages\rbush.signed\4.0.0\lib\net8.0\RBush.dll
+C:\Users\Terra\.nuget\packages\sixlabors.fonts\1.0.0\lib\netcoreapp3.1\SixLabors.Fonts.dll
 C:\Users\Terra\.nuget\packages\skiasharp\2.88.9\lib\net6.0\SkiaSharp.dll
 C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.13\ref\net8.0\System.AppContext.dll
 C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.13\ref\net8.0\System.Buffers.dll
@@ -73,6 +80,7 @@ C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.13\ref\net8.0\System
 C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.13\ref\net8.0\System.Diagnostics.TraceSource.dll
 C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.13\ref\net8.0\System.Diagnostics.Tracing.dll
 C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.13\ref\net8.0\System.dll
+C:\Users\Terra\.nuget\packages\system.drawing.common\4.5.0\ref\netstandard2.0\System.Drawing.Common.dll
 C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.13\ref\net8.0\System.Drawing.dll
 C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.13\ref\net8.0\System.Drawing.Primitives.dll
 C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.13\ref\net8.0\System.Dynamic.Runtime.dll
@@ -93,6 +101,7 @@ C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.13\ref\net8.0\System
 C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.13\ref\net8.0\System.IO.FileSystem.Watcher.dll
 C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.13\ref\net8.0\System.IO.IsolatedStorage.dll
 C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.13\ref\net8.0\System.IO.MemoryMappedFiles.dll
+C:\Users\Terra\.nuget\packages\system.io.packaging\8.0.1\lib\net8.0\System.IO.Packaging.dll
 C:\Users\Terra\.nuget\packages\system.io.pipelines\9.0.10\lib\net8.0\System.IO.Pipelines.dll
 C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.13\ref\net8.0\System.IO.Pipes.AccessControl.dll
 C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.13\ref\net8.0\System.IO.Pipes.dll

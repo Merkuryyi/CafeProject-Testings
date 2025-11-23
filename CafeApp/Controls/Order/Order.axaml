@@ -22,6 +22,17 @@
                                ComboBoxWidth="200"
                                Margin="0,0,25,0"
                                ItemsSource="{Binding StatusOrder}" IsVisible="True"/>  
+                    <StackPanel  x:Name="StatusPanel" IsVisible="False">
+                        <TextBlock Text="Статус"
+                                   FontSize="14"
+                                   Margin="0,0,25,0"
+                                   Foreground="#194E84" />
+                        <TextBlock x:Name="StatusTextBlock"
+                                   Text=""
+                                   FontSize="14"
+                                   Margin="0,0,25,0"
+                                   Foreground="#194E84"/>
+                    </StackPanel>
                     <combobox:ComboBox x:Name="WaiterComboBox" 
                                Text="Официант" 
                                Margin="0,0,25,0"
@@ -50,11 +61,22 @@
                         
                     </StackPanel>
                 </StackPanel>
-                <StackPanel x:Name="PaymentPanel">
+                <StackPanel >
                     <combobox:ComboBox x:Name="PaymentSelectionComboBox" 
                            Text="Оплата"  HorizontalAlignment="Left"
                            ComboBoxWidth="200"
                            ItemsSource="{Binding PaymentSelection}" IsVisible="False"/> 
+                    <StackPanel  x:Name="PaymentPanel" IsVisible="False">
+                        <TextBlock Text="Вариант оплаты"
+                                   FontSize="14"
+                                   Margin="0,0,25,0"
+                                   Foreground="#194E84" />
+                        <TextBlock x:Name="PaymentTextBlock"
+                                   Text=""
+                                   FontSize="14"
+                                   Margin="0,0,25,0"
+                                   Foreground="#194E84"/>
+                    </StackPanel>
                 </StackPanel>
                 
                 

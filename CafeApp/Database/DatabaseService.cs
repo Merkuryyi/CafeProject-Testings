@@ -508,7 +508,6 @@ namespace CafeApp.Database
                         }
                     }
 
-                    // Получаем позиции заказа - ВАРИАНТ 1: Без цены
                     string itemsQuery = @"
                         SELECT 
                             mi.name,
@@ -558,9 +557,6 @@ namespace CafeApp.Database
             {
                 using (var conn = GetConnection())
                 {
-                    File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", 
-                        $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - UpdateOrder started. Connection state: {conn.State}\n");
-                    
                     using (var transaction = conn.BeginTransaction())
                     {
                         try
@@ -571,7 +567,7 @@ namespace CafeApp.Database
                                 SET table_id = @tableId, 
                                     waiter_id = @waiterId, 
                                     status = @status,
-                                    created_at = @createdAt  -- ДОБАВЛЕНО: обновляем время
+                                    created_at = @createdAt  
                                 WHERE order_id = @orderId";
                             
                             using (var orderCommand = new NpgsqlCommand(orderQuery, conn, transaction))
@@ -643,9 +639,6 @@ namespace CafeApp.Database
                         {
                             File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", 
                                 $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - ERROR in update transaction: {ex.Message}\n{ex.StackTrace}\n");
-                            transaction.Rollback();
-                            File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", 
-                                $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - TRANSACTION ROLLED BACK\n");
                             throw;
                         }
                     }
@@ -658,8 +651,167 @@ namespace CafeApp.Database
                 return false;
             }
         }
+        public string GetOrderPaymentType(int orderId)
+        {
+            try
+            {
+                using (var conn = GetConnection())
+                {
+                    string query = "SELECT payment_type FROM \"order\" WHERE order_id = @orderId";
+            
+                    using (var command = new NpgsqlCommand(query, conn))
+                    {
+                        command.Parameters.AddWithValue("@orderId", orderId);
+                
+                        var result = command.ExecuteScalar();
+                        return result?.ToString() ?? "не указан";
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                string filePath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
+                string errorMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB ERROR (GetOrderPaymentType): {ex.Message}\n";
+                File.AppendAllText(filePath, errorMessage);
+                return "не указан";
+            }
+        }
+        public ReceiptOrder GetReceiptOrderData(int orderId)
+        {
+            var receiptOrder = new ReceiptOrder();
+            
+            try
+            {
+                using (var conn = GetConnection())
+                {
+                    // Получаем основную информацию о заказе
+                    string orderQuery = @"
+                        SELECT 
+                            o.order_id,
+                            o.created_at,
+                            o.payment_type,
+                            u.surname || ' ' || u.name || COALESCE(' ' || u.patronymic, '') as waiter_name
+                        FROM ""order"" o
+                        JOIN ""users"" u ON o.waiter_id = u.user_id
+                        WHERE o.order_id = @orderId";
+                    
+                    using (var orderCommand = new NpgsqlCommand(orderQuery, conn))
+                    {
+                        orderCommand.Parameters.AddWithValue("@orderId", orderId);
+                        
+                        using (var reader = orderCommand.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                receiptOrder.OrderId = reader.GetInt32(0);
+                                receiptOrder.OrderDate = reader.GetDateTime(1);
+                                receiptOrder.PaymentType = reader.IsDBNull(2) ? "не указан" : reader.GetString(2);
+                                receiptOrder.WaiterName = reader.GetString(3);
+                            }
+                        }
+                    }
 
-        // Метод для проверки изменений
+                    // Получаем позиции заказа с ценами
+                    string itemsQuery = @"
+                        SELECT 
+                            mi.name,
+                            oi.quantity,
+                            mi.price
+                        FROM order_item oi
+                        JOIN menu_item mi ON oi.menu_item_id = mi.item_id
+                        WHERE oi.order_id = @orderId";
+                    
+                    using (var itemsCommand = new NpgsqlCommand(itemsQuery, conn))
+                    {
+                        itemsCommand.Parameters.AddWithValue("@orderId", orderId);
+                        
+                        using (var reader = itemsCommand.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                var item = new ReceiptOrderItem
+                                {
+                                    DishName = reader.GetString(0),
+                                    Quantity = reader.GetInt32(1),
+                                    Price = reader.GetDecimal(2)
+                                };
+                                receiptOrder.Items.Add(item);
+                                receiptOrder.TotalAmount += item.TotalPrice;
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                string filePath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
+                string errorMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB ERROR (GetReceiptOrderData): {ex.Message}\n";
+                File.AppendAllText(filePath, errorMessage);
+            }
+            
+            return receiptOrder;
+        }
+        public bool UpdatePaymentOrder(int orderId, string paymentType)
+        {
+            try
+            {
+                using (var conn = GetConnection())
+                {
+                    using (var transaction = conn.BeginTransaction())
+                    {
+                        try
+                        {
+                            string orderQuery = @"
+                                UPDATE ""order"" 
+                                SET payment_type = @paymentType 
+                                WHERE order_id = @orderId";
+                            
+                            using (var orderCommand = new NpgsqlCommand(orderQuery, conn, transaction))
+                            {
+                                orderCommand.Parameters.AddWithValue("@orderId", orderId);
+                                orderCommand.Parameters.AddWithValue("@paymentType", paymentType);
+                                
+                                // ДОБАВЬТЕ: выполнение команды
+                                int rowsAffected = orderCommand.ExecuteNonQuery();
+                                
+                                File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", 
+                                    $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - UpdatePaymentOrder: ID={orderId}, Type={paymentType}, Rows affected: {rowsAffected}\n");
+                                
+                                if (rowsAffected == 0)
+                                {
+                                    File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", 
+                                        $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - WARNING: No rows affected in payment update!\n");
+                                }
+                            }
+
+                            // ДОБАВЬТЕ: коммит транзакции
+                            transaction.Commit();
+                            
+                            File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", 
+                                $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Payment update COMMITTED\n");
+                            
+                            return true;
+                        }
+                        catch (Exception ex)
+                        {
+                            File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", 
+                                $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - ERROR in payment update transaction: {ex.Message}\n{ex.StackTrace}\n");
+                            transaction.Rollback();
+                            File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", 
+                                $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Payment update ROLLED BACK\n");
+                            throw;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", 
+                    $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB ERROR (UpdatePaymentOrder): {ex.Message}\n{ex.StackTrace}\n");
+                return false;
+            }
+        }
+
         private void VerifyChangesInDatabase(int orderId, NpgsqlConnection conn)
         {
             try

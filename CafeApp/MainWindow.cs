@@ -62,13 +62,9 @@ namespace CafeApp
             _orders.Clear();
             List<ListItem> data;
             if (GetCurrentRole() == "официант")
-            {
-               data = _databaseService.GetCurrentShiftOrdersList();
-            }
+            { data = _databaseService.GetCurrentShiftOrdersList(); }
             else
-            {
-               data = _databaseService.GetOrdersList();
-            }
+            { data = _databaseService.GetOrdersList(); }
            
             foreach (var item in data)
                 _orders.Add(item);
@@ -183,21 +179,25 @@ namespace CafeApp
 
             if (title.Contains("заказ"))
             {
-                string orderStatus = _databaseService.GetOrderStatus(clickedItem.Id);
-                
-                if (orderStatus == "оплачен")
-                {
-                   return;
-                }
-                
                 var orderControl = this.FindControl<Order>("OrderControl");
                 if (orderControl != null)
                 {
-                    orderControl.Title = "Редактирование заказа";
                     orderControl.Role = GetCurrentRole();
                     int orderId = clickedItem.Id;
-                    orderControl.LoadOrderData(orderId, GetCurrentRole());
+                   
+                    
+                    
+                    orderControl.LoadOrderData(orderId, GetCurrentRole()); 
                     ShowControl(orderControl);
+                }
+            }
+            else if (title.Contains("сотрудник"))
+            {
+                var formEmployee = this.FindControl<FormEmployee>("FormEmployeeControl");
+                if (formEmployee != null)
+                {
+                    formEmployee.Title = "Редактирование сотрудника";
+                    ShowControl(formEmployee);
                 }
             }
             else if (title.Contains("сотрудник"))
@@ -223,7 +223,7 @@ namespace CafeApp
             var title = listControl.Title?.ToLower() ?? "";
             var currentRole = GetCurrentRole();
 
-            if (title.Contains("заказ") && currentRole != "повар" && currentRole != "администратор")
+            if (title.Contains("заказ") && currentRole != "повар" ) //&& currentRole != "администратор"
             {
                 var orderControl = this.FindControl<Order>("OrderControl");
                 if (orderControl != null)
