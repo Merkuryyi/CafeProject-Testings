@@ -64,7 +64,9 @@ namespace CafeApp
             if (GetCurrentRole() == "официант")
             { data = _databaseService.GetCurrentShiftOrdersList(); }
             else
-            { data = _databaseService.GetOrdersList(); }
+            {
+            data = _databaseService.GetOrdersList();
+            }
            
             foreach (var item in data)
                 _orders.Add(item);

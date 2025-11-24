@@ -1,4 +1,4 @@
-﻿using Avalonia;
+﻿﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using System.Collections.Generic;
@@ -56,244 +56,6 @@ namespace CafeApp.Controls
                 HideComponentsOrder();
             }
         }
-        public int OrderId
-        {
-            get => GetValue(OrderIdProperty);
-            set => SetValue(OrderIdProperty, value);
-        }
-        public event EventHandler? SaveButtonClicked;
-        public Order()
-        {
-            InitializeComponent();
-            
-            PaymentSelection = new List<string> { "наличная", "безналичная" };
-            _databaseService = new DatabaseService();
-            var dataRepository = new DataRepository(_databaseService);
-            
-            if (CurrentUser.IsAuthenticated && CurrentUser.IsWaiter)
-            {
-                ListWaiter.Add(CurrentUser.FullName);
-            }
-
-            AllMenuItems = new ObservableCollection<string>(
-                dataRepository.MenuItems.OrderBy(m => m.Name).Select(m => m.Name)
-            );
-
-            StatusOrder = new ObservableCollection<string>();
-            OrderMenuItems = new ObservableCollection<OrderMenuItem> { new OrderMenuItem() };
-            this.DataContext = this;
-        }
-
-        public void HideComponentsOrder()
-        {
-            if (this.Title != "Редактирование заказа") return;
-
-            var tableInput = this.FindControl<Input>("TableInput");
-            var statusComboBox = this.FindControl<global::CafeApp.Controls.Components.ComboBox.ComboBox>("StatusComboBox");
-            var waiterComboBox = this.FindControl<global::CafeApp.Controls.Components.ComboBox.ComboBox>("WaiterComboBox");
-            var addMenuItemButton = this.FindControl<TextBlock>("AddMenuItemButton");
-            var removeMenuItemButton = this.FindControl<TextBlock>("RemoveMenuItemButton");
-            var waiterPanel = this.FindControl<StackPanel>("WaiterPanel");
-            var tablePanel = this.FindControl<StackPanel>("TablePanel");
-            var scrollViewer = this.FindControl<ScrollViewer>("MenuScrollViewer");
-            var scrollViewerFalse = this.FindControl<ScrollViewer>("MenuScrollViewerFalse");
-
-            statusComboBox.ItemsSource = StatusOrder;
-            waiterComboBox.ItemsSource = ListWaiter;
-
-            if (Role != "администратор")
-            {
-                waiterComboBox.IsVisible = false;
-                tableInput.IsVisible = false;
-                addMenuItemButton.IsVisible = false;
-                removeMenuItemButton.IsVisible = false;
-                waiterPanel.IsVisible = true;
-                tablePanel.IsVisible = true;
-                scrollViewerFalse.IsVisible = true;
-                scrollViewer.IsVisible = false;
-            }
-        }
-
-        public void ReadOrder()
-        {
-            var orderInfo = _databaseService.GetOrderById(this.OrderId);
-            var tableInput = this.FindControl<Input>("TableInput");
-            var statusComboBox = this.FindControl<global::CafeApp.Controls.Components.ComboBox.ComboBox>("StatusComboBox");
-            var waiterComboBox = this.FindControl<global::CafeApp.Controls.Components.ComboBox.ComboBox>("WaiterComboBox");
-            var addMenuItemButton = this.FindControl<TextBlock>("AddMenuItemButton");
-            var removeMenuItemButton = this.FindControl<TextBlock>("RemoveMenuItemButton");
-            var waiterPanel = this.FindControl<StackPanel>("WaiterPanel");
-            var paymentPanel = this.FindControl<StackPanel>("PaymentPanel");
-            var statusPanel = this.FindControl<StackPanel>("StatusPanel");
-            var tablePanel = this.FindControl<StackPanel>("TablePanel");
-            var scrollViewer = this.FindControl<ScrollViewer>("MenuScrollViewer");
-            var scrollViewerFalse = this.FindControl<ScrollViewer>("MenuScrollViewerFalse");
-
-            waiterComboBox.IsVisible = false;
-            tableInput.IsVisible = false;
-            addMenuItemButton.IsVisible = false;
-            removeMenuItemButton.IsVisible = false;
-            statusComboBox.IsVisible = false;
-            scrollViewerFalse.IsVisible = true;
-            scrollViewer.IsVisible = false;
-
-            waiterPanel.IsVisible = true;
-            tablePanel.IsVisible = true;
-            statusPanel.IsVisible = true;
-            paymentPanel.IsVisible = true;
-
-            var waiterTextBlock = this.FindControl<TextBlock>("WaiterTextBlock");
-            var tableTextBlock = this.FindControl<TextBlock>("TableTextBlock");
-            var statusTextBlock = this.FindControl<TextBlock>("StatusTextBlock");
-            var paymentTextBlock = this.FindControl<TextBlock>("PaymentTextBlock");
-
-            if (waiterTextBlock != null) waiterTextBlock.Text = orderInfo.WaiterName;
-            if (tableTextBlock != null) tableTextBlock.Text = orderInfo.TableId.ToString();
-            if (statusTextBlock != null) statusTextBlock.Text = orderInfo.Status;
-
-            string paymentType = _databaseService.GetOrderPaymentType(this.OrderId);
-            if (paymentTextBlock != null) paymentTextBlock.Text = paymentType;
-
-            var saveButton = this.FindControl<global::CafeApp.Controls.Components.Button.Button>("SaveButton");
-            if (saveButton != null) saveButton.IsVisible = false;
-        }
-
-        public void LoadOrderData(int orderId, string role)
-        {
-            this.OrderId = orderId;
-            this.Role = role;
-            var orderInfo = _databaseService.GetOrderById(orderId);
-            this.Title = orderInfo.Status == "оплачен" ? "Просмотр заказа" : "Редактирование заказа";
-
-            if (this.Title == "Просмотр заказа")
-                ResetToEditMode();
-            else
-                ResetToEditMode();
-            if (Role == "администратор")
-            {
-                var waiterComboBox = this.FindControl<global::CafeApp.Controls.Components.ComboBox.ComboBox>("WaiterComboBox");
-                waiterComboBox.ItemsSource = ListWaiter;
-                waiterComboBox.SelectedItem = orderInfo.WaiterName;
-                var tableInput = this.FindControl<Input>("TableInput");
-                tableInput.Value = orderInfo.TableId.ToString();
-            }
-            else
-            {
-                var waiterTextBlock = this.FindControl<TextBlock>("WaiterTextBlock");
-                var tableTextBlock = this.FindControl<TextBlock>("TableTextBlock");
-                if (waiterTextBlock != null) waiterTextBlock.Text = orderInfo.WaiterName;
-                if (tableTextBlock != null) tableTextBlock.Text = orderInfo.TableId.ToString();
-            }
-
-            var statusComboBox = this.FindControl<global::CafeApp.Controls.Components.ComboBox.ComboBox>("StatusComboBox");
-            statusComboBox.ItemsSource = StatusOrder;
-            statusComboBox.SelectedItem = orderInfo.Status;
-
-            OrderMenuItems.Clear();
-            foreach (var item in orderInfo.Items)
-            {
-                OrderMenuItems.Add(new OrderMenuItem
-                {
-                    SelectedMenuItem = item.MenuItemName,
-                    Quantity = item.Quantity
-                });
-            }
-            UpdateTotalPrice();
-
-            if (this.Title == "Просмотр заказа")
-                ReadOrder();
-            else
-                HideComponentsOrder();
-        }
-        public void ResetToEditMode()
-        {
-            var tableInput = this.FindControl<Input>("TableInput");
-            var statusComboBox = this.FindControl<global::CafeApp.Controls.Components.ComboBox.ComboBox>("StatusComboBox");
-            var waiterComboBox = this.FindControl<global::CafeApp.Controls.Components.ComboBox.ComboBox>("WaiterComboBox");
-            var addMenuItemButton = this.FindControl<TextBlock>("AddMenuItemButton");
-            var removeMenuItemButton = this.FindControl<TextBlock>("RemoveMenuItemButton");
-            var waiterPanel = this.FindControl<StackPanel>("WaiterPanel");
-            var paymentPanel = this.FindControl<StackPanel>("PaymentPanel");
-            var statusPanel = this.FindControl<StackPanel>("StatusPanel");
-            var tablePanel = this.FindControl<StackPanel>("TablePanel");
-            var scrollViewer = this.FindControl<ScrollViewer>("MenuScrollViewer");
-            var scrollViewerFalse = this.FindControl<ScrollViewer>("MenuScrollViewerFalse");
-
-            if (Role == "администратор")
-            {
-                waiterComboBox.IsVisible = true;
-                tableInput.IsVisible = true;
-                addMenuItemButton.IsVisible = true;
-                removeMenuItemButton.IsVisible = true;
-                waiterPanel.IsVisible = false;
-                tablePanel.IsVisible = false;
-                var dataRepository = new DataRepository(_databaseService);
-                ListWaiter = new ObservableCollection<string>(
-                    dataRepository.Employees
-                        .Where(e => e.Role.ToLower() == "официант" && e.EmploymentStatus)
-                        .Select(w => $"{w.Surname} {w.Name} {w.Patronymic}".Trim())
-                );
-                waiterComboBox.ItemsSource = ListWaiter;
-            }
-            else if (Role == "официант")
-            {
-                // ДЛЯ ОФИЦИАНТА: показываем поля для ввода, скрываем текстовые блоки
-                waiterComboBox.IsVisible = false;  // Скрываем выбор официанта
-                tableInput.IsVisible = true;       // ПОКАЗЫВАЕМ поле ввода столика
-                addMenuItemButton.IsVisible = true; // ПОКАЗЫВАЕМ кнопки добавления/удаления
-                removeMenuItemButton.IsVisible = true;
-                waiterPanel.IsVisible = true;     // Скрываем текстовый блок официанта
-                tablePanel.IsVisible = false;      // Скрываем текстовый блок столика
-        
-                // Автоматически устанавливаем текущего официанта
-                if (CurrentUser.IsAuthenticated)
-                {
-                    var waiterTextBlock = this.FindControl<TextBlock>("WaiterTextBlock");
-                    if (waiterTextBlock != null)
-                    {
-                        waiterTextBlock.Text = CurrentUser.FullName;
-                    }
-            
-                    // Также устанавливаем в комбобокс (если он используется)
-                    waiterComboBox.SelectedItem = CurrentUser.FullName;
-                }
-            }
-            else
-            {
-                // Для других ролей (повар и т.д.)
-                waiterComboBox.IsVisible = false;
-                tableInput.IsVisible = false;
-                addMenuItemButton.IsVisible = false;
-                removeMenuItemButton.IsVisible = false;
-                waiterPanel.IsVisible = true;
-                tablePanel.IsVisible = true;
-            }
-
-            statusComboBox.IsVisible = true;
-            scrollViewerFalse.IsVisible = false;
-            scrollViewer.IsVisible = true;
-            statusPanel.IsVisible = false;
-            paymentPanel.IsVisible = false;
-
-            var saveButton = this.FindControl<global::CafeApp.Controls.Components.Button.Button>("SaveButton");
-            if (saveButton != null) saveButton.IsVisible = true;
-        }
-   
-        public decimal CalculateTotalPrice()
-        {
-            decimal total = 0;
-            foreach (var menuItem in OrderMenuItems)
-            {
-                if (!string.IsNullOrEmpty(menuItem.SelectedMenuItem) && menuItem.Quantity > 0)
-                {
-                    var menuItemPrice = _databaseService.GetMenuItemPriceByName(menuItem.SelectedMenuItem);
-                    if (menuItemPrice > 0)
-                    { total += menuItemPrice * (menuItem.Quantity ?? 0); }
-                }
-            }
-            return total;
-        }
-
         private void UpdateStatusOrder()
         {
             StatusOrder.Clear();
@@ -322,80 +84,312 @@ namespace CafeApp.Controls
             var paymentSelectionComboBox = this.FindControl<global::CafeApp.Controls.Components.ComboBox.ComboBox>("PaymentSelectionComboBox");
 
             if (GetComboBoxValue("StatusComboBox") != "оплачен")
-            {
-                 paymentSelectionComboBox.IsVisible = false;
-            }
-            
+            { paymentSelectionComboBox.IsVisible = false; }
         }
 
-        private void OnAddMenuItemClicked(object sender, PointerPressedEventArgs e)
+        public int OrderId
         {
-            OrderMenuItems.Add(new OrderMenuItem()); 
-            UpdateTotalPrice();
+            get => GetValue(OrderIdProperty);
+            set => SetValue(OrderIdProperty, value);
         }
-        private void UpdateTotalPrice()
-        { TotalPrice = CalculateTotalPrice(); }
-      
-        private void OnRemoveMenuItemClicked(object sender, PointerPressedEventArgs e)
-        { 
-            if (OrderMenuItems.Count > 1) 
-                OrderMenuItems.RemoveAt(OrderMenuItems.Count - 1); 
-            UpdateTotalPrice();
+        public event EventHandler? SaveButtonClicked;
+        public Order()
+        {
+            InitializeComponent();
+    
+            PaymentSelection = new List<string> { "наличная", "безналичная" };
+            _databaseService = new DatabaseService();
+            var dataRepository = new DataRepository(_databaseService);
+    
+            // Инициализируем коллекции ПЕРЕД использованием
+            ListWaiter = new ObservableCollection<string>();
+            StatusOrder = new ObservableCollection<string>();
+            OrderMenuItems = new ObservableCollection<OrderMenuItem> { new OrderMenuItem() };
+            
+            var waiters = dataRepository.Employees
+                .Where(e => e.Role.ToLower() == "официант" && e.EmploymentStatus)
+                .Select(w => $"{w.Surname} {w.Name} {w.Patronymic}".Trim());
+    
+            foreach (var waiter in waiters)
+            {
+                ListWaiter.Add(waiter);
+            }
+
+            AllMenuItems = new ObservableCollection<string>(
+                dataRepository.MenuItems.OrderBy(m => m.Name).Select(m => m.Name)
+            );
+
+            this.DataContext = this;
+            
+            ResetAllComponents();
         }
 
+        public void HideComponentsOrder()
+        {
+            var tableInput = this.FindControl<Input>("TableInput");
+            var statusComboBox = this.FindControl<global::CafeApp.Controls.Components.ComboBox.ComboBox>("StatusComboBox");
+            var waiterComboBox = this.FindControl<global::CafeApp.Controls.Components.ComboBox.ComboBox>("WaiterComboBox");
+            var addMenuItemButton = this.FindControl<TextBlock>("AddMenuItemButton");
+            var removeMenuItemButton = this.FindControl<TextBlock>("RemoveMenuItemButton");
+            var waiterPanel = this.FindControl<StackPanel>("WaiterPanel");
+            var tablePanel = this.FindControl<StackPanel>("TablePanel");
+            var scrollViewer = this.FindControl<ScrollViewer>("MenuScrollViewer");
+            var scrollViewerFalse = this.FindControl<ScrollViewer>("MenuScrollViewerFalse");
+            var customerCountPanel = this.FindControl<StackPanel>("CustomerCountPanel");
+            var customerCountInput = this.FindControl<Input>("CustomerCountInput");
+            var statusPanel = this.FindControl<StackPanel>("StatusPanel");
+            var paymentPanel = this.FindControl<StackPanel>("PaymentPanel");
+            var paymentSelectionComboBox = this.FindControl<global::CafeApp.Controls.Components.ComboBox.ComboBox>("PaymentSelectionComboBox");
+            
+            ResetAllComponents();
+
+            if (Title == "Редактирование заказа")
+            {
+                if (Role == "администратор")
+                {
+                    waiterComboBox.IsVisible = true;
+                    tableInput.IsVisible = true;
+                    customerCountInput.IsVisible = true;
+                    statusComboBox.IsVisible = true;
+                    addMenuItemButton.IsVisible = true;
+                    removeMenuItemButton.IsVisible = true;
+                    scrollViewer.IsVisible = true;
+                    paymentSelectionComboBox.IsVisible = GetComboBoxValue("StatusComboBox") == "оплачен";
+                }
+                else if (Role == "официант" || Role == "повар")
+                {
+                    statusComboBox.IsVisible = true;
+                    scrollViewerFalse.IsVisible = true;
+                    waiterPanel.IsVisible = true;
+                    tablePanel.IsVisible = true;
+                    customerCountPanel.IsVisible = true;
+                    
+                }
+            }
+            else if (Title == "Новый заказ")
+            {
+                if (Role == "администратор")
+                {
+                    waiterComboBox.IsVisible = true;
+                    tableInput.IsVisible = true;
+                    customerCountInput.IsVisible = true;
+                    statusComboBox.IsVisible = true;
+                    addMenuItemButton.IsVisible = true;
+                    removeMenuItemButton.IsVisible = true;
+                    scrollViewer.IsVisible = true;
+                }
+                else if (Role == "официант")
+                {
+                    // Официант: все поля ввода + скроллвью
+                    tableInput.IsVisible = true;
+                    customerCountInput.IsVisible = true;
+                    statusComboBox.IsVisible = true;
+                    addMenuItemButton.IsVisible = true;
+                    removeMenuItemButton.IsVisible = true;
+                    scrollViewer.IsVisible = true;
+                    waiterPanel.IsVisible = true;
+                    
+                    // Автоматически устанавливаем текущего официанта
+                    if (CurrentUser.IsAuthenticated)
+                    {
+                        var waiterTextBlock = this.FindControl<TextBlock>("WaiterTextBlock");
+                        waiterTextBlock.Text = CurrentUser.FullName;
+                    }
+                }
+            }
+            else if (Title == "Просмотр заказа")
+            {
+                scrollViewerFalse.IsVisible = true;
+                waiterPanel.IsVisible = true;
+                tablePanel.IsVisible = true;
+                customerCountPanel.IsVisible = true;
+                statusPanel.IsVisible = true;
+                paymentPanel.IsVisible = true;
+            }
+        }
+        
+        public void LoadOrderData(int orderId, string role)
+        {
+            this.OrderId = orderId;
+            this.Role = role;
+            var orderInfo = _databaseService.GetOrderById(orderId);
+            this.Title = orderInfo.Status == "оплачен" ? "Просмотр заказа" : "Редактирование заказа";
+
+            if (Role == "администратор")
+            {
+                var waiterComboBox = this.FindControl<global::CafeApp.Controls.Components.ComboBox.ComboBox>("WaiterComboBox");
+                waiterComboBox.ItemsSource = ListWaiter;
+                waiterComboBox.SelectedItem = orderInfo.WaiterName;
+                
+                var tableInput = this.FindControl<Input>("TableInput");
+                tableInput.Value = orderInfo.TableId.ToString();
+                
+                var customerCountInput = this.FindControl<Input>("CustomerCountInput");
+                customerCountInput.Value = orderInfo.CustomerCount.ToString();
+            }
+            else
+            {
+                var waiterTextBlock = this.FindControl<TextBlock>("WaiterTextBlock");
+                var tableTextBlock = this.FindControl<TextBlock>("TableTextBlock");
+                var customerCountTextBlock = this.FindControl<TextBlock>("CustomerCountTextBlock");
+                
+                if (waiterTextBlock != null) waiterTextBlock.Text = orderInfo.WaiterName;
+                if (tableTextBlock != null) tableTextBlock.Text = orderInfo.TableId.ToString();
+                
+                if (customerCountTextBlock != null) customerCountTextBlock.Text = orderInfo.CustomerCount.ToString();
+            }
+
+            if (Title == "Просмотр заказа")
+            {
+                
+                var statusTextBlock = this.FindControl<TextBlock>("StatusTextBlock");
+                if (statusTextBlock != null) statusTextBlock.Text = orderInfo.Status;
+                
+                var paymentTextBlock = this.FindControl<TextBlock>("PaymentTextBlock");
+                string paymentType = _databaseService.GetOrderPaymentType(this.OrderId);
+                if (paymentTextBlock != null) paymentTextBlock.Text = paymentType;
+
+            }
+
+            var statusComboBox = this.FindControl<global::CafeApp.Controls.Components.ComboBox.ComboBox>("StatusComboBox");
+            statusComboBox.ItemsSource = StatusOrder;
+            statusComboBox.SelectedItem = orderInfo.Status;
+            
+            OrderMenuItems.Clear();
+            foreach (var item in orderInfo.Items)
+            {
+                OrderMenuItems.Add(new OrderMenuItem
+                {
+                    SelectedMenuItem = item.MenuItemName,
+                    Quantity = item.Quantity
+                });
+            }
+            UpdateTotalPrice();
+            HideComponentsOrder();
+        }
+
+        public void ResetToEditMode()
+        {
+            HideComponentsOrder();
+        }
+
+        private void ResetAllComponents()
+        {
+            var tableInput = this.FindControl<Input>("TableInput");
+            var statusComboBox = this.FindControl<global::CafeApp.Controls.Components.ComboBox.ComboBox>("StatusComboBox");
+            var waiterComboBox = this.FindControl<global::CafeApp.Controls.Components.ComboBox.ComboBox>("WaiterComboBox");
+            var addMenuItemButton = this.FindControl<TextBlock>("AddMenuItemButton");
+            var removeMenuItemButton = this.FindControl<TextBlock>("RemoveMenuItemButton");
+            var waiterPanel = this.FindControl<StackPanel>("WaiterPanel");
+            var tablePanel = this.FindControl<StackPanel>("TablePanel");
+            var scrollViewer = this.FindControl<ScrollViewer>("MenuScrollViewer");
+            var scrollViewerFalse = this.FindControl<ScrollViewer>("MenuScrollViewerFalse");
+            var customerCountPanel = this.FindControl<StackPanel>("CustomerCountPanel");
+            var customerCountInput = this.FindControl<Input>("CustomerCountInput");
+            var statusPanel = this.FindControl<StackPanel>("StatusPanel");
+            var paymentPanel = this.FindControl<StackPanel>("PaymentPanel");
+            var paymentSelectionComboBox = this.FindControl<global::CafeApp.Controls.Components.ComboBox.ComboBox>("PaymentSelectionComboBox");
+
+            tableInput.IsVisible = false;
+            statusComboBox.IsVisible = false;
+            waiterComboBox.IsVisible = false;
+            addMenuItemButton.IsVisible = false;
+            removeMenuItemButton.IsVisible = false;
+            waiterPanel.IsVisible = false;
+            tablePanel.IsVisible = false;
+            scrollViewer.IsVisible = false;
+            scrollViewerFalse.IsVisible = false;
+            customerCountPanel.IsVisible = false;
+            customerCountInput.IsVisible = false;
+            statusPanel.IsVisible = false;
+            paymentPanel.IsVisible = false;
+            paymentSelectionComboBox.IsVisible = false;
+        }
+   
+        public decimal CalculateTotalPrice()
+        {
+            decimal total = 0;
+            foreach (var menuItem in OrderMenuItems)
+            {
+                if (!string.IsNullOrEmpty(menuItem.SelectedMenuItem) && menuItem.Quantity > 0)
+                {
+                    var menuItemPrice = _databaseService.GetMenuItemPriceByName(menuItem.SelectedMenuItem);
+                    if (menuItemPrice > 0)
+                    { total += menuItemPrice * (menuItem.Quantity ?? 0); }
+                }
+            }
+            return total;
+        }
+
+      
        private void SaveButton_Click(object sender, RoutedEventArgs e)
         {
             try
             {
                 string status = GetComboBoxValue("StatusComboBox");
+                if (Title == "Просмотр заказа" && Title == "официант")
+                {
+                    GenerateReceipt();
+                    return;
+                }
+
                 string waiterName = "";
                 int tableId = 0;
+                int countCustomer = 0;
+                
                 var paymentSelectionComboBox = this.FindControl<global::CafeApp.Controls.Components.ComboBox.ComboBox>("PaymentSelectionComboBox");
-
-                if (GetComboBoxValue("StatusComboBox") != "оплачен")
-                { paymentSelectionComboBox.IsVisible = false; }
-                else
-                { paymentSelectionComboBox.IsVisible = true; }
+                var tableInput = this.FindControl<Input>("TableInput");
+                var tableTextBlock = this.FindControl<TextBlock>("TableTextBlock");
+                var customerCountInput = this.FindControl<Input>("CustomerCountInput");
+                var customerCountTextBlock = this.FindControl<TextBlock>("CustomerCountTextBlock");
+                var waiterTextBlock = this.FindControl<TextBlock>("WaiterTextBlock");
+                
+                // Управление видимостью комбобокса оплаты
+                paymentSelectionComboBox.IsVisible = GetComboBoxValue("StatusComboBox") == "оплачен";
+                
                 if (Role == "администратор")
                 {
                     waiterName = GetComboBoxValue("WaiterComboBox");
-                    var tableInput = this.FindControl<Input>("TableInput");
                     string tableNumber = tableInput.Value?.ToString() ?? tableInput.Text ?? "";
+                    string customerCount = customerCountInput.Value?.ToString() ?? customerCountInput.Text ?? "";
                     
-                    if (string.IsNullOrEmpty(waiterName) || string.IsNullOrEmpty(tableNumber))
-                    { return; }
-                    
+                    if (string.IsNullOrEmpty(waiterName) || string.IsNullOrEmpty(tableNumber) || string.IsNullOrEmpty(customerCount))
+                        return;
                     if (!int.TryParse(tableNumber, out tableId) || tableId <= 0)
-                    { return; }
+                        return;
+                    if (!int.TryParse(customerCount, out countCustomer) || countCustomer <= 0)
+                        return;
                 }
                 else
                 {
                     string tableNumber = "";
-                    var waiterTextBlock = this.FindControl<TextBlock>("WaiterTextBlock");
-                    var tableTextBlock = this.FindControl<TextBlock>("TableTextBlock");
-                    var tableInput = this.FindControl<Input>("TableInput");
+                    string customerCount = "";
                     if (Title == "Новый заказ")
                     {
                         waiterName = waiterTextBlock?.Text ?? "";
                         tableNumber = tableInput.Value?.ToString() ?? tableInput.Text ?? "";
+                        customerCount = customerCountInput.Value?.ToString() ?? customerCountInput.Text ?? "";
                     }
                     else
                     {
                         waiterName = waiterTextBlock?.Text ?? "";
                         tableNumber = tableTextBlock?.Text ?? "";
+                        customerCount = customerCountTextBlock?.Text ?? "";
                     }
-                    File.AppendAllText(@"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log", 
-                        $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Saving order: Waiter={waiterName}, tb={tableNumber} S\n");
                     
-                    if (string.IsNullOrEmpty(waiterName) || string.IsNullOrEmpty(tableNumber))
-                    { return; }
+                    if (string.IsNullOrEmpty(waiterName) || string.IsNullOrEmpty(tableNumber) || string.IsNullOrEmpty(customerCount))
+                        return;
                     
                     if (!int.TryParse(tableNumber, out tableId) || tableId <= 0)
-                    { return; }
+                        return;
+                    if (!int.TryParse(customerCount, out countCustomer) || countCustomer <= 0)
+                        return;
                 }
+                
                 var orderItems = CollectOrderItemsFromUI();
                 if (orderItems.Count == 0)
-                { return; }
+                    return;
+                    
                 int waiterId = _databaseService.GetWaiterIdByName(waiterName);
                 if (waiterId == -1)
                 {
@@ -403,28 +397,28 @@ namespace CafeApp.Controls
                         $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - VALIDATION ERROR: Waiter not found: {waiterName}\n");
                     return;
                 }
-                int shiftId = 1;
-                int customerCount = 1;
-
-                bool success;
+                
+                int shiftId = _databaseService.GetCurrentOrLatestShiftId();
+                bool success = false;
                 int currentOrderId = this.OrderId;
 
                 File.AppendAllText(@"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log", 
-                    $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Saving order: Title={Title}, OrderId={OrderId}, Table={tableId}, Waiter={waiterId}, Status={status}, Items={orderItems.Count}\n");
+                    $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Saving order:" +
+                    $" Title={Title}, OrderId={OrderId}, Table={tableId}, Waiter={waiterId}, Status={status}," +
+                    $" Items={orderItems.Count}\n");
 
                 if (Title == "Редактирование заказа" && OrderId > 0)
                 { 
                     if (status == "оплачен")
                     { 
                         if (string.IsNullOrEmpty(GetComboBoxValue("PaymentSelectionComboBox")))
-                        { return; }
+                            return;
                     }
-                    success = _databaseService.UpdateOrder(OrderId, tableId, waiterId, status, orderItems);
-                    
+                    success = _databaseService.UpdateOrder(OrderId, tableId, waiterId, status, orderItems, countCustomer);
                 }
-                else
+                else if (Title == "Новый заказ") 
                 {
-                    int newOrderId = _databaseService.CreateOrder(tableId, waiterId, shiftId, customerCount, status, orderItems);
+                    int newOrderId = _databaseService.CreateOrder(tableId, waiterId, shiftId, countCustomer, status, orderItems);
                     success = newOrderId > 0;
                     currentOrderId = newOrderId; 
                 }
@@ -432,9 +426,9 @@ namespace CafeApp.Controls
                 if (success)
                 { 
                     if (currentOrderId > 0 && this.OrderId <= 0)
-                    { this.OrderId = currentOrderId; }
+                        this.OrderId = currentOrderId;
 
-                    if (status == "оплачен")
+                    if (status == "оплачен" )
                     { 
                         string paymentType = GetComboBoxValue("PaymentSelectionComboBox");
                         if (!string.IsNullOrEmpty(paymentType) && currentOrderId > 0)
@@ -454,14 +448,42 @@ namespace CafeApp.Controls
                     $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - EXCEPTION in SaveButton_Click: {ex.Message}\n{ex.StackTrace}\n");
             }
         }
+  
+        private void GenerateReceipt()
+        {
+            var paymentTextBlock = this.FindControl<TextBlock>("PaymentTextBlock");
+            string paymentType = "";
+            
+            if (Title == "Просмотр заказа")
+            {
+                paymentType = paymentTextBlock?.Text ?? "";
+            }
+            else
+            {
+                paymentType = GetComboBoxValue("PaymentSelectionComboBox");
+            }
+            
+
+            if (!string.IsNullOrEmpty(paymentType))
+            {
+                bool paymentUpdated = _databaseService.UpdatePaymentOrder(OrderId, paymentType);
+                if (paymentUpdated) {
+                    int correctTableId = GetCurrentTableId();
+                    var receiptData = _databaseService.GetReceiptOrderData(OrderId);
+                    receiptData.TableId = correctTableId;
+                    string filePath = _excelService.GenerateReceiptOrder(receiptData);
+                    
+                    if (!string.IsNullOrEmpty(filePath))
+                    { OpenFileInExplorer(filePath); }
+                }
+            }
+        }
         private void OpenFileInExplorer(string filePath)
         {
             try
             {
                 if (File.Exists(filePath))
-                {
-                    System.Diagnostics.Process.Start("explorer.exe", $"/select, \"{filePath}\"");
-                }
+                { System.Diagnostics.Process.Start("explorer.exe", $"/select, \"{filePath}\""); }
                 else
                 {
                     string directory = Path.GetDirectoryName(filePath);
@@ -475,6 +497,7 @@ namespace CafeApp.Controls
                 File.AppendAllText(logPath, $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - ERROR opening explorer: {ex.Message}\n");
             }
         }
+
         private int GetCurrentTableId()
         {
             try
@@ -485,9 +508,7 @@ namespace CafeApp.Controls
                     if (tableInput != null && !string.IsNullOrEmpty(tableInput.Text))
                     {
                         if (int.TryParse(tableInput.Text, out int tableId))
-                        {
-                            return tableId;
-                        }
+                        { return tableId; }
                     }
                 }
                 else
@@ -501,8 +522,6 @@ namespace CafeApp.Controls
                         }
                     }
                 }
-        
-                // Если не удалось получить из UI, пробуем из базы
                 var orderInfo = _databaseService.GetOrderById(OrderId);
                 return orderInfo?.TableId ?? 0;
             }
@@ -515,29 +534,22 @@ namespace CafeApp.Controls
         }
 
 
-        private void GenerateReceipt()
+        private void OnAddMenuItemClicked(object sender, PointerPressedEventArgs e)
         {
-            string paymentType = GetComboBoxValue("PaymentSelectionComboBox");
-            
-            if (!string.IsNullOrEmpty(paymentType))
-            {
-                bool paymentUpdated = _databaseService.UpdatePaymentOrder(OrderId, paymentType);
-                if (paymentUpdated)
-                {
-                    int correctTableId = GetCurrentTableId();
-                    
-                    var receiptData = _databaseService.GetReceiptOrderData(OrderId);
-                    receiptData.TableId = correctTableId;
-                    string logPath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
-                    File.AppendAllText(logPath, $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - GenerateReceipt: OrderId={OrderId}, TableId={receiptData.TableId}, WaiterName={receiptData.WaiterName}\n");
-                    string filePath = _excelService.GenerateReceiptOrder(receiptData);
-                    
-                    if (!string.IsNullOrEmpty(filePath))
-                    { OpenFileInExplorer(filePath); }
-                }
-            }
+            OrderMenuItems.Add(new OrderMenuItem()); 
+            UpdateTotalPrice();
+        }
+        private void UpdateTotalPrice()
+        { TotalPrice = CalculateTotalPrice(); }
+      
+        private void OnRemoveMenuItemClicked(object sender, PointerPressedEventArgs e)
+        { 
+            if (OrderMenuItems.Count > 1) 
+                OrderMenuItems.RemoveAt(OrderMenuItems.Count - 1); 
+            UpdateTotalPrice();
         }
 
+        
         private string GetComboBoxValue(string comboBoxName)
         {
             var comboBox = this.FindControl<global::CafeApp.Controls.Components.ComboBox.ComboBox>(comboBoxName);

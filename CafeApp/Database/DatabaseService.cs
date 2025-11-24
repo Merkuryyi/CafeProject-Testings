@@ -46,9 +46,7 @@ namespace CafeApp.Database
                                 return (role, userId, fullName);
                             }
                             else
-                            {
-                                return (null, null, null);
-                            }
+                            { return (null, null, null); }
                         }
                     }
                 }
@@ -358,7 +356,7 @@ namespace CafeApp.Database
                 {
                     try
                     {
-                        // 1. Вставляем основной заказ
+                      
                         string orderQuery = @"
                             INSERT INTO ""order"" 
                             (table_id, waiter_id, shift_id, customer_count, status, created_at) 
@@ -474,31 +472,6 @@ namespace CafeApp.Database
                 return -1;
             }
         }
-        public decimal GetMenuItemPrice(int menuItemId)
-        {
-            try
-            {
-                using (var conn = GetConnection())
-                {
-                    string query = "SELECT price FROM menu_item WHERE menu_item_id = @id";
-                    
-                    using (var command = new NpgsqlCommand(query, conn))
-                    {
-                        command.Parameters.AddWithValue("@id", menuItemId);
-                        
-                        var result = command.ExecuteScalar();
-                        return result != null ? Convert.ToDecimal(result) : 0;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                string filePath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
-                string errorMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB ERROR (GetMenuItemPrice): {ex.Message}\n";
-                File.AppendAllText(filePath, errorMessage);
-                return 0;
-            }
-        }
 
         
         public void Dispose()
@@ -519,6 +492,7 @@ namespace CafeApp.Database
                             o.order_id,
                             o.table_id,
                             o.waiter_id,
+                            o.customer_count,  -- Добавлен столбец customer_count
                             o.status,
                             o.created_at,
                             u.surname || ' ' || u.name || COALESCE(' ' || u.patronymic, '') as waiter_name
@@ -537,12 +511,14 @@ namespace CafeApp.Database
                                 orderInfo.OrderId = reader.GetInt32(0);
                                 orderInfo.TableId = reader.GetInt32(1);
                                 orderInfo.WaiterId = reader.GetInt32(2);
-                                orderInfo.Status = reader.GetString(3);
-                                orderInfo.CreatedAt = reader.GetDateTime(4);
-                                orderInfo.WaiterName = reader.GetString(5);
+                                orderInfo.CustomerCount = reader.GetInt32(3);  
+                                orderInfo.Status = reader.GetString(4);
+                                orderInfo.CreatedAt = reader.GetDateTime(5);
+                                orderInfo.WaiterName = reader.GetString(6);
                                 
                                 File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", 
-                                    $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Order found: ID={orderInfo.OrderId}, Status={orderInfo.Status}, Waiter={orderInfo.WaiterName}\n");
+                                    $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Order found: ID={orderInfo.OrderId}, Status={orderInfo.Status}, " +
+                                    $"Waiter={orderInfo.WaiterName}, CustomerCount={orderInfo.CustomerCount}\n");
                             }
                             else
                             {
@@ -596,7 +572,7 @@ namespace CafeApp.Database
             
             return orderInfo;
         }
-        public bool UpdateOrder(int orderId, int tableId, int waiterId, string status, List<OrderItem> orderItems)
+        public bool UpdateOrder(int orderId, int tableId, int waiterId, string status, List<OrderItem> orderItems, int countCustomer)
         {
             try
             {
@@ -606,13 +582,13 @@ namespace CafeApp.Database
                     {
                         try
                         {
-                            // 1. Обновляем основной заказ
                              string orderQuery = @"
                                 UPDATE ""order"" 
                                 SET table_id = @tableId, 
                                     waiter_id = @waiterId, 
                                     status = @status,
-                                    created_at = @createdAt  
+                                    created_at = @createdAt,
+                                    customer_count = @countCustomer 
                                 WHERE order_id = @orderId";
                             
                             using (var orderCommand = new NpgsqlCommand(orderQuery, conn, transaction))
@@ -622,6 +598,7 @@ namespace CafeApp.Database
                                 orderCommand.Parameters.AddWithValue("@waiterId", waiterId);
                                 orderCommand.Parameters.AddWithValue("@status", status);
                                 orderCommand.Parameters.AddWithValue("@createdAt", DateTime.Now);
+                                orderCommand.Parameters.AddWithValue("@countCustomer", countCustomer);
                                 
                                 int rowsAffected = orderCommand.ExecuteNonQuery();
                                 
@@ -635,7 +612,6 @@ namespace CafeApp.Database
                                 }
                             }
 
-                            // 2. Удаляем старые позиции заказа
                             string deleteItemsQuery = "DELETE FROM order_item WHERE order_id = @orderId";
                             using (var deleteCommand = new NpgsqlCommand(deleteItemsQuery, conn, transaction))
                             {
@@ -646,7 +622,6 @@ namespace CafeApp.Database
                                     $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Deleted old order items: {deletedRows} rows\n");
                             }
 
-                            // 3. Добавляем новые позиции заказа
                             string insertItemQuery = @"
                                 INSERT INTO order_item 
                                 (order_id, menu_item_id, quantity) 
@@ -719,6 +694,66 @@ namespace CafeApp.Database
                 string errorMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB ERROR (GetOrderPaymentType): {ex.Message}\n";
                 File.AppendAllText(filePath, errorMessage);
                 return "не указан";
+            }
+        }
+        public int GetCurrentOrLatestShiftId()
+        {
+            try
+            {
+                using (var conn = GetConnection())
+                {
+                    // Сначала пытаемся найти текущую активную смену
+                    string currentShiftQuery = @"
+                        SELECT shift_id 
+                        FROM shift 
+                        WHERE shift_date = CURRENT_DATE 
+                        AND start_time <= CURRENT_TIME 
+                        AND end_time >= CURRENT_TIME 
+                        LIMIT 1";
+                    
+                    using (var command = new NpgsqlCommand(currentShiftQuery, conn))
+                    {
+                        var result = command.ExecuteScalar();
+                        if (result != null)
+                        {
+                            int currentShiftId = Convert.ToInt32(result);
+                            File.AppendAllText(@"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log", 
+                                $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Found current shift: ID={currentShiftId}\n");
+                            return currentShiftId;
+                        }
+                    }
+
+                    // Если текущая смена не найдена, берем самую недавнюю смену
+                    string latestShiftQuery = @"
+                        SELECT shift_id 
+                        FROM shift 
+                        WHERE shift_date <= CURRENT_DATE
+                        ORDER BY shift_date DESC, start_time DESC 
+                        LIMIT 1";
+                    
+                    using (var command = new NpgsqlCommand(latestShiftQuery, conn))
+                    {
+                        var result = command.ExecuteScalar();
+                        if (result != null)
+                        {
+                            int latestShiftId = Convert.ToInt32(result);
+                            File.AppendAllText(@"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log", 
+                                $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Current shift not found, using latest shift: ID={latestShiftId}\n");
+                            return latestShiftId;
+                        }
+                    }
+
+                    // Если вообще нет смен в базе
+                    File.AppendAllText(@"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log", 
+                        $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - WARNING: No shifts found in database\n");
+                    return -1;
+                }
+            }
+            catch (Exception ex)
+            {
+                File.AppendAllText(@"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log", 
+                    $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - ERROR in GetCurrentOrLatestShiftId: {ex.Message}\n{ex.StackTrace}\n");
+                return -1;
             }
         }
         public ReceiptOrder GetReceiptOrderData(int orderId)
@@ -889,6 +924,7 @@ namespace CafeApp.Database
         public int WaiterId { get; set; }
         public string WaiterName { get; set; } = "";
         public string Status { get; set; } = "";
+        public int CustomerCount { get; set; } 
         public DateTime CreatedAt { get; set; }
         public List<OrderItemInfo> Items { get; set; } = new List<OrderItemInfo>();
     }
