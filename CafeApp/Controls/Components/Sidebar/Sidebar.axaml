@@ -9,18 +9,6 @@
                    Foreground="#194E84"
                    Margin="0,0,0,40"/>
         
-        <Border x:Name="RegistrationBorder" 
-                Background="Transparent"
-                CornerRadius="10"
-                Margin="0,0,0,20">
-            <TextBlock x:Name="RegistrationText" 
-                       Text="Регистрация"
-                       FontSize="24"
-                       Foreground="#194E84"
-                       Padding="20,10"
-                       HorizontalAlignment="Stretch"
-                       PointerPressed="TextBlock_PointerPressed"/>
-        </Border>
 		
         <Border x:Name="EmployeesBorder" 
                 Background="Transparent"
@@ -73,17 +61,6 @@
                        HorizontalAlignment="Stretch"
                        PointerPressed="TextBlock_PointerPressed"/>
         </Border>
-        
-        <Border x:Name="OrderBorder" 
-                Background="Transparent"
-                CornerRadius="10">
-            <TextBlock x:Name="OrderText"
-                       Text="Ордер"
-                       FontSize="24"
-                       Foreground="#194E84"
-                       Padding="20,10"
-                       HorizontalAlignment="Stretch"
-                       PointerPressed="TextBlock_PointerPressed"/>
-        </Border>
+     
     </StackPanel>
 </UserControl>

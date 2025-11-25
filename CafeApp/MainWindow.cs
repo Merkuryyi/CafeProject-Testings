@@ -267,7 +267,7 @@ namespace CafeApp
                     orderControl.Title = "Новый заказ";
                     orderControl.Role = currentRole;
                     orderControl.OrderId = -1;
-                    orderControl.ResetToEditMode();
+                    orderControl.HideComponentsOrder();
                     ShowControl(orderControl);
                 }
             }

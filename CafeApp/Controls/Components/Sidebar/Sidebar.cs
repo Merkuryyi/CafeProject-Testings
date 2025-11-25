@@ -46,7 +46,7 @@ namespace CafeApp.Controls.Components.Sidebar
             
             if (roleLower == "администратор")
             {
-                SelectItem("RegistrationText");
+                SelectItem("EmployeesText");
             }
             else if (roleLower == "повар")
             {
@@ -66,25 +66,20 @@ namespace CafeApp.Controls.Components.Sidebar
 
         private void UpdateVisibility()
         {
-            var registrationBorder = this.FindControl<Border>("RegistrationBorder");
             var employeesBorder = this.FindControl<Border>("EmployeesBorder");
             var ordersBorder = this.FindControl<Border>("OrdersBorder");
             var shiftsBorder = this.FindControl<Border>("ShiftsBorder");
             var reportsBorder = this.FindControl<Border>("ReportsBorder");
-            var orderBorder = this.FindControl<Border>("OrderBorder");
-
-            if (registrationBorder == null) return;
+            
 
             bool isAdmin = Role == "Администратор" || Role == "администратор";
             bool isCook = Role == "Повар" || Role == "повар";
             bool isWaiter = Role == "Официант" || Role == "официант";
-
-            registrationBorder.IsVisible = isAdmin;
+            
             employeesBorder.IsVisible = isAdmin;
             ordersBorder.IsVisible = isWaiter || isAdmin || isCook;
             reportsBorder.IsVisible = isWaiter || isAdmin;
             shiftsBorder.IsVisible = isAdmin;
-            orderBorder.IsVisible = isWaiter || isCook;
         }
 
         private void TextBlock_PointerPressed(object sender, PointerPressedEventArgs e)

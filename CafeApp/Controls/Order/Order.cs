@@ -100,8 +100,6 @@ namespace CafeApp.Controls
             PaymentSelection = new List<string> { "наличная", "безналичная" };
             _databaseService = new DatabaseService();
             var dataRepository = new DataRepository(_databaseService);
-    
-            // Инициализируем коллекции ПЕРЕД использованием
             ListWaiter = new ObservableCollection<string>();
             StatusOrder = new ObservableCollection<string>();
             OrderMenuItems = new ObservableCollection<OrderMenuItem> { new OrderMenuItem() };
@@ -180,7 +178,6 @@ namespace CafeApp.Controls
                 }
                 else if (Role == "официант")
                 {
-                    // Официант: все поля ввода + скроллвью
                     tableInput.IsVisible = true;
                     customerCountInput.IsVisible = true;
                     statusComboBox.IsVisible = true;
@@ -188,8 +185,6 @@ namespace CafeApp.Controls
                     removeMenuItemButton.IsVisible = true;
                     scrollViewer.IsVisible = true;
                     waiterPanel.IsVisible = true;
-                    
-                    // Автоматически устанавливаем текущего официанта
                     if (CurrentUser.IsAuthenticated)
                     {
                         var waiterTextBlock = this.FindControl<TextBlock>("WaiterTextBlock");
@@ -268,12 +263,7 @@ namespace CafeApp.Controls
             HideComponentsOrder();
         }
 
-        public void ResetToEditMode()
-        {
-            HideComponentsOrder();
-        }
-
-        private void ResetAllComponents()
+       private void ResetAllComponents()
         {
             var tableInput = this.FindControl<Input>("TableInput");
             var statusComboBox = this.FindControl<global::CafeApp.Controls.Components.ComboBox.ComboBox>("StatusComboBox");

@@ -17,11 +17,20 @@ namespace CafeApp.Controls
         private string _photoFilePath = "";
         private string _contractFilePath = "";
         private DatabaseService _databaseService;
-
         public List<string> Roles { get; set; }
         public List<string> Status { get; set; }
+
         public static readonly StyledProperty<string> TitleProperty =
             AvaloniaProperty.Register<FormEmployee, string>(nameof(Title), "Регистрация сотрудника");
+        public static readonly StyledProperty<int> EmployeeIdProperty =
+            AvaloniaProperty.Register<Order, int>(nameof(EmployeeId), -1);
+        
+        
+        public int EmployeeId
+        {
+            get => GetValue(EmployeeIdProperty);
+            set => SetValue(EmployeeIdProperty, value);
+        }
         public string Title
         {
             get => GetValue(TitleProperty);
@@ -47,12 +56,68 @@ namespace CafeApp.Controls
         }
 
         private void InitializeComponent()
-        {
-            AvaloniaXamlLoader.Load(this);
-        }
+        { AvaloniaXamlLoader.Load(this); }
 
         public ObservableCollection<string> Employees { get; } = new ObservableCollection<string>();
         public event EventHandler? SaveButtonClicked;
+
+        public void ResetComponents()
+        {
+            var loginInput = this.FindControl<Input>("UsernameInput");
+            var passwordInput = this.FindControl<Input>("PasswordInput");
+            var roleComboBox = this.FindControl<global::CafeApp.Controls.Components.ComboBox.ComboBox>("RoleComboBox");
+            var addPhotoEmployee = this.FindControl<TextBlock>("AddPhotoEmployee");
+            
+            var loginPanel = this.FindControl<StackPanel>("LoginPanel");
+            var passwordPanel = this.FindControl<StackPanel>("PasswordPanel");
+            var rolePanel = this.FindControl<StackPanel>("WaiterPanel");
+            
+            
+            var nameInput = this.FindControl<Input>("NameInput");
+            var surnameInput = this.FindControl<Input>("SurnameInput");
+            var patronymicInput = this.FindControl<Input>("PatronymicInput");
+            var addEmploymentContract = this.FindControl<TextBlock>("AddEmploymentContract");
+            
+            var namePanel = this.FindControl<Input>("NamePanel");
+            var surnamePanel = this.FindControl<Input>("SurnamePanel");
+            var patronymicPanel = this.FindControl<Input>("PatronymicPanel");
+            
+            
+            var statusComboBox = this.FindControl<global::CafeApp.Controls.Components.ComboBox.ComboBox>("StatusComboBox");
+            if (Title == "Редактирование сотрудника")
+            {
+               
+            }
+            else
+            {
+               
+            }
+        }
+
+        public void LoadEmployee(int employeeId)
+        {
+            EmployeeId = employeeId;
+           // var employeeInfo = _databaseService.GetOrderById(employeeId);
+           var loginTextBlock = this.FindControl<TextBlock>("LoginTextBlock");
+           var passwordTextBlock = this.FindControl<TextBlock>("PasswordTextBlock");
+           var roleTextBlock = this.FindControl<TextBlock>("RoleTextBlock");
+           
+            
+           var nameTextBlock = this.FindControl<TextBlock>("NameTextBlock");
+           var surnameTextBlock = this.FindControl<TextBlock>("SurnameTextBlock");
+           var patronymicTextBlock = this.FindControl<TextBlock>("PatronymicTextBlock");
+           
+           var statusComboBox = this.FindControl<global::CafeApp.Controls.Components.ComboBox.ComboBox>("StatusComboBox");
+           if (Title == "Редактирование сотрудника")
+           {
+               
+           }
+           else
+           {
+               
+           }
+
+        }
 
         private void SaveButton_Click(object sender, RoutedEventArgs e)
         {
@@ -85,7 +150,6 @@ namespace CafeApp.Controls
             var roleInnerComboBox = roleComboBox?.FindControl<Avalonia.Controls.ComboBox>("MainComboBox");
             string selectedRole = roleInnerComboBox?.SelectedItem?.ToString() ?? "";
 
-            // Проверка что все поля заполнены
             if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password) || 
                 string.IsNullOrEmpty(name) || string.IsNullOrEmpty(surname) ||
                 string.IsNullOrEmpty(selectedRole) || string.IsNullOrEmpty(_photoFilePath) ||
@@ -101,8 +165,6 @@ namespace CafeApp.Controls
                 string projectDirectory = Directory.GetCurrentDirectory();
                 string photoLink = "";
                 string contractScanLink = "";
-                
-                // Копируем фото с использованием FileStream
                 if (!string.IsNullOrEmpty(_photoFilePath))
                 {
                     string photoTargetDir = Path.Combine(projectDirectory, "images/EmployeePhoto");
@@ -175,8 +237,6 @@ namespace CafeApp.Controls
             var patronymicInput = this.FindControl<Input>("PatronymicInput");
             var roleComboBox = this.FindControl<global::CafeApp.Controls.Components.ComboBox.ComboBox>("RoleComboBox");
             var roleInnerComboBox = roleComboBox?.FindControl<Avalonia.Controls.ComboBox>("MainComboBox");
-
-            // Очищаем значения полей ввода (Value), а не заголовки (Text)
             usernameInput.Value = "";
             passwordInput.Value = "";
             nameInput.Value = "";
