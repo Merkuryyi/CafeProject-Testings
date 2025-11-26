@@ -64,9 +64,7 @@ namespace CafeApp
             if (GetCurrentRole() == "официант")
             { data = _databaseService.GetCurrentShiftOrdersList(); }
             else
-            {
-            data = _databaseService.GetOrdersList();
-            }
+            { data = _databaseService.GetOrdersList(); }
            
             foreach (var item in data)
                 _orders.Add(item);
@@ -95,16 +93,15 @@ namespace CafeApp
         {
             if (!string.IsNullOrEmpty(role))
             {
-                string userInfo = CurrentUser.GetUserInfo();
+             //   string userInfo = CurrentUser.GetUserInfo();
                 
-                string logPath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
-                File.AppendAllText(logPath, $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - MAIN WINDOW: {userInfo}\n");
+             //   string logPath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
+           //     File.AppendAllText(logPath, $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - MAIN WINDOW: {userInfo}\n");
         
-                UpdateUserInterface();
+               // UpdateUserInterface();
         
                 var sidebarControl = this.FindControl<Sidebar>("SidebarControl");
-                if (sidebarControl != null)
-                    sidebarControl.Role = CurrentUser.Role; // Используем CurrentUser.Role вместо role
+                sidebarControl.Role = CurrentUser.Role;
         
                 var withSidebarPanel = this.FindControl<Grid>("WithSidebarPanel");
                 var withoutSidebarPanel = this.FindControl<Grid>("WithoutSidebarPanel");
@@ -118,30 +115,22 @@ namespace CafeApp
         {
             // Показываем информацию о пользователе
             var userInfoTextBlock = this.FindControl<TextBlock>("UserInfoTextBlock");
-            if (userInfoTextBlock != null)
-            {
-                userInfoTextBlock.Text = $"{CurrentUser.FullName} ({CurrentUser.Role})";
-            }
+            userInfoTextBlock.Text = $"{CurrentUser.FullName} ({CurrentUser.Role})";
+            
     
             // Настраиваем видимость элементов по роли
             var adminPanel = this.FindControl<StackPanel>("AdminPanel");
-            if (adminPanel != null)
-            {
-                adminPanel.IsVisible = CurrentUser.IsAdmin;
-            }
+            adminPanel.IsVisible = CurrentUser.IsAdmin;
+            
     
             var waiterPanel = this.FindControl<StackPanel>("WaiterPanel");
-            if (waiterPanel != null)
-            {
-                waiterPanel.IsVisible = CurrentUser.IsWaiter;
-            }
+            waiterPanel.IsVisible = CurrentUser.IsWaiter;
+            
     
             // Также можно обновить Sidebar
             var sidebarControl = this.FindControl<Sidebar>("SidebarControl");
-            if (sidebarControl != null)
-            {
-                sidebarControl.Role = CurrentUser.Role;
-            }
+              sidebarControl.Role = CurrentUser.Role;
+            
         }
 
         private void OnSidebarItemSelected(object? sender, string itemName)
@@ -232,6 +221,7 @@ namespace CafeApp
                 if (formEmployee != null)
                 {
                     formEmployee.Title = "Редактирование сотрудника";
+                    formEmployee.LoadEmployee(clickedItem.Id);
                     ShowControl(formEmployee);
                 }
             }

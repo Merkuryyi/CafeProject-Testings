@@ -23,7 +23,7 @@ namespace CafeApp.Controls
         public static readonly StyledProperty<string> TitleProperty =
             AvaloniaProperty.Register<FormEmployee, string>(nameof(Title), "Регистрация сотрудника");
         public static readonly StyledProperty<int> EmployeeIdProperty =
-            AvaloniaProperty.Register<Order, int>(nameof(EmployeeId), -1);
+            AvaloniaProperty.Register<FormEmployee, int>(nameof(EmployeeId), -1);
         
         
         public int EmployeeId
@@ -68,9 +68,7 @@ namespace CafeApp.Controls
             var roleComboBox = this.FindControl<global::CafeApp.Controls.Components.ComboBox.ComboBox>("RoleComboBox");
             var addPhotoEmployee = this.FindControl<TextBlock>("AddPhotoEmployee");
             
-            var loginPanel = this.FindControl<StackPanel>("LoginPanel");
-            var passwordPanel = this.FindControl<StackPanel>("PasswordPanel");
-            var rolePanel = this.FindControl<StackPanel>("WaiterPanel");
+          
             
             
             var nameInput = this.FindControl<Input>("NameInput");
@@ -78,26 +76,62 @@ namespace CafeApp.Controls
             var patronymicInput = this.FindControl<Input>("PatronymicInput");
             var addEmploymentContract = this.FindControl<TextBlock>("AddEmploymentContract");
             
-            var namePanel = this.FindControl<Input>("NamePanel");
-            var surnamePanel = this.FindControl<Input>("SurnamePanel");
-            var patronymicPanel = this.FindControl<Input>("PatronymicPanel");
+            
+            var loginPanel = this.FindControl<StackPanel>("LoginPanel");
+            var passwordPanel = this.FindControl<StackPanel>("PasswordPanel");
+        //    var rolePanel = this.FindControl<StackPanel>("WaiterPanel");
+            
+            var namePanel = this.FindControl<StackPanel>("NamePanel");
+            var surnamePanel = this.FindControl<StackPanel>("SurnamePanel");
+            var patronymicPanel = this.FindControl<StackPanel>("PatronymicPanel");
             
             
             var statusComboBox = this.FindControl<global::CafeApp.Controls.Components.ComboBox.ComboBox>("StatusComboBox");
             if (Title == "Редактирование сотрудника")
             {
-               
+                loginPanel.IsVisible = true;
+                passwordPanel.IsVisible = true;
+                //rolePanel.IsVisible = true;
+                namePanel.IsVisible = true;
+                surnamePanel.IsVisible = true;
+                patronymicPanel.IsVisible = true;
+                statusComboBox.IsVisible = true;
+                
+                loginInput.IsVisible = false;
+                passwordInput.IsVisible = false;
+                roleComboBox.IsVisible = false;
+                addPhotoEmployee.IsVisible = false;
+                nameInput.IsVisible = false;
+                surnameInput.IsVisible = false;
+                patronymicInput.IsVisible = false;
+                addEmploymentContract.IsVisible = false;
             }
             else
             {
-               
+                loginPanel.IsVisible = false;
+                passwordPanel.IsVisible = false;
+               // rolePanel.IsVisible = false;
+                namePanel.IsVisible = false;
+                surnamePanel.IsVisible = false;
+                patronymicPanel.IsVisible = false;
+                
+                statusComboBox.IsVisible = false;
+                
+                loginInput.IsVisible = true;
+                passwordInput.IsVisible = true;
+                roleComboBox.IsVisible = true;
+                addPhotoEmployee.IsVisible = true;
+                nameInput.IsVisible = true;
+                surnameInput.IsVisible = true;
+                patronymicInput.IsVisible = true;
+                addEmploymentContract.IsVisible = true;
             }
         }
 
         public void LoadEmployee(int employeeId)
         {
-            EmployeeId = employeeId;
-           // var employeeInfo = _databaseService.GetOrderById(employeeId);
+    
+           var employeeInfo = _databaseService.GetEmployeeById(employeeId);
            var loginTextBlock = this.FindControl<TextBlock>("LoginTextBlock");
            var passwordTextBlock = this.FindControl<TextBlock>("PasswordTextBlock");
            var roleTextBlock = this.FindControl<TextBlock>("RoleTextBlock");
@@ -108,14 +142,37 @@ namespace CafeApp.Controls
            var patronymicTextBlock = this.FindControl<TextBlock>("PatronymicTextBlock");
            
            var statusComboBox = this.FindControl<global::CafeApp.Controls.Components.ComboBox.ComboBox>("StatusComboBox");
+           ResetComponents();
+           
+           
            if (Title == "Редактирование сотрудника")
            {
+               if (employeeInfo.EmploymentStatus)
+               {
+                   statusComboBox.SelectedItem = "Работает";
+               }
+               else
+               {
+                   statusComboBox.SelectedItem = "Уволен";
+               }
                
+
+               loginTextBlock.Text = employeeInfo.Username;
+               passwordTextBlock.Text = employeeInfo.Password;
+                   roleTextBlock.Text = employeeInfo.Role;
+                   nameTextBlock.Text = employeeInfo.Name;
+                   surnameTextBlock.Text = employeeInfo.Surname;
+                   patronymicTextBlock.Text = employeeInfo.Patronymic;
+                   File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", 
+                       $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - " +
+                       $"Employee loaded successfully: {employeeInfo.Surname} " +
+                       $"{employeeInfo.Name} $\"{employeeInfo.Patronymic}" +
+                       $"{employeeInfo.Role} {employeeInfo.Password}\n");
+
+
+
            }
-           else
-           {
-               
-           }
+           
 
         }
 

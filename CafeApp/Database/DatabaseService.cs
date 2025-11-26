@@ -572,6 +572,7 @@ namespace CafeApp.Database
             
             return orderInfo;
         }
+        
         public bool UpdateOrder(int orderId, int tableId, int waiterId, string status, List<OrderItem> orderItems, int countCustomer)
         {
             try
@@ -912,7 +913,71 @@ namespace CafeApp.Database
                 return 0;
             }
         }
-
+        public UserInfo GetEmployeeById(int employeeId)
+        {
+            var userInfo = new UserInfo();
+            
+            try
+            {
+                using (var conn = GetConnection())
+                {
+                    string query = @"
+                        SELECT 
+                            user_id,
+                            username,
+                            password_,
+                            role,
+                            name,
+                            surname,
+                            patronymic,
+                            employment_status,
+                            photo_link,
+                            contract_scan_link
+                        FROM users 
+                        WHERE user_id = @employeeId";
+                    
+                    using (var command = new NpgsqlCommand(query, conn))
+                    {
+                        command.Parameters.AddWithValue("@employeeId", employeeId);
+                        
+                        using (var reader = command.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                userInfo.UserId = reader.GetInt32(0);
+                                userInfo.Username = reader.GetString(1);
+                                userInfo.Password = reader.GetString(2);
+                                userInfo.Role = reader.GetString(3);
+                                userInfo.Name = reader.GetString(4);
+                                userInfo.Surname = reader.GetString(5);
+                                userInfo.Patronymic = reader.IsDBNull(6) ? null : reader.GetString(6);
+                                userInfo.EmploymentStatus = reader.GetBoolean(7);
+                                userInfo.PhotoLink = reader.IsDBNull(8) ? null : reader.GetString(8);
+                                userInfo.ContractScanLink = reader.IsDBNull(9) ? null : reader.GetString(9);
+                                
+                                File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", 
+                                    $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Employee found: ID={userInfo.UserId}, " +
+                                    $"Username={userInfo.Username}, Role={userInfo.Role}, Name={userInfo.Surname} {userInfo.Name}\n");
+                            }
+                            else
+                            {
+                                File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", 
+                                    $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - No employee found with ID: {employeeId}\n");
+                                return userInfo;
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                string filePath = @"A:/Инженерно-техническая поддержка сопровождения ИС/debug.log";
+                string errorMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB ERROR (GetEmployeeById): {ex.Message}\n{ex.StackTrace}\n";
+                File.AppendAllText(filePath, errorMessage);
+            }
+            
+            return userInfo;
+        }
         
        
     }

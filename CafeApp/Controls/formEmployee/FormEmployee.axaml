@@ -37,12 +37,12 @@
                        ComboBoxWidth="200"
                        Margin="0,0,0,20"
                        ItemsSource="{Binding Roles}"/>  
-                    <combobox:ComboBox x:Name="StatusComboBox" 
-                                       Text="Роль" 
+                    <combobox:ComboBox x:Name="StatusComboBox"  IsVisible="False" 
+                                       Text="Статус" 
                                        ComboBoxWidth="200"
                                        Margin="0,0,0,20"
                                        ItemsSource="{Binding Status}"/>  
-                    <StackPanel  x:Name="LoginPanel" IsVisible="False">
+                    <StackPanel  x:Name="LoginPanel" IsVisible="False"  Margin="00,0,0,15">
                         <TextBlock Text="Логин" 
                                    FontSize="14"
                                    Foreground="#194E84"/>
@@ -51,8 +51,8 @@
                                    FontSize="14"
                                    Foreground="#194E84" />
                     </StackPanel>
-                    <StackPanel  x:Name="PasswordPanel" IsVisible="False">
-                        <TextBlock Text="Логин" 
+                    <StackPanel  x:Name="PasswordPanel" IsVisible="False" Margin="00,0,0,15">
+                        <TextBlock Text="Пароль" 
                                    FontSize="14"
                                    Foreground="#194E84"/>
                         <TextBlock x:Name="PasswordTextBlock"
@@ -60,8 +60,8 @@
                                    FontSize="14"
                                    Foreground="#194E84" />
                     </StackPanel>
-                    <StackPanel  x:Name="RolePanel" IsVisible="False">
-                        <TextBlock Text="Логин" 
+                    <StackPanel  x:Name="RolePanel" IsVisible="False" Margin="00,0,0,15">
+                        <TextBlock Text="Роль" 
                                    FontSize="14"
                                    Foreground="#194E84"/>
                         <TextBlock x:Name="RoleTextBlock"
@@ -89,8 +89,8 @@
                     <input:Input x:Name="NameInput" Text="Фамилия" InputWidth="200"/>
                     <input:Input x:Name="SurnameInput" Text="Имя" InputWidth="200"/>
                     <input:Input x:Name="PatronymicInput" Text="Отчество" InputWidth="200"/>
-                    <StackPanel  x:Name="NamePanel" IsVisible="False">
-                        <TextBlock Text="Логин" 
+                    <StackPanel  x:Name="NamePanel" IsVisible="False" Margin="00,0,0,15">
+                        <TextBlock Text="Имя" 
                                    FontSize="14"
                                    Foreground="#194E84"/>
                         <TextBlock x:Name="NameTextBlock"
@@ -98,8 +98,8 @@
                                    FontSize="14"
                                    Foreground="#194E84" />
                     </StackPanel>
-                    <StackPanel  x:Name="SurnamePanel" IsVisible="False">
-                        <TextBlock Text="Логин" 
+                    <StackPanel  x:Name="SurnamePanel" IsVisible="False" Margin="00,0,0,15">
+                        <TextBlock Text="Фамилия" 
                                    FontSize="14"
                                    Foreground="#194E84"/>
                         <TextBlock x:Name="SurnameTextBlock"
@@ -107,8 +107,8 @@
                                    FontSize="14"
                                    Foreground="#194E84" />
                     </StackPanel>
-                    <StackPanel  x:Name="PatronymicPanel" IsVisible="False">
-                        <TextBlock Text="Логин" 
+                    <StackPanel  x:Name="PatronymicPanel" IsVisible="False" Margin="00,0,0,15">
+                        <TextBlock Text="Отчество" 
                                    FontSize="14"
                                    Foreground="#194E84"/>
                         <TextBlock x:Name="PatronymicTextBlock"
