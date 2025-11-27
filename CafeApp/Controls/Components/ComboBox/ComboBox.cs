@@ -2,6 +2,7 @@
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using System.Collections;
+using System;
 
 namespace CafeApp.Controls.Components.ComboBox
 {
@@ -22,6 +23,9 @@ namespace CafeApp.Controls.Components.ComboBox
         public static readonly StyledProperty<int> SelectedIndexProperty =
             AvaloniaProperty.Register<ComboBox, int>(nameof(SelectedIndex), -1);
 
+        // Событие SelectionChanged
+        public event EventHandler<SelectionChangedEventArgs>? SelectionChanged;
+
         public ComboBox()
         {
             InitializeComponent();
@@ -30,6 +34,24 @@ namespace CafeApp.Controls.Components.ComboBox
         private void InitializeComponent()
         {
             AvaloniaXamlLoader.Load(this);
+        }
+
+        protected override void OnInitialized()
+        {
+            base.OnInitialized();
+            
+            // Находим внутренний ComboBox и подписываемся на его событие
+            var innerComboBox = this.FindControl<Avalonia.Controls.ComboBox>("MainComboBox");
+            if (innerComboBox != null)
+            {
+                innerComboBox.SelectionChanged += InnerComboBox_SelectionChanged;
+            }
+        }
+
+        private void InnerComboBox_SelectionChanged(object? sender, SelectionChangedEventArgs e)
+        {
+            // Пробрасываем событие наружу
+            SelectionChanged?.Invoke(this, e);
         }
 
         public string Text

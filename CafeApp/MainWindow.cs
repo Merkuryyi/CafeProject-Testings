@@ -225,21 +225,14 @@ namespace CafeApp
                     ShowControl(formEmployee);
                 }
             }
-            else if (title.Contains("сотрудник"))
-            {
-                var formEmployee = this.FindControl<FormEmployee>("FormEmployeeControl");
-                if (formEmployee != null)
-                {
-                    formEmployee.Title = "Редактирование сотрудника";
-                    ShowControl(formEmployee);
-                    string logMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Loading employee ID: {clickedItem.Id}\n";
-                    File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", logMessage);
-                }
-            }
             else if (title.Contains("смен"))
             {
-                string logMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Loading shift ID: {clickedItem.Id}\n";
-                File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", logMessage);
+                //  var shiftControl = this.FindControl<CafeApp.Controls.Shift>("ShiftControl");
+             //   int orderId = clickedItem.Id;
+             //   string logMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Loading shift ID: {clickedItem.Id}\n";
+              //  File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", logMessage);
+              // shiftControl.Title = "Новая смена";
+              //  ShowControl(shiftControl);
             }
         }
         private void OnListAddButtonClicked(object sender, EventArgs e)
@@ -271,6 +264,12 @@ namespace CafeApp
                     ShowControl(formEmployee);
                 }
             }
+            else if (title.Contains("смен"))
+            {
+                var shiftControl = this.FindControl<CafeApp.Controls.Shift>("ShiftControl");
+               shiftControl.Title = "Новая смена";
+                ShowControl(shiftControl);
+            }
         }
 
         private void ShowControl(Control control)
@@ -300,6 +299,10 @@ namespace CafeApp
             var orderControl = this.FindControl<CafeApp.Controls.Order>("OrderControl");
             if (orderControl != null)
                 orderControl.IsVisible = false;
+            
+            var shiftControl = this.FindControl<CafeApp.Controls.Shift>("ShiftControl");
+            if (shiftControl != null)
+                shiftControl.IsVisible = false;
         }
     }
 

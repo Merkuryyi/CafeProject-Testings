@@ -65,5 +65,8 @@ build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 [C:/Users/Terra/RiderProjects/CafeProject/CafeApp/Controls/Order/Order.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 
+[C:/Users/Terra/RiderProjects/CafeProject/CafeApp/Controls/Shift/Shift.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
 [C:/Users/Terra/RiderProjects/CafeProject/CafeApp/MainWindow.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml

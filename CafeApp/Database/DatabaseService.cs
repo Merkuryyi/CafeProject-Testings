@@ -109,7 +109,6 @@ namespace CafeApp.Database
                                 patronymic,
                                 role
                             FROM users 
-                            WHERE employment_status = true 
                             ORDER BY surname, name";
             
                     using (var command = new NpgsqlCommand(query, conn))
@@ -978,8 +977,359 @@ namespace CafeApp.Database
             
             return userInfo;
         }
-        
-       
+        public bool UpdateEmployeeStatus(int employeeId, bool employmentStatus)
+        {
+            try
+            {
+                using (var conn = GetConnection())
+                {
+                    string query = @"
+                UPDATE users 
+                SET employment_status = @employmentStatus 
+                WHERE user_id = @employeeId";
+            
+                    using (var command = new NpgsqlCommand(query, conn))
+                    {
+                        command.Parameters.AddWithValue("@employeeId", employeeId);
+                        command.Parameters.AddWithValue("@employmentStatus", employmentStatus);
+                
+                        int rowsAffected = command.ExecuteNonQuery();
+                
+                        string filePath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
+                        string logMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Employee status updated: ID={employeeId}, " +
+                                            $"New Status={(employmentStatus ? "работает" : "уволен")}, Rows affected: {rowsAffected}\n";
+                        File.AppendAllText(filePath, logMessage);
+                
+                        return rowsAffected == 1;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                string filePath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
+                string errorMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB ERROR (UpdateEmployeeStatus): {ex.Message}\n{ex.StackTrace}\n";
+                File.AppendAllText(filePath, errorMessage);
+                return false;
+            }
+        }
+        public List<UserInfo> GetAllEmployeesExceptAdmins()
+        {
+            var employees = new List<UserInfo>();
+            try
+            {
+                using (var conn = GetConnection())
+                {
+                    string query = @"SELECT 
+                                user_id,
+                                username,
+                                password_,
+                                role,
+                                name,
+                                surname,
+                                patronymic,
+                                employment_status,
+                                photo_link,
+                                contract_scan_link
+                            FROM users 
+                            WHERE employment_status = true 
+                            AND role != 'администратор'
+                            ORDER BY surname, name";
+                    
+                    using (var command = new NpgsqlCommand(query, conn))
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            var userInfo = new UserInfo
+                            {
+                                UserId = reader.GetInt32(0),
+                                Username = reader.GetString(1),
+                                Password = reader.GetString(2),
+                                Role = reader.GetString(3),
+                                Name = reader.GetString(4),
+                                Surname = reader.GetString(5),
+                                Patronymic = reader.IsDBNull(6) ? null : reader.GetString(6),
+                                EmploymentStatus = reader.GetBoolean(7),
+                                PhotoLink = reader.IsDBNull(8) ? null : reader.GetString(8),
+                                ContractScanLink = reader.IsDBNull(9) ? null : reader.GetString(9)
+                            };
+                            employees.Add(userInfo);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                string filePath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
+                string errorMessage = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + " - DB ERROR (GetAllEmployeesExceptAdmins): " + ex.Message + "\n";
+                File.AppendAllText(filePath, errorMessage);
+            }
+            return employees;
+        }
+        // Метод для создания смены
+public int CreateShift(DateTime shiftDate, TimeSpan startTime, TimeSpan endTime)
+{
+    try
+    {
+        using (var conn = GetConnection())
+        {
+            string query = @"
+                INSERT INTO shift (shift_date, start_time, end_time) 
+                VALUES (@shiftDate, @startTime, @endTime)
+                RETURNING shift_id";
+
+            using (var command = new NpgsqlCommand(query, conn))
+            {
+                command.Parameters.AddWithValue("@shiftDate", shiftDate);
+                command.Parameters.AddWithValue("@startTime", startTime);
+                command.Parameters.AddWithValue("@endTime", endTime);
+
+                var result = command.ExecuteScalar();
+                return result != null ? Convert.ToInt32(result) : -1;
+            }
+        }
     }
-  
+    catch (Exception ex)
+    {
+        string filePath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
+        string errorMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB ERROR (CreateShift): {ex.Message}\n";
+        File.AppendAllText(filePath, errorMessage);
+        return -1;
+    }
+}
+
+// Метод для добавления сотрудника в смену
+public bool AddEmployeeToShift(int shiftId, int userId, string? tableNumber)
+{
+    try
+    {
+        using (var conn = GetConnection())
+        {
+            string query = @"
+                INSERT INTO shift_employee (shift_id, user_id, table_number) 
+                VALUES (@shiftId, @userId, @tableNumber)";
+
+            using (var command = new NpgsqlCommand(query, conn))
+            {
+                command.Parameters.AddWithValue("@shiftId", shiftId);
+                command.Parameters.AddWithValue("@userId", userId);
+                command.Parameters.AddWithValue("@tableNumber", 
+                    string.IsNullOrEmpty(tableNumber) ? (object)DBNull.Value : tableNumber);
+
+                int rowsAffected = command.ExecuteNonQuery();
+                return rowsAffected == 1;
+            }
+        }
+    }
+    catch (Exception ex)
+    {
+        string filePath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
+        string errorMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB ERROR (AddEmployeeToShift): {ex.Message}\n";
+        File.AppendAllText(filePath, errorMessage);
+        return false;
+    }
+}
+
+// Метод для получения информации о смене по ID
+public ShiftInfo GetShiftById(int shiftId)
+{
+    var shiftInfo = new ShiftInfo();
+    
+    try
+    {
+        using (var conn = GetConnection())
+        {
+            // Получаем основную информацию о смене
+            string shiftQuery = @"
+                SELECT 
+                    shift_id,
+                    shift_date,
+                    start_time,
+                    end_time
+                FROM shift 
+                WHERE shift_id = @shiftId";
+            
+            using (var shiftCommand = new NpgsqlCommand(shiftQuery, conn))
+            {
+                shiftCommand.Parameters.AddWithValue("@shiftId", shiftId);
+                
+                using (var reader = shiftCommand.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        shiftInfo.ShiftId = reader.GetInt32(0);
+                        shiftInfo.ShiftDate = reader.GetDateTime(1);
+                        shiftInfo.StartTime = reader.GetTimeSpan(2);
+                        shiftInfo.EndTime = reader.GetTimeSpan(3);
+                    }
+                }
+            }
+
+            // Получаем сотрудников смены
+            string employeesQuery = @"
+                SELECT 
+                    u.user_id,
+                    u.surname,
+                    u.name,
+                    u.patronymic,
+                    u.role,
+                    se.table_number
+                FROM shift_employee se
+                JOIN users u ON se.user_id = u.user_id
+                WHERE se.shift_id = @shiftId
+                ORDER BY u.surname, u.name";
+            
+            using (var employeesCommand = new NpgsqlCommand(employeesQuery, conn))
+            {
+                employeesCommand.Parameters.AddWithValue("@shiftId", shiftId);
+                
+                using (var reader = employeesCommand.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        var employee = new ShiftEmployeeInfo
+                        {
+                            UserId = reader.GetInt32(0),
+                            Surname = reader.GetString(1),
+                            Name = reader.GetString(2),
+                            Patronymic = reader.IsDBNull(3) ? null : reader.GetString(3),
+                            Role = reader.GetString(4),
+                            TableNumber = reader.IsDBNull(5) ? null : reader.GetString(5)
+                        };
+                        shiftInfo.Employees.Add(employee);
+                    }
+                }
+            }
+        }
+    }
+    catch (Exception ex)
+    {
+        string filePath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
+        string errorMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB ERROR (GetShiftById): {ex.Message}\n";
+        File.AppendAllText(filePath, errorMessage);
+    }
+    
+    return shiftInfo;
+}
+
+// Метод для проверки существования смены на указанную дату и время
+public bool IsShiftExists(DateTime shiftDate, TimeSpan startTime, TimeSpan endTime)
+{
+    try
+    {
+        using (var conn = GetConnection())
+        {
+            string query = @"
+                SELECT COUNT(*) 
+                FROM shift 
+                WHERE shift_date = @shiftDate 
+                AND start_time = @startTime 
+                AND end_time = @endTime";
+            
+            using (var command = new NpgsqlCommand(query, conn))
+            {
+                command.Parameters.AddWithValue("@shiftDate", shiftDate);
+                command.Parameters.AddWithValue("@startTime", startTime);
+                command.Parameters.AddWithValue("@endTime", endTime);
+
+                long count = (long)command.ExecuteScalar();
+                return count > 0;
+            }
+        }
+    }
+    catch (Exception ex)
+    {
+        string filePath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
+        string errorMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB ERROR (IsShiftExists): {ex.Message}\n";
+        File.AppendAllText(filePath, errorMessage);
+        return false;
+    }
+}
+
+// Метод для получения ID сотрудника по ФИО
+public int GetEmployeeIdByName(string fullName)
+{
+    try
+    {
+        using (var conn = GetConnection())
+        {
+            string[] nameParts = fullName.Split(' ');
+            if (nameParts.Length < 2)
+                return -1;
+
+            string surname = nameParts[0];
+            string name = nameParts[1];
+            string patronymic = nameParts.Length > 2 ? nameParts[2] : "";
+            
+            string query = @"SELECT user_id FROM users 
+                           WHERE surname = @surname AND name = @name 
+                           AND (patronymic = @patronymic OR patronymic IS NULL)
+                           AND employment_status = true";
+            
+            using (var command = new NpgsqlCommand(query, conn))
+            {
+                command.Parameters.AddWithValue("@surname", surname);
+                command.Parameters.AddWithValue("@name", name);
+                command.Parameters.AddWithValue("@patronymic", 
+                    string.IsNullOrEmpty(patronymic) ? (object)DBNull.Value : patronymic);
+                
+                var result = command.ExecuteScalar();
+                return result != null ? Convert.ToInt32(result) : -1;
+            }
+        }
+    }
+    catch (Exception ex)
+    {
+        string filePath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
+        string errorMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB ERROR (GetEmployeeIdByName): {ex.Message}\n";
+        File.AppendAllText(filePath, errorMessage);
+        return -1;
+    }
+}
+
+// Метод для удаления смены
+public bool DeleteShift(int shiftId)
+{
+    try
+    {
+        using (var conn = GetConnection())
+        using (var transaction = conn.BeginTransaction())
+        {
+            try
+            {
+                // Сначала удаляем связанные записи из shift_employee
+                string deleteEmployeesQuery = "DELETE FROM shift_employee WHERE shift_id = @shiftId";
+                using (var deleteCommand = new NpgsqlCommand(deleteEmployeesQuery, conn, transaction))
+                {
+                    deleteCommand.Parameters.AddWithValue("@shiftId", shiftId);
+                    deleteCommand.ExecuteNonQuery();
+                }
+
+                // Затем удаляем саму смену
+                string deleteShiftQuery = "DELETE FROM shift WHERE shift_id = @shiftId";
+                using (var shiftCommand = new NpgsqlCommand(deleteShiftQuery, conn, transaction))
+                {
+                    shiftCommand.Parameters.AddWithValue("@shiftId", shiftId);
+                    int rowsAffected = shiftCommand.ExecuteNonQuery();
+                    
+                    transaction.Commit();
+                    return rowsAffected == 1;
+                }
+            }
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+                throw;
+            }
+        }
+    }
+    catch (Exception ex)
+    {
+        string filePath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
+        string errorMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB ERROR (DeleteShift): {ex.Message}\n";
+        File.AppendAllText(filePath, errorMessage);
+        return false;
+    }
+}
+    }
 }

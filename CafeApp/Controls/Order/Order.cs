@@ -230,8 +230,8 @@ namespace CafeApp.Controls
                 
                 if (waiterTextBlock != null) waiterTextBlock.Text = orderInfo.WaiterName;
                 if (tableTextBlock != null) tableTextBlock.Text = orderInfo.TableId.ToString();
-                
                 if (customerCountTextBlock != null) customerCountTextBlock.Text = orderInfo.CustomerCount.ToString();
+                
             }
 
             if (Title == "Просмотр заказа")
@@ -445,13 +445,9 @@ namespace CafeApp.Controls
             string paymentType = "";
             
             if (Title == "Просмотр заказа")
-            {
-                paymentType = paymentTextBlock?.Text ?? "";
-            }
+            { paymentType = paymentTextBlock?.Text ?? ""; }
             else
-            {
-                paymentType = GetComboBoxValue("PaymentSelectionComboBox");
-            }
+            { paymentType = GetComboBoxValue("PaymentSelectionComboBox"); }
             
 
             if (!string.IsNullOrEmpty(paymentType))
@@ -538,7 +534,6 @@ namespace CafeApp.Controls
                 OrderMenuItems.RemoveAt(OrderMenuItems.Count - 1); 
             UpdateTotalPrice();
         }
-
         
         private string GetComboBoxValue(string comboBoxName)
         {

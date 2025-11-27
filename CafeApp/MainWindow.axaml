@@ -61,18 +61,17 @@
                         IsVisible="False"
                         Title="Список смен"
                         ListHeight="400"/>
-
+                    
                     <controls:Order x:Name="OrderControl" 
                         HorizontalAlignment="Stretch"
                         VerticalAlignment="Stretch"
                         IsVisible="False"/>
                     
-                    <controls:EditOrder x:Name="EditOrderControl" 
+                    <controls:Shift x:Name="ShiftControl" 
                         HorizontalAlignment="Stretch"
                         VerticalAlignment="Stretch"
                         IsVisible="False"/>
                 </StackPanel>
-
             </Grid>
         </Grid>
 

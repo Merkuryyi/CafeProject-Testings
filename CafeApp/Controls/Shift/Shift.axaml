@@ -1,0 +1,77 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:combobox="clr-namespace:CafeApp.Controls.Components.ComboBox"
+             xmlns:input="clr-namespace:CafeApp.Controls.Components.Input"
+             xmlns:button="clr-namespace:CafeApp.Controls.Components.Button"
+             x:Class="CafeApp.Controls.Shift"
+             x:Name="root">
+    <StackPanel>
+        <Border Padding="15,15,15,0">
+            <StackPanel Spacing="5" HorizontalAlignment="Left">
+                <TextBlock x:Name="TitleText"
+                   FontSize="20" 
+                   Foreground="#194E84"
+                   FontWeight="Bold" Margin="0,0,0,25"/>
+                
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                    <input:Input x:Name="DateInput" Text="Дата" InputWidth="120" 
+                        Margin="0,0,10,0"/>
+                    <input:Input x:Name="StartTimeInput" Text="Время начала" InputWidth="120" 
+                        Margin="0,0,10,0"/>
+                    <input:Input x:Name="EndTimeInput" Text="Время окончания" InputWidth="120" 
+                        Margin="0,0,10,0"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+        
+        <Border Padding="15,15,15,0">
+            <StackPanel Spacing="5">
+                <StackPanel Orientation="Horizontal" Spacing="15">
+                    <TextBlock Text="Сотрудники смены"
+                       FontSize="20"
+                       Foreground="#194E84"
+                       FontWeight="Bold"/>
+                    <TextBlock x:Name="AddEmployeeButton"
+                       Text="+"
+                       FontSize="20" 
+                       Cursor="Hand"
+                       Foreground="#194E84"/>
+                    <TextBlock x:Name="RemoveEmployeeButton"
+                       Text="-"
+                       FontSize="20" 
+                       Cursor="Hand"
+                       Foreground="#194E84"/>
+                    <TextBlock x:Name="EmployeeCountText"
+                       FontSize="16"
+                       Foreground="#194E84"/>
+                </StackPanel>
+                
+                <ScrollViewer VerticalScrollBarVisibility="Auto" MaxHeight="200">
+                    <ItemsControl x:Name="EmployeesItemsControl" ItemsSource="{Binding ShiftEmployees, ElementName=root}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" Spacing="10" Margin="0,10,0,0">
+                                    <combobox:ComboBox x:Name="EmployeeComboBox"
+                                                       Text="Сотрудник" 
+                                                       ComboBoxWidth="150"
+                                                      
+                                                       SelectionChanged="OnEmployeeComboBoxSelectionChanged"
+                                                       ItemsSource="{Binding #root.AllEmployees}"/>
+                                    
+        
+                                    <input:Input x:Name="TableInput" 
+                                                 Text="Столик" 
+                                                 InputWidth="80"
+                                                 IsVisible="True"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+                
+                <button:Button x:Name="SaveButton" Text="Сохранить смену"  Click="SaveButton_Click"
+                    HorizontalAlignment="Stretch"/> 
+            </StackPanel>
+        </Border>
+    </StackPanel>
+</UserControl>
