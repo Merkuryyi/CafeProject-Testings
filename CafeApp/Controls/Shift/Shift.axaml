@@ -3,6 +3,7 @@
              xmlns:combobox="clr-namespace:CafeApp.Controls.Components.ComboBox"
              xmlns:input="clr-namespace:CafeApp.Controls.Components.Input"
              xmlns:button="clr-namespace:CafeApp.Controls.Components.Button"
+             xmlns:models="clr-namespace:CafeApp.Controls" 
              x:Class="CafeApp.Controls.Shift"
              x:Name="root">
     <StackPanel>
@@ -49,20 +50,27 @@
                 <ScrollViewer VerticalScrollBarVisibility="Auto" MaxHeight="200">
                     <ItemsControl x:Name="EmployeesItemsControl" ItemsSource="{Binding ShiftEmployees, ElementName=root}">
                         <ItemsControl.ItemTemplate>
-                            <DataTemplate>
+                            <DataTemplate DataType="models:ShiftEmployeeData">
                                 <StackPanel Orientation="Horizontal" Spacing="10" Margin="0,10,0,0">
-                                    <combobox:ComboBox x:Name="EmployeeComboBox"
-                                                       Text="Сотрудник" 
-                                                       ComboBoxWidth="150"
-                                                      
-                                                       SelectionChanged="OnEmployeeComboBoxSelectionChanged"
-                                                       ItemsSource="{Binding #root.AllEmployees}"/>
-                                    
+                                    <combobox:ComboBox 
+                                        Text="Сотрудник" 
+                                        ComboBoxWidth="150"
+                                        ItemsSource="{Binding #root.AllEmployees}"
+                                        SelectedItem="{Binding SelectedEmployeeName, Mode=TwoWay}"/>
         
-                                    <input:Input x:Name="TableInput" 
-                                                 Text="Столик" 
-                                                 InputWidth="80"
-                                                 IsVisible="True"/>
+                                    <TextBlock 
+                                        Text="{Binding EmployeeRole}"
+                                        FontSize="14"
+                                        Foreground="#194E84"
+                                        VerticalAlignment="Center"
+                                        Width="120"/>
+
+                                    <input:Input 
+                                        Text="Столик" 
+                                        InputWidth="80"
+                                        Value="{Binding TableNumber, Mode=TwoWay}"
+                                        IsVisible="{Binding IsWaiter}"/>
+                                        
                                 </StackPanel>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>

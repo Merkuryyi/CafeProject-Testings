@@ -1,4 +1,4 @@
-﻿﻿using Avalonia;
+﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using System.Collections.Generic;
@@ -13,6 +13,7 @@ using Avalonia.Interactivity;
 using CafeApp.Controls.Components.Input;
 using System.IO;
 using System.ComponentModel;
+ 
 namespace CafeApp.Controls
 {
     public partial class Order : UserControl
@@ -109,9 +110,7 @@ namespace CafeApp.Controls
                 .Select(w => $"{w.Surname} {w.Name} {w.Patronymic}".Trim());
     
             foreach (var waiter in waiters)
-            {
-                ListWaiter.Add(waiter);
-            }
+            { ListWaiter.Add(waiter); }
 
             AllMenuItems = new ObservableCollection<string>(
                 dataRepository.MenuItems.OrderBy(m => m.Name).Select(m => m.Name)
@@ -334,7 +333,6 @@ namespace CafeApp.Controls
                 var customerCountTextBlock = this.FindControl<TextBlock>("CustomerCountTextBlock");
                 var waiterTextBlock = this.FindControl<TextBlock>("WaiterTextBlock");
                 
-                // Управление видимостью комбобокса оплаты
                 paymentSelectionComboBox.IsVisible = GetComboBoxValue("StatusComboBox") == "оплачен";
                 
                 if (Role == "администратор")
@@ -391,11 +389,6 @@ namespace CafeApp.Controls
                 int shiftId = _databaseService.GetCurrentOrLatestShiftId();
                 bool success = false;
                 int currentOrderId = this.OrderId;
-
-                File.AppendAllText(@"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log", 
-                    $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Saving order:" +
-                    $" Title={Title}, OrderId={OrderId}, Table={tableId}, Waiter={waiterId}, Status={status}," +
-                    $" Items={orderItems.Count}\n");
 
                 if (Title == "Редактирование заказа" && OrderId > 0)
                 { 
@@ -545,21 +538,12 @@ namespace CafeApp.Controls
         private List<OrderItem> CollectOrderItemsFromUI()
         {
             var orderItems = new List<OrderItem>();
-    
-            File.AppendAllText(@"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log", 
-                $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - CollectOrderItemsFromUI: OrderMenuItems count = {OrderMenuItems.Count}\n");
 
             foreach (var menuItem in OrderMenuItems)
             {
-                File.AppendAllText(@"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log", 
-                    $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Checking item: SelectedMenuItem='{menuItem.SelectedMenuItem}', Quantity={menuItem.Quantity}\n");
-
                 if (!string.IsNullOrEmpty(menuItem.SelectedMenuItem) && menuItem.Quantity > 0)
                 {
                     int menuItemId = _databaseService.GetMenuItemIdByName(menuItem.SelectedMenuItem);
-                    File.AppendAllText(@"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log", 
-                        $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - MenuItemId found: {menuItemId} for '{menuItem.SelectedMenuItem}'\n");
-
                     if (menuItemId != -1)
                     {
                         orderItems.Add(new OrderItem
@@ -589,7 +573,7 @@ namespace CafeApp.Controls
             OrderMenuItems.Clear();
             OrderMenuItems.Add(new OrderMenuItem());
     
-            var tableInput = this.FindControl<global::CafeApp.Controls.Components.Input.Input>("TableInput");
+            var tableInput = this.FindControl<Input>("TableInput");
             if (tableInput != null) tableInput.Text = "";
             
             var waiterTextBlock = this.FindControl<TextBlock>("WaiterTextBlock");

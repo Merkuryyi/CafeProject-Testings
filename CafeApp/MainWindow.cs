@@ -227,12 +227,13 @@ namespace CafeApp
             }
             else if (title.Contains("смен"))
             {
-                //  var shiftControl = this.FindControl<CafeApp.Controls.Shift>("ShiftControl");
-             //   int orderId = clickedItem.Id;
+                var shiftControl = this.FindControl<CafeApp.Controls.Shift>("ShiftControl");
+             int shiftId = clickedItem.Id;
+            shiftControl.LoadShiftData(clickedItem.Id);
              //   string logMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Loading shift ID: {clickedItem.Id}\n";
               //  File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", logMessage);
-              // shiftControl.Title = "Новая смена";
-              //  ShowControl(shiftControl);
+              shiftControl.Title = "Редактирование смены";
+              ShowControl(shiftControl);
             }
         }
         private void OnListAddButtonClicked(object sender, EventArgs e)
