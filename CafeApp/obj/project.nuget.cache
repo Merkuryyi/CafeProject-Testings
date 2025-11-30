@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "Ee48lxGUtF8=",
+  "dgSpecHash": "zFdX2eCORxY=",
   "success": true,
   "projectFilePath": "C:\\Users\\Terra\\RiderProjects\\CafeProject\\CafeApp\\CafeApp.csproj",
   "expectedPackageFiles": [
@@ -19,6 +19,7 @@
     "C:\\Users\\Terra\\.nuget\\packages\\avalonia.themes.simple\\11.3.6\\avalonia.themes.simple.11.3.6.nupkg.sha512",
     "C:\\Users\\Terra\\.nuget\\packages\\avalonia.win32\\11.3.6\\avalonia.win32.11.3.6.nupkg.sha512",
     "C:\\Users\\Terra\\.nuget\\packages\\avalonia.x11\\11.3.6\\avalonia.x11.11.3.6.nupkg.sha512",
+    "C:\\Users\\Terra\\.nuget\\packages\\bouncycastle.cryptography\\2.4.0\\bouncycastle.cryptography.2.4.0.nupkg.sha512",
     "C:\\Users\\Terra\\.nuget\\packages\\closedxml\\0.105.0\\closedxml.0.105.0.nupkg.sha512",
     "C:\\Users\\Terra\\.nuget\\packages\\closedxml.parser\\2.0.0\\closedxml.parser.2.0.0.nupkg.sha512",
     "C:\\Users\\Terra\\.nuget\\packages\\closedxml.signed\\0.95.4\\closedxml.signed.0.95.4.nupkg.sha512",
@@ -31,6 +32,7 @@
     "C:\\Users\\Terra\\.nuget\\packages\\harfbuzzsharp.nativeassets.webassembly\\8.3.1.1\\harfbuzzsharp.nativeassets.webassembly.8.3.1.1.nupkg.sha512",
     "C:\\Users\\Terra\\.nuget\\packages\\harfbuzzsharp.nativeassets.win32\\8.3.1.1\\harfbuzzsharp.nativeassets.win32.8.3.1.1.nupkg.sha512",
     "C:\\Users\\Terra\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
+    "C:\\Users\\Terra\\.nuget\\packages\\itextsharp\\5.5.13.4\\itextsharp.5.5.13.4.nupkg.sha512",
     "C:\\Users\\Terra\\.nuget\\packages\\microcom.runtime\\0.11.0\\microcom.runtime.0.11.0.nupkg.sha512",
     "C:\\Users\\Terra\\.nuget\\packages\\microsoft.bcl.asyncinterfaces\\7.0.0\\microsoft.bcl.asyncinterfaces.7.0.0.nupkg.sha512",
     "C:\\Users\\Terra\\.nuget\\packages\\microsoft.build.framework\\17.8.3\\microsoft.build.framework.17.8.3.nupkg.sha512",
@@ -88,5 +90,16 @@
     "C:\\Users\\Terra\\.nuget\\packages\\system.threading.channels\\7.0.0\\system.threading.channels.7.0.0.nupkg.sha512",
     "C:\\Users\\Terra\\.nuget\\packages\\tmds.dbus.protocol\\0.21.2\\tmds.dbus.protocol.0.21.2.nupkg.sha512"
   ],
-  "logs": []
+  "logs": [
+    {
+      "code": "NU1701",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Пакет \"iTextSharp 5.5.13.4\" был восстановлен с помощью \".NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8, .NETFramework,Version=v4.8.1\", а не целевой платформы проекта \"net8.0\". Этот пакет может быть не полностью совместим с вашим проектом.",
+      "libraryId": "iTextSharp",
+      "targetGraphs": [
+        "net8.0"
+      ]
+    }
+  ]
 }

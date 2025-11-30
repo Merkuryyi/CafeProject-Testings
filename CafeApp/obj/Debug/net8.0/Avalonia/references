@@ -22,12 +22,14 @@ C:\Users\Terra\.nuget\packages\avalonia\11.3.6\ref\net8.0\Avalonia.Vulkan.dll
 C:\Users\Terra\.nuget\packages\avalonia.win32\11.3.6\lib\net8.0\Avalonia.Win32.Automation.dll
 C:\Users\Terra\.nuget\packages\avalonia.win32\11.3.6\lib\net8.0\Avalonia.Win32.dll
 C:\Users\Terra\.nuget\packages\avalonia.x11\11.3.6\lib\net8.0\Avalonia.X11.dll
+C:\Users\Terra\.nuget\packages\bouncycastle.cryptography\2.4.0\lib\net6.0\BouncyCastle.Cryptography.dll
 C:\Users\Terra\.nuget\packages\closedxml\0.105.0\lib\netstandard2.1\ClosedXML.dll
 C:\Users\Terra\.nuget\packages\closedxml.parser\2.0.0\lib\netstandard2.1\ClosedXML.Parser.dll
 C:\Users\Terra\.nuget\packages\documentformat.openxml\3.1.1\lib\net8.0\DocumentFormat.OpenXml.dll
 C:\Users\Terra\.nuget\packages\documentformat.openxml.framework\3.1.1\lib\net8.0\DocumentFormat.OpenXml.Framework.dll
 C:\Users\Terra\.nuget\packages\excelnumberformat\1.1.0\lib\netstandard2.0\ExcelNumberFormat.dll
 C:\Users\Terra\.nuget\packages\harfbuzzsharp\8.3.1.1\lib\net8.0\HarfBuzzSharp.dll
+C:\Users\Terra\.nuget\packages\itextsharp\5.5.13.4\lib\net461\itextsharp.dll
 C:\Users\Terra\.nuget\packages\microcom.runtime\0.11.0\lib\net5.0\MicroCom.Runtime.dll
 C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\8.0.13\ref\net8.0\Microsoft.CSharp.dll
 C:\Users\Terra\.nuget\packages\microsoft.entityframeworkcore.abstractions\9.0.10\lib\net8.0\Microsoft.EntityFrameworkCore.Abstractions.dll

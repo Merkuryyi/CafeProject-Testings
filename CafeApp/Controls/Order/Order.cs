@@ -139,7 +139,7 @@ namespace CafeApp.Controls
             var paymentSelectionComboBox = this.FindControl<global::CafeApp.Controls.Components.ComboBox.ComboBox>("PaymentSelectionComboBox");
             
             ResetAllComponents();
-
+            
             if (Title == "Редактирование заказа")
             {
                 if (Role == "администратор")
@@ -208,41 +208,41 @@ namespace CafeApp.Controls
             this.Role = role;
             var orderInfo = _databaseService.GetOrderById(orderId);
             this.Title = orderInfo.Status == "оплачен" ? "Просмотр заказа" : "Редактирование заказа";
-
+            
+            var waiterComboBox = this.FindControl<global::CafeApp.Controls.Components.ComboBox.ComboBox>("WaiterComboBox");
+            var customerCountInput = this.FindControl<Input>("CustomerCountInput");
+            var waiterTextBlock = this.FindControl<TextBlock>("WaiterTextBlock");
+            var tableTextBlock = this.FindControl<TextBlock>("TableTextBlock");
+            var customerCountTextBlock = this.FindControl<TextBlock>("CustomerCountTextBlock");
+            var tableInput = this.FindControl<Input>("TableInput");
+            var statusTextBlock = this.FindControl<TextBlock>("StatusTextBlock");
+            var paymentTextBlock = this.FindControl<TextBlock>("PaymentTextBlock");
+            
             if (Role == "администратор")
             {
-                var waiterComboBox = this.FindControl<global::CafeApp.Controls.Components.ComboBox.ComboBox>("WaiterComboBox");
                 waiterComboBox.ItemsSource = ListWaiter;
                 waiterComboBox.SelectedItem = orderInfo.WaiterName;
-                
-                var tableInput = this.FindControl<Input>("TableInput");
                 tableInput.Value = orderInfo.TableId.ToString();
-                
-                var customerCountInput = this.FindControl<Input>("CustomerCountInput");
                 customerCountInput.Value = orderInfo.CustomerCount.ToString();
             }
             else
             {
-                var waiterTextBlock = this.FindControl<TextBlock>("WaiterTextBlock");
-                var tableTextBlock = this.FindControl<TextBlock>("TableTextBlock");
-                var customerCountTextBlock = this.FindControl<TextBlock>("CustomerCountTextBlock");
-                
                 if (waiterTextBlock != null) waiterTextBlock.Text = orderInfo.WaiterName;
                 if (tableTextBlock != null) tableTextBlock.Text = orderInfo.TableId.ToString();
                 if (customerCountTextBlock != null) customerCountTextBlock.Text = orderInfo.CustomerCount.ToString();
-                
+                if (statusTextBlock != null) statusTextBlock.Text = orderInfo.Status;
+                string paymentType = _databaseService.GetOrderPaymentType(this.OrderId);
+                if (paymentTextBlock != null) paymentTextBlock.Text = paymentType;
             }
 
             if (Title == "Просмотр заказа")
             {
-                
-                var statusTextBlock = this.FindControl<TextBlock>("StatusTextBlock");
+                if (waiterTextBlock != null) waiterTextBlock.Text = orderInfo.WaiterName;
+                if (tableTextBlock != null) tableTextBlock.Text = orderInfo.TableId.ToString();
+                if (customerCountTextBlock != null) customerCountTextBlock.Text = orderInfo.CustomerCount.ToString();
                 if (statusTextBlock != null) statusTextBlock.Text = orderInfo.Status;
-                
-                var paymentTextBlock = this.FindControl<TextBlock>("PaymentTextBlock");
                 string paymentType = _databaseService.GetOrderPaymentType(this.OrderId);
                 if (paymentTextBlock != null) paymentTextBlock.Text = paymentType;
-
             }
 
             var statusComboBox = this.FindControl<global::CafeApp.Controls.Components.ComboBox.ComboBox>("StatusComboBox");
@@ -620,7 +620,7 @@ namespace CafeApp.Controls
     public class OrderMenuItem : INotifyPropertyChanged
     {
         private string _selectedMenuItem = "";
-        private int? _quantity = 1;
+        private int? _quantity;
 
         public string SelectedMenuItem
         {

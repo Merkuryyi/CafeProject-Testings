@@ -1,0 +1,24 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:list="clr-namespace:CafeApp.Controls.Components.List"
+             x:Class="CafeApp.Controls.WaiterReport"
+             x:Name="root">
+    <StackPanel>
+        <TextBlock Text="Отчет официанта" 
+                   FontSize="20" 
+                   Foreground="#194E84"
+                   FontWeight="Bold" 
+                   Margin="0,0,0,25"/>
+        
+        <TextBlock x:Name="WaiterNameText"
+                   FontSize="16"
+                   Foreground="#194E84"
+                   Margin="0,0,0,15"/>
+        
+        <list:List x:Name="WaiterOrdersList"
+                   HorizontalAlignment="Stretch"
+                   VerticalAlignment="Stretch"
+                   Title="Принятые заказы"
+                   ListHeight="400"/>
+    </StackPanel>
+</UserControl>

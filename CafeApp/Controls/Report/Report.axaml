@@ -3,7 +3,6 @@
              xmlns:combobox="clr-namespace:CafeApp.Controls.Components.ComboBox"
              xmlns:input="clr-namespace:CafeApp.Controls.Components.Input"
              xmlns:button="clr-namespace:CafeApp.Controls.Components.Button"
-             xmlns:models="clr-namespace:CafeApp.Controls" 
              x:Class="CafeApp.Controls.Report"
              x:Name="root">
     <StackPanel>
@@ -13,42 +12,47 @@
                    FontWeight="Bold"  Margin="0,0,25,25"/>
    
         
-            <StackPanel Spacing="5" HorizontalAlignment="Left" Orientation="Horizontal" x:Name="ReportWaiterPanel">
-                <TextBlock x:Name="ReportWaiterTextBlock"
-                   FontSize="20"  Text="Отчет официанта" 
-                   Foreground="#194E84"
-                   FontWeight="Bold" Margin="0,0,0,25"/>
-                
-            </StackPanel>
-        <StackPanel Spacing="5" HorizontalAlignment="Left" Orientation="Horizontal" x:Name="ReportOrdersReceivedPanel">
+        <StackPanel Spacing="5" HorizontalAlignment="Left" x:Name="ReportWaiterPanel">
+            <TextBlock x:Name="ReportWaiterTextBlock"
+               FontSize="20"  Text="Отчет официанта" 
+               Foreground="#194E84" Cursor="Hand"
+               FontWeight="Bold" Margin="0,0,0,25" PointerPressed="OnReportWaiterPressed"/>
             
-            <TextBlock x:Name="ReportOrdersReceivedTextBlock"
-               FontSize="20" 
-               Foreground="#194E84"
-               FontWeight="Bold" Margin="0,0,0,25"/>
-                
-            <combobox:ComboBox  x:Name="OrdersReceivedFormatSelectionComboBox"
-                Text="Выбор формата" 
-                ComboBoxWidth="150"
-                ItemsSource="{Binding #root.FormatSelection}"/>
-            
-            <combobox:ComboBox  x:Name="ShiftSelectionComboBox"
-                Text="Выбор смены" 
-                ComboBoxWidth="150"
-                ItemsSource="{Binding #root.ShiftSelection}"/>
         </StackPanel>
         
-        <StackPanel Spacing="5" HorizontalAlignment="Left" Orientation="Horizontal" x:Name="ReportOrdersPaidPanel">
-            <TextBlock x:Name="ReportOrdersPaidTextBlock"
-               FontSize="20" 
-               Foreground="#194E84"
-               FontWeight="Bold" Margin="0,0,0,25"/>
-                
-            <combobox:ComboBox  x:Name="OrdersPaidFormatSelectionComboBox"
+        <StackPanel Spacing="5" HorizontalAlignment="Left" x:Name="ReportOrdersReceivedPanel">
+            
+            <TextBlock x:Name="ReportOrdersReceivedTextBlock"
+               FontSize="20" Text="Отчет полученных заказов" 
+               Foreground="#194E84" Cursor="Hand"
+               FontWeight="Bold" Margin="0,0,0,10" PointerPressed="OnReportOrdersReceivedPressed"/>
+            <StackPanel Spacing="5" HorizontalAlignment="Left" 
+                        Orientation="Horizontal" 
+                        x:Name="OrdersReceivedPanelComboBox" Margin="0,0,0,25" 
+                        >    
+                <combobox:ComboBox  x:Name="OrdersReceivedFormatSelectionComboBox"
                     Text="Выбор формата" 
                     ComboBoxWidth="150"
-                    ItemsSource="{Binding #root.FormatSelection}"/>
+                    ItemsSource="{Binding FormatSelection, ElementName=root}"/>
+                
+                <combobox:ComboBox  x:Name="ShiftSelectionComboBox"
+                    Text="Выбор смены" 
+                    ComboBoxWidth="150"
+                    ItemsSource="{Binding ShiftSelection, ElementName=root}"/>
+            </StackPanel>
+        </StackPanel>
+    
+        <StackPanel Spacing="5" HorizontalAlignment="Left" x:Name="ReportOrdersPaidPanel">
+            <TextBlock x:Name="ReportOrdersPaidTextBlock"
+               FontSize="20"  Text="Отчет оплаченных заказов" 
+               Foreground="#194E84" Cursor="Hand" PointerPressed="OnReportOrdersPaidPressed"
+               FontWeight="Bold" Margin="0,0,0,10" />
+            <StackPanel Spacing="5" HorizontalAlignment="Left" Orientation="Horizontal" x:Name="OrdersPaidPanelComboBox">       
+                <combobox:ComboBox  x:Name="OrdersPaidFormatSelectionComboBox"
+                        Text="Выбор формата" 
+                        ComboBoxWidth="150"
+                        ItemsSource="{Binding FormatSelection, ElementName=root}"/>
+            </StackPanel>
         </StackPanel>
     </StackPanel>
-       
 </UserControl>

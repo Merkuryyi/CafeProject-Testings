@@ -32,7 +32,6 @@ namespace CafeApp.Controls
             set
             {
                 _currentShiftId = value;
-                // Обновляем заголовок при изменении ID смены
                 UpdateTitle();
             }
         }
@@ -84,8 +83,7 @@ namespace CafeApp.Controls
                 foreach (var employee in ShiftEmployees)
                 { employee.PropertyChanged -= OnEmployeePropertyChanged; }
                 ShiftEmployees.Clear();
-
-             
+                
                 var dateInput = this.FindControl<Input>("DateInput");
                 var startTimeInput = this.FindControl<Input>("StartTimeInput");
                 var endTimeInput = this.FindControl<Input>("EndTimeInput");
@@ -112,7 +110,6 @@ namespace CafeApp.Controls
                 
                 EmployeeCount = ShiftEmployees.Count;
                 UpdateEmployeeCountText();
-                
             }
             catch (Exception ex)
             {
@@ -177,7 +174,6 @@ namespace CafeApp.Controls
             {
                 var employees = _databaseService.GetAllEmployeesExceptAdmins();
                 AllEmployees.Clear();
-        
                 foreach (var employee in employees)
                 {
                     string fullName = $"{employee.Surname} {employee.Name} {employee.Patronymic}".Trim();
@@ -219,9 +215,6 @@ namespace CafeApp.Controls
                 
                 foreach (var employee in ShiftEmployees)
                 {
-                    File.AppendAllText(@"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log", 
-                        $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Сотрудник: SelectedEmployeeName='{employee.SelectedEmployeeName}', Role='{employee.EmployeeRole}', Table='{employee.TableNumber}'\n");
-
                     if (string.IsNullOrEmpty(employee.SelectedEmployeeName))
                     { return; }
                 }
@@ -235,7 +228,6 @@ namespace CafeApp.Controls
                 { success = UpdateShiftInDatabase(CurrentShiftId, date, startTime, endTime); }
                 else
                 { success = CreateShiftInDatabase(date, startTime, endTime); }
-                
                 if (success)
                 {
                     ClearForm();
@@ -258,44 +250,30 @@ namespace CafeApp.Controls
                 TimeSpan end = TimeSpan.Parse(endTime);
 
                 bool shiftExists = _databaseService.IsShiftExists(shiftDate, start, end);
-               
-                if (shiftExists)
-                { return false; }
-                
-                int shiftId = _databaseService.CreateShift(shiftDate, start, end);
                 File.AppendAllText(@"A:\debug.log", 
-                    $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - CreateShift returned ID: {shiftId}\n");
+                    $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Shift exists check: {shiftExists}\n");
 
-                if (shiftId == -1)
+                if (shiftExists)
                 {
                     File.AppendAllText(@"A:\debug.log", 
-                        DateTime.Now.ToString() + " - ERROR: Не удалось создать смену\n");
+                        DateTime.Now.ToString() + " - ERROR: Смена на указанную дату и время уже существует\n");
                     return false;
                 }
-
-                File.AppendAllText(@"A:\debug.log", 
-                    $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Смена создана успешно. ID: {shiftId}\n");
-
-                // Добавляем сотрудников в смену и назначаем столики официантам
+                
+                int shiftId = _databaseService.CreateShift(shiftDate, start, end);
+                if (shiftId == -1)
+                { return false; }
+                
+            
                 foreach (var employee in ShiftEmployees)
                 {
                     if (!string.IsNullOrEmpty(employee.SelectedEmployeeName))
                     {
-                        File.AppendAllText(@"A:\debug.log", 
-                            $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Processing employee: {employee.SelectedEmployeeName}\n");
-
                         int employeeId = _databaseService.GetEmployeeIdByName(employee.SelectedEmployeeName);
-                        File.AppendAllText(@"A:\debug.log", 
-                            $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Employee ID for {employee.SelectedEmployeeName}: {employeeId}\n");
-
                         if (employeeId != -1)
                         {
-                            // Добавляем сотрудника в смену
                             bool added = _databaseService.AddEmployeeToShift(shiftId, employeeId);
-                            File.AppendAllText(@"A:\debug.log", 
-                                $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - AddEmployeeToShift result: {added}\n");
-                            
-                            // Если это официант и указан столик, назначаем столик
+                           
                             if (added && employee.IsWaiter && !string.IsNullOrEmpty(employee.TableNumber))
                             {
                                 File.AppendAllText(@"A:\debug.log", 
@@ -304,21 +282,6 @@ namespace CafeApp.Controls
                                 if (int.TryParse(employee.TableNumber, out int tableNumber))
                                 {
                                     bool tableAssigned = _databaseService.AssignTableToWaiter(shiftId, employeeId, tableNumber, shiftDate);
-                                    File.AppendAllText(@"A:\debug.log", 
-                                        $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - AssignTableToWaiter result: {tableAssigned}\n");
-                                    
-                                    if (tableAssigned)
-                                    {
-                                        File.AppendAllText(@"A:\debug.log", 
-                                            DateTime.Now.ToString() + " - SUCCESS: Столик " + tableNumber.ToString() + 
-                                            " назначен официанту " + employee.SelectedEmployeeName + "\n");
-                                    }
-                                    else
-                                    {
-                                        File.AppendAllText(@"A:\debug.log", 
-                                            DateTime.Now.ToString() + " - WARNING: Не удалось назначить столик " + 
-                                            employee.TableNumber + " официанту " + employee.SelectedEmployeeName + "\n");
-                                    }
                                 }
                                 else
                                 {
@@ -326,13 +289,6 @@ namespace CafeApp.Controls
                                         DateTime.Now.ToString() + " - ERROR: Неверный формат номера столика: " + 
                                         employee.TableNumber + "\n");
                                 }
-                            }
-                            
-                            if (!added)
-                            {
-                                File.AppendAllText(@"A:\debug.log", 
-                                    DateTime.Now.ToString() + " - WARNING: Не удалось добавить сотрудника " + 
-                                    employee.SelectedEmployeeName + " в смену\n");
                             }
                         }
                         else
@@ -343,106 +299,57 @@ namespace CafeApp.Controls
                         }
                     }
                 }
-
-                File.AppendAllText(@"A:\debug.log", 
-                    DateTime.Now.ToString() + " - Смена создана: ID=" + shiftId.ToString() + 
-                    ", Дата: " + date + ", Время: " + startTime + "-" + endTime + 
-                    ", Сотрудников: " + ShiftEmployees.Count.ToString() + "\n");
-
                 return true;
             }
             catch (Exception ex)
-            {
-                File.AppendAllText(@"A:\debug.log", 
-                    DateTime.Now.ToString() + " - ERROR in CreateShiftInDatabase: " + ex.Message + "\n" + ex.StackTrace + "\n");
-                return false;
-            }
+            { return false; }
         }
 
         private bool UpdateShiftInDatabase(int shiftId, string date, string startTime, string endTime)
         {
             try
             {
-                File.AppendAllText(@"A:\debug.log", 
-                    $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - UpdateShiftInDatabase started. ShiftID: {shiftId}, Date: {date}, Start: {startTime}, End: {endTime}\n");
-
                 DateTime shiftDate = DateTime.Parse(date);
                 TimeSpan start = TimeSpan.Parse(startTime);
                 TimeSpan end = TimeSpan.Parse(endTime);
-
-                // Обновляем основную информацию о смене
                 bool shiftUpdated = _databaseService.UpdateShift(shiftId, shiftDate, start, end);
                 File.AppendAllText(@"A:\debug.log", 
                     $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - UpdateShift result: {shiftUpdated}\n");
 
                 if (!shiftUpdated)
-                {
-                    File.AppendAllText(@"A:\debug.log", 
-                        $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - ERROR: Failed to update shift basic info\n");
-                    return false;
-                }
-
-                // Удаляем старых сотрудников из смены
+                { return false; }
+                
                 bool employeesCleared = _databaseService.ClearShiftEmployees(shiftId);
-                File.AppendAllText(@"A:\debug.log", 
-                    $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - ClearShiftEmployees result: {employeesCleared}\n");
-
-                // Добавляем новых сотрудников в смену
+                
                 int successCount = 0;
                 foreach (var employee in ShiftEmployees)
                 {
                     if (!string.IsNullOrEmpty(employee.SelectedEmployeeName))
                     {
-                        File.AppendAllText(@"A:\debug.log", 
-                            $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Processing employee: {employee.SelectedEmployeeName}\n");
-
                         int employeeId = _databaseService.GetEmployeeIdByName(employee.SelectedEmployeeName);
-                        File.AppendAllText(@"A:\debug.log", 
-                            $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Employee ID for {employee.SelectedEmployeeName}: {employeeId}\n");
-
                         if (employeeId != -1)
                         {
-                            // Добавляем сотрудника в смену
                             bool added = _databaseService.AddEmployeeToShift(shiftId, employeeId);
-                            File.AppendAllText(@"A:\debug.log", 
-                                $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - AddEmployeeToShift result: {added}\n");
-                            
                             if (added)
                             {
                                 successCount++;
                                 
-                                // Если это официант и указан столик, назначаем столик
                                 if (employee.IsWaiter && !string.IsNullOrEmpty(employee.TableNumber))
                                 {
-                                    File.AppendAllText(@"A:\debug.log", 
-                                        $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Employee is waiter with table: {employee.TableNumber}\n");
-
                                     if (int.TryParse(employee.TableNumber, out int tableNumber))
                                     {
-                                        // Удаляем старые назначения столиков для этого официанта
                                         _databaseService.ClearWaiterTableAssignments(shiftId, employeeId);
-                                        
                                         bool tableAssigned = _databaseService.AssignTableToWaiter(shiftId, employeeId, tableNumber, shiftDate);
-                                        File.AppendAllText(@"A:\debug.log", 
-                                            $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - AssignTableToWaiter result: {tableAssigned}\n");
                                     }
                                 }
                             }
                         }
                     }
                 }
-
-                File.AppendAllText(@"A:\debug.log", 
-                    $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Shift updated: ID={shiftId}, Date: {date}, Time: {startTime}-{endTime}, Employees: {successCount}/{ShiftEmployees.Count}\n");
-
-                return successCount > 0; // Успех если добавлен хотя бы один сотрудник
+                return successCount > 0;
             }
             catch (Exception ex)
-            {
-                File.AppendAllText(@"A:\debug.log", 
-                    $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - ERROR in UpdateShiftInDatabase: {ex.Message}\n{ex.StackTrace}\n");
-                return false;
-            }
+            { return false; }
         }
 
         private void UpdateEmployeeCountText()
@@ -454,27 +361,19 @@ namespace CafeApp.Controls
 
         public void ClearForm()
         {
-            // Сбрасываем ID текущей смены
             CurrentShiftId = -1;
-            
-            // Отписываемся от событий
             foreach (var employee in ShiftEmployees)
-            {
-                employee.PropertyChanged -= OnEmployeePropertyChanged;
-            }
-
-            // Очищаем сотрудников
+            { employee.PropertyChanged -= OnEmployeePropertyChanged; }
+            
             ShiftEmployees.Clear();
-
-            // Добавляем 4 пустых сотрудника по умолчанию
+            
             for (int i = 0; i < 4; i++)
             {
                 var newEmployee = new ShiftEmployeeData();
                 newEmployee.PropertyChanged += OnEmployeePropertyChanged;
                 ShiftEmployees.Add(newEmployee);
             }
-
-            // Очищаем поля ввода
+            
             var dateInput = this.FindControl<Input>("DateInput");
             var startTimeInput = this.FindControl<Input>("StartTimeInput");
             var endTimeInput = this.FindControl<Input>("EndTimeInput");
@@ -483,7 +382,6 @@ namespace CafeApp.Controls
             if (startTimeInput != null) startTimeInput.Value = "";
             if (endTimeInput != null) endTimeInput.Value = "";
 
-            // Сбрасываем счетчик и заголовок
             EmployeeCount = ShiftEmployees.Count;
             UpdateEmployeeCountText();
             UpdateTitle();
@@ -494,25 +392,13 @@ namespace CafeApp.Controls
             if (e.PropertyName == nameof(ShiftEmployeeData.SelectedEmployeeName))
             {
                 var employeeData = (ShiftEmployeeData)sender;
-                
-                // Логируем для отладки
-                File.AppendAllText(@"A:\debug.log", 
-                    $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Employee selection changed: '{employeeData.SelectedEmployeeName}'\n");
-                
                 if (!string.IsNullOrEmpty(employeeData.SelectedEmployeeName))
                 {
-                    // Получаем роль из базы данных и устанавливаем ее
                     string role = GetEmployeeRoleByFullName(employeeData.SelectedEmployeeName);
-                    
-                    File.AppendAllText(@"A:\debug.log", 
-                        $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Found role: '{role}' for employee: '{employeeData.SelectedEmployeeName}'\n");
-                    
                     employeeData.SetEmployeeRole(role);
                 }
                 else
-                {
-                    employeeData.SetEmployeeRole("");
-                }
+                { employeeData.SetEmployeeRole(""); }
             }
         }
     }
@@ -564,18 +450,13 @@ namespace CafeApp.Controls
                 }
             }
         }
-
-        // Метод для установки роли (будет вызываться из внешнего кода)
+        
         public void SetEmployeeRole(string role)
-        {
-            EmployeeRole = role;
-        }
+        { EmployeeRole = role; }
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
         protected virtual void OnPropertyChanged(string propertyName)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
+        { PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName)); }
     }
 }

@@ -63,7 +63,6 @@ namespace CafeApp.Controls.Components.List
             var textBlock = sender as TextBlock;
             if (textBlock?.DataContext is ListItem listItem)
             {
-                // Вызываем событие клика по элементу списка с ListItem
                 ItemClicked?.Invoke(this, listItem);
             }
         }

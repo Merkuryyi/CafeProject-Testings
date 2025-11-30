@@ -1130,87 +1130,87 @@ namespace CafeApp.Database
 
 
        public ShiftInfo GetShiftById(int shiftId)
-{
-    var shiftInfo = new ShiftInfo();
-    
-    try
-    {
-        using (var conn = GetConnection())
         {
-            // Получаем основную информацию о смене
-            string shiftQuery = @"
-                SELECT 
-                    shift_id,
-                    shift_date,
-                    start_time,
-                    end_time
-                FROM shift 
-                WHERE shift_id = @shiftId";
+            var shiftInfo = new ShiftInfo();
             
-            using (var shiftCommand = new NpgsqlCommand(shiftQuery, conn))
+            try
             {
-                shiftCommand.Parameters.AddWithValue("@shiftId", shiftId);
-                
-                using (var reader = shiftCommand.ExecuteReader())
+                using (var conn = GetConnection())
                 {
-                    if (reader.Read())
+                    // Получаем основную информацию о смене
+                    string shiftQuery = @"
+                        SELECT 
+                            shift_id,
+                            shift_date,
+                            start_time,
+                            end_time
+                        FROM shift 
+                        WHERE shift_id = @shiftId";
+                    
+                    using (var shiftCommand = new NpgsqlCommand(shiftQuery, conn))
                     {
-                        shiftInfo.ShiftId = reader.GetInt32(0);
-                        shiftInfo.ShiftDate = reader.GetDateTime(1);
-                        shiftInfo.StartTime = reader.GetTimeSpan(2);
-                        shiftInfo.EndTime = reader.GetTimeSpan(3);
-                    }
-                }
-            }
-
-            // Получаем сотрудников смены с номерами столиков из table_assignment
-            string employeesQuery = @"
-                SELECT 
-                    u.user_id,
-                    u.surname,
-                    u.name,
-                    u.patronymic,
-                    u.role,
-                    t.table_number
-                FROM shift_assignment sa
-                JOIN users u ON sa.user_id = u.user_id
-                LEFT JOIN table_assignment ta ON sa.shift_id = ta.shift_id AND sa.user_id = ta.user_id
-                LEFT JOIN ""table"" t ON ta.table_id = t.table_id
-                WHERE sa.shift_id = @shiftId
-                ORDER BY u.surname, u.name";
-            
-            using (var employeesCommand = new NpgsqlCommand(employeesQuery, conn))
-            {
-                employeesCommand.Parameters.AddWithValue("@shiftId", shiftId);
-                
-                using (var reader = employeesCommand.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        var employee = new ShiftEmployeeInfo
+                        shiftCommand.Parameters.AddWithValue("@shiftId", shiftId);
+                        
+                        using (var reader = shiftCommand.ExecuteReader())
                         {
-                            UserId = reader.GetInt32(0),
-                            Surname = reader.GetString(1),
-                            Name = reader.GetString(2),
-                            Patronymic = reader.IsDBNull(3) ? null : reader.GetString(3),
-                            Role = reader.GetString(4),
-                            TableNumber = reader.IsDBNull(5) ? null : reader.GetInt32(5).ToString()
-                        };
-                        shiftInfo.Employees.Add(employee);
+                            if (reader.Read())
+                            {
+                                shiftInfo.ShiftId = reader.GetInt32(0);
+                                shiftInfo.ShiftDate = reader.GetDateTime(1);
+                                shiftInfo.StartTime = reader.GetTimeSpan(2);
+                                shiftInfo.EndTime = reader.GetTimeSpan(3);
+                            }
+                        }
+                    }
+
+                    // Получаем сотрудников смены с номерами столиков из table_assignment
+                    string employeesQuery = @"
+                        SELECT 
+                            u.user_id,
+                            u.surname,
+                            u.name,
+                            u.patronymic,
+                            u.role,
+                            t.table_number
+                        FROM shift_assignment sa
+                        JOIN users u ON sa.user_id = u.user_id
+                        LEFT JOIN table_assignment ta ON sa.shift_id = ta.shift_id AND sa.user_id = ta.user_id
+                        LEFT JOIN ""table"" t ON ta.table_id = t.table_id
+                        WHERE sa.shift_id = @shiftId
+                        ORDER BY u.surname, u.name";
+                    
+                    using (var employeesCommand = new NpgsqlCommand(employeesQuery, conn))
+                    {
+                        employeesCommand.Parameters.AddWithValue("@shiftId", shiftId);
+                        
+                        using (var reader = employeesCommand.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                var employee = new ShiftEmployeeInfo
+                                {
+                                    UserId = reader.GetInt32(0),
+                                    Surname = reader.GetString(1),
+                                    Name = reader.GetString(2),
+                                    Patronymic = reader.IsDBNull(3) ? null : reader.GetString(3),
+                                    Role = reader.GetString(4),
+                                    TableNumber = reader.IsDBNull(5) ? null : reader.GetInt32(5).ToString()
+                                };
+                                shiftInfo.Employees.Add(employee);
+                            }
+                        }
                     }
                 }
             }
+            catch (Exception ex)
+            {
+                string filePath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
+                string errorMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB ERROR (GetShiftById): {ex.Message}\n";
+                File.AppendAllText(filePath, errorMessage);
+            }
+            
+            return shiftInfo;
         }
-    }
-    catch (Exception ex)
-    {
-        string filePath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
-        string errorMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB ERROR (GetShiftById): {ex.Message}\n";
-        File.AppendAllText(filePath, errorMessage);
-    }
-    
-    return shiftInfo;
-}
         // Метод для назначения столика официанту на смену
         public bool AssignTableToWaiter(int shiftId, int waiterId, int tableNumber, DateTime assignmentDate)
         {
@@ -1488,6 +1488,372 @@ namespace CafeApp.Database
                 File.AppendAllText(filePath, errorMessage);
                 return false;
             }
+            
         }
+        // В класс DatabaseService добавьте метод:
+        public List<ListItem> GetWaiterOrders(int waiterId, int shiftId = -1)
+        {
+            var orders = new List<ListItem>();
+            try
+            {
+                using (var conn = GetConnection())
+                {
+                    string query;
+                    NpgsqlCommand command;
+
+                    if (shiftId > 0)
+                    {
+                        // Заказы официанта за конкретную смену с вычислением суммы
+                        query = @"
+                            SELECT 
+                                o.order_id,
+                                o.table_id,
+                                o.created_at,
+                                o.status,
+                                o.customer_count,
+                                COALESCE((
+                                    SELECT SUM(oi.quantity * mi.price)
+                                    FROM order_item oi
+                                    JOIN menu_item mi ON oi.menu_item_id = mi.item_id
+                                    WHERE oi.order_id = o.order_id
+                                ), 0) as total_amount
+                            FROM ""order"" o
+                            WHERE o.waiter_id = @waiterId 
+                            AND o.shift_id = @shiftId
+                            ORDER BY o.created_at DESC";
+                        
+                        command = new NpgsqlCommand(query, conn);
+                        command.Parameters.AddWithValue("@waiterId", waiterId);
+                        command.Parameters.AddWithValue("@shiftId", shiftId);
+                    }
+                    else
+                    {
+                        // Все заказы официанта с вычислением суммы
+                        query = @"
+                            SELECT 
+                                o.order_id,
+                                o.table_id,
+                                o.created_at,
+                                o.status,
+                                o.customer_count,
+                                s.shift_date,
+                                COALESCE((
+                                    SELECT SUM(oi.quantity * mi.price)
+                                    FROM order_item oi
+                                    JOIN menu_item mi ON oi.menu_item_id = mi.item_id
+                                    WHERE oi.order_id = o.order_id
+                                ), 0) as total_amount
+                            FROM ""order"" o
+                            JOIN shift s ON o.shift_id = s.shift_id
+                            WHERE o.waiter_id = @waiterId
+                            ORDER BY o.created_at DESC";
+                        
+                        command = new NpgsqlCommand(query, conn);
+                        command.Parameters.AddWithValue("@waiterId", waiterId);
+                    }
+
+                    using (command)
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            int orderId = reader.GetInt32(0);
+                            int tableId = reader.GetInt32(1);
+                            DateTime createdAt = reader.GetDateTime(2);
+                            string status = reader.GetString(3);
+                            int customerCount = reader.GetInt32(4);
+                            decimal totalAmount = reader.GetDecimal(5);
+                            
+                            string displayText;
+                            if (shiftId > 0)
+                            {
+                                displayText = $"Стол №{tableId} - {createdAt:HH:mm} - {status} - {customerCount} чел. - {totalAmount:C}";
+                            }
+                            else
+                            {
+                                DateTime shiftDate = reader.GetDateTime(5);
+                                displayText = $"Стол №{tableId} - {shiftDate:yyyy-MM-dd} {createdAt:HH:mm} - {status} - {customerCount} чел. - {totalAmount:C}";
+                            }
+
+                            orders.Add(new ListItem
+                            {
+                                Id = orderId,
+                                DisplayText = displayText
+                            });
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                string filePath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
+                string errorMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB ERROR (GetWaiterOrders): {ex.Message}\n";
+                File.AppendAllText(filePath, errorMessage);
+            }
+            return orders;
+        }
+        public int? GetWaiterTableForCurrentShift(int waiterId)
+        {
+            try
+            {
+                using (var conn = GetConnection())
+                {
+                    // Получаем текущую смену
+                    int currentShiftId = GetCurrentOrLatestShiftId();
+                    if (currentShiftId == -1)
+                    {
+                        File.AppendAllText(@"A:\debug.log", 
+                            $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - No current shift found for waiter {waiterId}\n");
+                        return null;
+                    }
+
+                    // Получаем номер столика официанта на текущую смену
+                    string query = @"
+                        SELECT t.table_number
+                        FROM table_assignment ta
+                        JOIN ""table"" t ON ta.table_id = t.table_id
+                        WHERE ta.user_id = @waiterId 
+                        AND ta.shift_id = @shiftId
+                        LIMIT 1";
+
+                    using (var command = new NpgsqlCommand(query, conn))
+                    {
+                        command.Parameters.AddWithValue("@waiterId", waiterId);
+                        command.Parameters.AddWithValue("@shiftId", currentShiftId);
+
+                        var result = command.ExecuteScalar();
+                        if (result != null)
+                        {
+                            int tableNumber = Convert.ToInt32(result);
+                            File.AppendAllText(@"A:\debug.log", 
+                                $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Found table {tableNumber} for waiter {waiterId} in shift {currentShiftId}\n");
+                            return tableNumber;
+                        }
+                        else
+                        {
+                            File.AppendAllText(@"A:\debug.log", 
+                                $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - No table assigned to waiter {waiterId} in shift {currentShiftId}\n");
+                            return null;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                string filePath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
+                string errorMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB ERROR (GetWaiterTableForCurrentShift): {ex.Message}\n";
+                File.AppendAllText(filePath, errorMessage);
+                return null;
+            }
+        }
+        // В DatabaseService добавьте методы:
+
+        // Отчет о полученных заказах за смену
+         public List<OrderReportData> GetOrdersReceivedReport(int shiftId)
+         {
+             var orders = new List<OrderReportData>();
+             try
+             {
+                 using (var conn = GetConnection())
+                 {
+                     string query = @"
+                         SELECT 
+                             o.order_id,
+                             o.created_at,
+                             o.table_id,
+                             u.surname || ' ' || u.name || COALESCE(' ' || u.patronymic, '') as waiter_name,
+                             o.status,
+                             COALESCE(o.payment_type, 'не указан') as payment_type,
+                             o.customer_count,
+                             COALESCE((
+                                 SELECT SUM(oi.quantity * mi.price)
+                                 FROM order_item oi
+                                 JOIN menu_item mi ON oi.menu_item_id = mi.item_id
+                                 WHERE oi.order_id = o.order_id
+                             ), 0) as total_amount
+                         FROM ""order"" o
+                         JOIN users u ON o.waiter_id = u.user_id
+                         WHERE o.shift_id = @shiftId
+                         ORDER BY o.created_at";
+ 
+                     using (var command = new NpgsqlCommand(query, conn))
+                     {
+                         command.Parameters.AddWithValue("@shiftId", shiftId);
+                         
+                         using (var reader = command.ExecuteReader())
+                         {
+                             while (reader.Read())
+                             {
+                                 var order = new OrderReportData
+                                 {
+                                     OrderId = reader.GetInt32(0),
+                                     OrderDate = reader.GetDateTime(1),
+                                     TableId = reader.GetInt32(2),
+                                     WaiterName = reader.GetString(3),
+                                     Status = reader.GetString(4),
+                                     PaymentType = reader.GetString(5),
+                                     CustomerCount = reader.GetInt32(6),
+                                     TotalAmount = reader.GetDecimal(7)
+                                 };
+                                 
+                                 // Получаем позиции заказа
+                                 order.Items = GetOrderItemsForReport(order.OrderId);
+                                 orders.Add(order);
+                             }
+                         }
+                     }
+                 }
+             }
+             catch (Exception ex)
+             {
+                 string filePath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
+                 string errorMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB ERROR (GetOrdersReceivedReport): {ex.Message}\n";
+                 File.AppendAllText(filePath, errorMessage);
+             }
+             return orders;
+         }
+ 
+         // Отчет об оплаченных заказах
+         public List<OrderReportData> GetPaidOrdersReport(int shiftId = -1)
+         {
+             var orders = new List<OrderReportData>();
+             try
+             {
+                 using (var conn = GetConnection())
+                 {
+                     string query;
+                     NpgsqlCommand command;
+ 
+                     if (shiftId > 0)
+                     {
+                         query = @"
+                             SELECT 
+                                 o.order_id,
+                                 o.created_at,
+                                 o.table_id,
+                                 u.surname || ' ' || u.name || COALESCE(' ' || u.patronymic, '') as waiter_name,
+                                 o.status,
+                                 COALESCE(o.payment_type, 'не указан') as payment_type,
+                                 o.customer_count,
+                                 COALESCE((
+                                     SELECT SUM(oi.quantity * mi.price)
+                                     FROM order_item oi
+                                     JOIN menu_item mi ON oi.menu_item_id = mi.item_id
+                                     WHERE oi.order_id = o.order_id
+                                 ), 0) as total_amount
+                             FROM ""order"" o
+                             JOIN users u ON o.waiter_id = u.user_id
+                             WHERE o.shift_id = @shiftId AND o.status = 'оплачен'
+                             ORDER BY o.created_at";
+                         
+                         command = new NpgsqlCommand(query, conn);
+                         command.Parameters.AddWithValue("@shiftId", shiftId);
+                     }
+                     else
+                     {
+                         // Берем текущую или последнюю смену
+                         int currentShiftId = GetCurrentOrLatestShiftId();
+                         
+                         query = @"
+                             SELECT 
+                                 o.order_id,
+                                 o.created_at,
+                                 o.table_id,
+                                 u.surname || ' ' || u.name || COALESCE(' ' || u.patronymic, '') as waiter_name,
+                                 o.status,
+                                 COALESCE(o.payment_type, 'не указан') as payment_type,
+                                 o.customer_count,
+                                 COALESCE((
+                                     SELECT SUM(oi.quantity * mi.price)
+                                     FROM order_item oi
+                                     JOIN menu_item mi ON oi.menu_item_id = mi.item_id
+                                     WHERE oi.order_id = o.order_id
+                                 ), 0) as total_amount
+                             FROM ""order"" o
+                             JOIN users u ON o.waiter_id = u.user_id
+                             WHERE o.shift_id = @shiftId AND o.status = 'оплачен'
+                             ORDER BY o.created_at";
+                         
+                         command = new NpgsqlCommand(query, conn);
+                         command.Parameters.AddWithValue("@shiftId", currentShiftId);
+                     }
+ 
+                     using (command)
+                     using (var reader = command.ExecuteReader())
+                     {
+                         while (reader.Read())
+                         {
+                             var order = new OrderReportData
+                             {
+                                 OrderId = reader.GetInt32(0),
+                                 OrderDate = reader.GetDateTime(1),
+                                 TableId = reader.GetInt32(2),
+                                 WaiterName = reader.GetString(3),
+                                 Status = reader.GetString(4),
+                                 PaymentType = reader.GetString(5),
+                                 CustomerCount = reader.GetInt32(6),
+                                 TotalAmount = reader.GetDecimal(7)
+                             };
+                             
+                             order.Items = GetOrderItemsForReport(order.OrderId);
+                             orders.Add(order);
+                         }
+                     }
+                 }
+             }
+             catch (Exception ex)
+             {
+                 string filePath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
+                 string errorMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB ERROR (GetPaidOrdersReport): {ex.Message}\n";
+                 File.AppendAllText(filePath, errorMessage);
+             }
+             return orders;
+         }
+
+        // Вспомогательный метод для получения позиций заказа
+            private List<OrderItemReport> GetOrderItemsForReport(int orderId)
+            {
+                var items = new List<OrderItemReport>();
+                try
+                {
+                    using (var conn = GetConnection())
+                    {
+                        string query = @"
+                            SELECT 
+                                mi.name,
+                                oi.quantity,
+                                mi.price
+                            FROM order_item oi
+                            JOIN menu_item mi ON oi.menu_item_id = mi.item_id
+                            WHERE oi.order_id = @orderId";
+                        
+                        using (var command = new NpgsqlCommand(query, conn))
+                        {
+                            command.Parameters.AddWithValue("@orderId", orderId);
+                            
+                            using (var reader = command.ExecuteReader())
+                            {
+                                while (reader.Read())
+                                {
+                                    var item = new OrderItemReport
+                                    {
+                                        DishName = reader.GetString(0),
+                                        Quantity = reader.GetInt32(1),
+                                        Price = reader.GetDecimal(2)
+                                    };
+                                    items.Add(item);
+                                }
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    string filePath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
+                    string errorMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB ERROR (GetOrderItemsForReport): {ex.Message}\n";
+                    File.AppendAllText(filePath, errorMessage);
+                }
+                return items;
+            }
     }
 }

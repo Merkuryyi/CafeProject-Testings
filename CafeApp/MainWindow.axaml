@@ -71,6 +71,15 @@
                         HorizontalAlignment="Stretch"
                         VerticalAlignment="Stretch"
                         IsVisible="False"/>
+                    
+                    <controls:Report x:Name="ReportControl" 
+                         HorizontalAlignment="Stretch"
+                         VerticalAlignment="Stretch"
+                         IsVisible="False"/>
+                    <controls:WaiterReport x:Name="WaiterReportControl" 
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch"
+                        IsVisible="False"/>
                 </StackPanel>
             </Grid>
         </Grid>

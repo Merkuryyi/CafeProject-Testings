@@ -40,8 +40,35 @@ namespace CafeApp
             
             var sidebarControl = this.FindControl<Sidebar>("SidebarControl");
             sidebarControl.ItemSelected += OnSidebarItemSelected;
+            
+            var waiterReportControl = this.FindControl<WaiterReport>("WaiterReportControl");
+            if (waiterReportControl != null)
+            { waiterReportControl.OrderClicked += OnWaiterReportOrderClicked; }
 
             SubscribeToListEvents();
+        }
+        private void OnWaiterReportOrderClicked(object? sender, int orderId)
+        {
+            try
+            {
+                var orderControl = this.FindControl<CafeApp.Controls.Order>("OrderControl");
+                if (orderControl != null)
+                {
+                    string role = GetCurrentRole();
+                    bool isWaiter = (role == "официант");
+                    string viewMode = isWaiter ? "Просмотр заказа" : "Редактирование заказа";
+                    orderControl.Role = role;
+                    orderControl.LoadOrderData(orderId, role);
+                    orderControl.Title = viewMode;
+                    orderControl.HideComponentsOrder();
+                    ShowControl(orderControl);
+                }
+            }
+            catch (Exception ex)
+            {
+                File.AppendAllText(@"A:\debug.log", 
+                    $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - ERROR in OnWaiterReportOrderClicked: {ex.Message}\n{ex.StackTrace}\n");
+            }
         }
 
         private void LoadEmployeesData()
@@ -88,49 +115,39 @@ namespace CafeApp
             listControl.Title = "Список смен";
             
         }
+        public void ShowWaiterReport(int waiterId, string waiterName, int shiftId)
+        {
+            try
+            {
+                HideAllControls();
+
+                var waiterReportControl = this.FindControl<WaiterReport>("WaiterReportControl");
+                if (waiterReportControl != null)
+                {
+                    waiterReportControl.OrderClicked -= OnWaiterReportOrderClicked; // Сначала отписываемся
+                    waiterReportControl.OrderClicked += OnWaiterReportOrderClicked; // Затем подписываемся
+                    waiterReportControl.LoadWaiterReport(waiterId, waiterName, shiftId);
+                    waiterReportControl.IsVisible = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                File.AppendAllText(@"A:\debug.log", 
+                    $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - ERROR in ShowWaiterReport: {ex.Message}\n{ex.StackTrace}\n");
+            }
+        }
 
         private void OnLoginResult(object? sender, string role)
         {
             if (!string.IsNullOrEmpty(role))
             {
-             //   string userInfo = CurrentUser.GetUserInfo();
-                
-             //   string logPath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
-           //     File.AppendAllText(logPath, $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - MAIN WINDOW: {userInfo}\n");
-        
-               // UpdateUserInterface();
-        
                 var sidebarControl = this.FindControl<Sidebar>("SidebarControl");
                 sidebarControl.Role = CurrentUser.Role;
-        
                 var withSidebarPanel = this.FindControl<Grid>("WithSidebarPanel");
                 var withoutSidebarPanel = this.FindControl<Grid>("WithoutSidebarPanel");
-        
                 withSidebarPanel.IsVisible = true;
                 withoutSidebarPanel.IsVisible = false;
             }
-        }
-        
-        private void UpdateUserInterface()
-        {
-            // Показываем информацию о пользователе
-            var userInfoTextBlock = this.FindControl<TextBlock>("UserInfoTextBlock");
-            userInfoTextBlock.Text = $"{CurrentUser.FullName} ({CurrentUser.Role})";
-            
-    
-            // Настраиваем видимость элементов по роли
-            var adminPanel = this.FindControl<StackPanel>("AdminPanel");
-            adminPanel.IsVisible = CurrentUser.IsAdmin;
-            
-    
-            var waiterPanel = this.FindControl<StackPanel>("WaiterPanel");
-            waiterPanel.IsVisible = CurrentUser.IsWaiter;
-            
-    
-            // Также можно обновить Sidebar
-            var sidebarControl = this.FindControl<Sidebar>("SidebarControl");
-              sidebarControl.Role = CurrentUser.Role;
-            
         }
 
         private void OnSidebarItemSelected(object? sender, string itemName)
@@ -164,6 +181,14 @@ namespace CafeApp
                     if (shiftsList != null)
                         shiftsList.IsVisible = true;
                     break;
+                
+                case "ReportsText":
+                    LoadShiftsData();
+                    var reportControl = this.FindControl<CafeApp.Controls.Report>("ReportControl");
+                    if (reportControl != null)
+                        reportControl.Role = CurrentUser.Role;
+                        reportControl.IsVisible = true;
+                    break;
             }
         }
 
@@ -189,6 +214,7 @@ namespace CafeApp
                 shiftsList.ItemClicked += OnListItemClicked;
                 shiftsList.AddButtonClicked += OnListAddButtonClicked;
             }
+            
         }
 
         private string GetCurrentRole()
@@ -227,13 +253,10 @@ namespace CafeApp
             }
             else if (title.Contains("смен"))
             {
-                var shiftControl = this.FindControl<CafeApp.Controls.Shift>("ShiftControl");
-             int shiftId = clickedItem.Id;
-            shiftControl.LoadShiftData(clickedItem.Id);
-             //   string logMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Loading shift ID: {clickedItem.Id}\n";
-              //  File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", logMessage);
-              shiftControl.Title = "Редактирование смены";
-              ShowControl(shiftControl);
+                var shiftControl = this.FindControl<Controls.Shift>("ShiftControl");
+                shiftControl.LoadShiftData(clickedItem.Id);
+                shiftControl.Title = "Редактирование смены";
+                ShowControl(shiftControl);
             }
         }
         private void OnListAddButtonClicked(object sender, EventArgs e)
@@ -242,9 +265,9 @@ namespace CafeApp
             var title = listControl.Title?.ToLower() ?? "";
             var currentRole = GetCurrentRole();
 
-            if (title.Contains("заказ") && currentRole != "повар" ) //&& currentRole != "администратор"
+            if (title.Contains("заказ") && currentRole != "повар" && currentRole != "администратор")
             {
-                var orderControl = this.FindControl<CafeApp.Controls.Order>("OrderControl");
+                var orderControl = this.FindControl<Controls.Order>("OrderControl");
                 if (orderControl != null)
                 {
                     orderControl.ClearForm();
@@ -262,14 +285,15 @@ namespace CafeApp
                 {
                     formEmployee.ClearForm();
                     formEmployee.Title = "Регистрация сотрудника";
+                    formEmployee.ResetComponents();
                     ShowControl(formEmployee);
                 }
             }
             else if (title.Contains("смен"))
             {
-                var shiftControl = this.FindControl<CafeApp.Controls.Shift>("ShiftControl");
-               shiftControl.Title = "Новая смена";
-                ShowControl(shiftControl);
+                 var shiftControl = this.FindControl<Controls.Shift>("ShiftControl");
+                 shiftControl.Title = "Новая смена";
+                 ShowControl(shiftControl);
             }
         }
 
@@ -304,6 +328,14 @@ namespace CafeApp
             var shiftControl = this.FindControl<CafeApp.Controls.Shift>("ShiftControl");
             if (shiftControl != null)
                 shiftControl.IsVisible = false;
+            
+            var reportControl = this.FindControl<Report>("ReportControl");
+            if (reportControl != null)
+                reportControl.IsVisible = false;
+            
+            var waiterReportControl = this.FindControl<WaiterReport>("WaiterReportControl");
+            if (waiterReportControl != null)
+                waiterReportControl.IsVisible = false;
         }
     }
 

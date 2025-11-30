@@ -25,7 +25,6 @@ namespace CafeApp.Controls
         public static readonly StyledProperty<int> EmployeeIdProperty =
             AvaloniaProperty.Register<FormEmployee, int>(nameof(EmployeeId), -1);
         
-        
         public int EmployeeId
         {
             get => GetValue(EmployeeIdProperty);
@@ -66,17 +65,19 @@ namespace CafeApp.Controls
 
         public void ResetComponents()
         {
+            File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log",
+                $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - " +
+                $"Employee loaded successfully: {Title}\n");
+            EmployeeId = -1;
             var loginInput = this.FindControl<Input>("UsernameInput");
             var passwordInput = this.FindControl<Input>("PasswordInput");
             var roleComboBox = this.FindControl<global::CafeApp.Controls.Components.ComboBox.ComboBox>("RoleComboBox");
             var addPhotoEmployee = this.FindControl<TextBlock>("AddPhotoEmployee");
             
-            
             var nameInput = this.FindControl<Input>("NameInput");
             var surnameInput = this.FindControl<Input>("SurnameInput");
             var patronymicInput = this.FindControl<Input>("PatronymicInput");
             var addEmploymentContract = this.FindControl<TextBlock>("AddEmploymentContract");
-            
             
             var loginPanel = this.FindControl<StackPanel>("LoginPanel");
             var passwordPanel = this.FindControl<StackPanel>("PasswordPanel");
@@ -86,8 +87,26 @@ namespace CafeApp.Controls
             var surnamePanel = this.FindControl<StackPanel>("SurnamePanel");
             var patronymicPanel = this.FindControl<StackPanel>("PatronymicPanel");
             
-            
             var statusComboBox = this.FindControl<global::CafeApp.Controls.Components.ComboBox.ComboBox>("StatusComboBox");
+            if (Title == "Регистрация сотрудника")
+            {
+                loginPanel.IsVisible = false;
+                passwordPanel.IsVisible = false;
+                rolePanel.IsVisible = false;
+                namePanel.IsVisible = false;
+                surnamePanel.IsVisible = false;
+                patronymicPanel.IsVisible = false;
+                statusComboBox.IsVisible = false;
+                
+                loginInput.IsVisible = true;
+                passwordInput.IsVisible = true;
+                roleComboBox.IsVisible = true;
+                addPhotoEmployee.IsVisible = true;
+                nameInput.IsVisible = true;
+                surnameInput.IsVisible = true;
+                patronymicInput.IsVisible = true;
+                addEmploymentContract.IsVisible = true;
+            }
             if (Title == "Редактирование сотрудника")
             {
                 loginPanel.IsVisible = true;
@@ -107,38 +126,20 @@ namespace CafeApp.Controls
                 patronymicInput.IsVisible = false;
                 addEmploymentContract.IsVisible = false;
             }
-            else if (Title == "Регистрация сотрудника")
-            {
-                loginPanel.IsVisible = false;
-                passwordPanel.IsVisible = false;
-                rolePanel.IsVisible = false;
-                namePanel.IsVisible = false;
-                surnamePanel.IsVisible = false;
-                patronymicPanel.IsVisible = false;
-                statusComboBox.IsVisible = false;
-                
-                loginInput.IsVisible = true;
-                passwordInput.IsVisible = true;
-                roleComboBox.IsVisible = true;
-                addPhotoEmployee.IsVisible = true;
-                nameInput.IsVisible = true;
-                surnameInput.IsVisible = true;
-                patronymicInput.IsVisible = true;
-                addEmploymentContract.IsVisible = true;
-            }
+            
         }
 
         public void LoadEmployee(int employeeId)
         {
             
-            ResetComponents();
-           var employeeInfo = _databaseService.GetEmployeeById(employeeId);
+           ResetComponents();
            EmployeeId = employeeId;
+           var employeeInfo = _databaseService.GetEmployeeById(employeeId);
+           
            var loginTextBlock = this.FindControl<TextBlock>("LoginTextBlock");
            var passwordTextBlock = this.FindControl<TextBlock>("PasswordTextBlock");
            var roleTextBlock = this.FindControl<TextBlock>("RoleTextBlock");
            
-            
            var nameTextBlock = this.FindControl<TextBlock>("NameTextBlock");
            var surnameTextBlock = this.FindControl<TextBlock>("SurnameTextBlock");
            var patronymicTextBlock = this.FindControl<TextBlock>("PatronymicTextBlock");
@@ -151,25 +152,19 @@ namespace CafeApp.Controls
                { statusComboBox.SelectedItem = "Работает"; }
                else
                { statusComboBox.SelectedItem = "Уволен"; }
-               
 
-               loginTextBlock.Text = employeeInfo.Username;
-               passwordTextBlock.Text = employeeInfo.Password;
-                   roleTextBlock.Text = employeeInfo.Role;
-                   nameTextBlock.Text = employeeInfo.Name;
-                   surnameTextBlock.Text = employeeInfo.Surname;
-                   patronymicTextBlock.Text = employeeInfo.Patronymic;
-                   File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", 
-                       $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - " +
-                       $"Employee loaded successfully: {employeeInfo.Surname} " +
-                       $"{employeeInfo.Name} $\"{employeeInfo.Patronymic}" +
-                       $"{employeeInfo.Role} {employeeInfo.Password}\n");
-
-
-
+                loginTextBlock.Text = employeeInfo.Username;
+                passwordTextBlock.Text = employeeInfo.Password;
+                roleTextBlock.Text = employeeInfo.Role;
+                nameTextBlock.Text = employeeInfo.Name;
+                surnameTextBlock.Text = employeeInfo.Surname;
+                patronymicTextBlock.Text = employeeInfo.Patronymic;
+                File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", 
+                $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - " +
+                $"Employee loaded successfully: {employeeInfo.Surname} " +
+                $"{employeeInfo.Name} $\"{employeeInfo.Patronymic}" +
+                $"{employeeInfo.Role} {employeeInfo.Password}\n");
            }
-           
-
         }
 
         private void SaveButton_Click(object sender, RoutedEventArgs e)
@@ -202,8 +197,7 @@ namespace CafeApp.Controls
 
             var roleInnerComboBox = roleComboBox?.FindControl<Avalonia.Controls.ComboBox>("MainComboBox");
             string selectedRole = roleInnerComboBox?.SelectedItem?.ToString() ?? "";
-
-
+            
             try
             {
                 var statusComboBox = this.FindControl<global::CafeApp.Controls.Components.ComboBox.ComboBox>("StatusComboBox");
@@ -215,9 +209,7 @@ namespace CafeApp.Controls
                     { status = true; }
                     else
                     { status = false; }
-                    File.AppendAllText(@"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log", 
-                        $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - EmployeeId = {EmployeeId} {status}\n");
-
+                    
                    bool success = _databaseService.UpdateEmployeeStatus(EmployeeId, status);
                    if (success)
                    { statusComboBox.SelectedItem = ""; }
@@ -225,19 +217,15 @@ namespace CafeApp.Controls
                 }
                 else
                 {
-                    
                     if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password) || 
                         string.IsNullOrEmpty(name) || string.IsNullOrEmpty(surname) ||
                         string.IsNullOrEmpty(selectedRole) || string.IsNullOrEmpty(_photoFilePath) ||
                         string.IsNullOrEmpty(_contractFilePath))
-                    {
-                        string logMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - ERROR: Not all fields are filled\n";
-                        File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", logMessage);
-                        return;
-                    }
-                     string projectDirectory = Directory.GetCurrentDirectory();
+                    { return; }
+                    string projectDirectory = Directory.GetCurrentDirectory();
                     string photoLink = "";
                     string contractScanLink = "";
+                    
                     if (!string.IsNullOrEmpty(_photoFilePath))
                     {
                         string photoTargetDir = Path.Combine(projectDirectory, "images/EmployeePhoto");
@@ -247,55 +235,28 @@ namespace CafeApp.Controls
                         
                         using (var sourceStream = new FileStream(_photoFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                         using (var targetStream = new FileStream(photoTargetPath, FileMode.Create, FileAccess.Write))
-                        {
-                            sourceStream.CopyTo(targetStream);
-                        }
+                        { sourceStream.CopyTo(targetStream); }
                         photoLink = $"CafeApp/images/EmployeePhoto/{photoFileName}";
                     }
-
-                    // Копируем договор с использованием FileStream
                     if (!string.IsNullOrEmpty(_contractFilePath))
                     {
                         string contractTargetDir = Path.Combine(projectDirectory, "images/EmploymentContract");
                         Directory.CreateDirectory(contractTargetDir);
                         string contractFileName = Path.GetFileName(_contractFilePath);
                         string contractTargetPath = Path.Combine(contractTargetDir, contractFileName);
-                        
-                        // Используем FileStream для обхода блокировки
                         using (var sourceStream = new FileStream(_contractFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                         using (var targetStream = new FileStream(contractTargetPath, FileMode.Create, FileAccess.Write))
-                        {
-                            sourceStream.CopyTo(targetStream);
-                        }
+                        { sourceStream.CopyTo(targetStream); }
                         contractScanLink = $"CafeApp/images/EmploymentContract/{contractFileName}";
                     }
-
-                    // Регистрируем пользователя в БД
                     bool isRegistered = _databaseService.RegisterUser(username, password, name, surname, patronymic, selectedRole, photoLink, contractScanLink);
-
-                    string logMessage1 = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Form data saved:\n" +
-                                       $"Username: '{username}'\n" +
-                                       $"Password: '{password}'\n"+
-                                       $"Name: '{name}'\n" +
-                                       $"Surname: '{surname}'\n" +
-                                       $"Patronymic: '{patronymic}'\n" +
-                                       $"Role: '{selectedRole}'\n" +
-                                       $"Photo: '{photoLink}'\n" +
-                                       $"Contract: '{contractScanLink}'\n" +
-                                       $"DB Registration: {isRegistered}\n";
-                    File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения" +
-                                       " ИС/debug.log", logMessage1);
 
                     if (isRegistered)
                     {
                         ClearForm();
                         SaveButtonClicked?.Invoke(this, EventArgs.Empty);
                     }
-                
-
                 }
-               
-                
             }
             catch (Exception ex)
             {
@@ -325,11 +286,9 @@ namespace CafeApp.Controls
             surnameInput.Value = "";
             patronymicInput.Value = "";
 
-            // Сбрасываем ComboBox
             if (roleInnerComboBox != null)
             { roleInnerComboBox.SelectedIndex = -1; }
 
-            // Возвращаем плюсики
             var addPhotoEmployee = this.FindControl<TextBlock>("AddPhotoEmployee");
             var addEmploymentContract = this.FindControl<TextBlock>("AddEmploymentContract");
             addPhotoEmployee.Text = "+";
