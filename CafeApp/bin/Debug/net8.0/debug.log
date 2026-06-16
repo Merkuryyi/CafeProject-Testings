@@ -1,0 +1,222 @@
+2026-06-16 14:59:37 - Employee loaded successfully: Регистрация сотрудника
+2026-06-16 15:19:25 - Employee loaded successfully: Регистрация сотрудника
+2026-06-16 15:19:36 - Employee loaded successfully: Регистрация сотрудника
+2026-06-16 15:22:31 - Employee loaded successfully: Регистрация сотрудника
+2026-06-16 15:30:46 - Employee loaded successfully: Регистрация сотрудника
+2026-06-16 15:30:46 - DB ERROR (GetAllEmployeesExceptAdmins): 28P01: ������������ "postgres" �� ������ �������� ����������� (�� ������)
+2026-06-16 15:30:46 - DB ERROR (GetShiftsList): 28P01: ������������ "postgres" �� ������ �������� ����������� (�� ������)
+2026-06-16 15:30:47 - DB ERROR (GetEmployeesList): 28P01: ������������ "postgres" �� ������ �������� ����������� (�� ������)
+2026-06-16 15:35:40 - Employee loaded successfully: Регистрация сотрудника
+2026-06-16 15:35:40 - DB ERROR (GetAllEmployeesExceptAdmins): 42P01: отношение "users" не существует
+
+POSITION: 486
+2026-06-16 15:35:40 - DB ERROR (GetEmployeesList): 42P01: отношение "users" не существует
+
+POSITION: 251
+2026-06-16 15:36:21 - AUTH ERROR: 42P01: отношение "users" не существует
+
+POSITION: 157
+2026-06-16 15:36:24 - AUTH ERROR: 42P01: отношение "users" не существует
+
+POSITION: 157
+2026-06-16 15:36:26 - AUTH ERROR: 42P01: отношение "users" не существует
+
+POSITION: 157
+2026-06-16 15:37:08 - AUTH ERROR: 42P01: отношение "users" не существует
+
+POSITION: 157
+2026-06-16 15:37:59 - Employee loaded successfully: Регистрация сотрудника
+2026-06-16 15:38:00 - DB ERROR (GetAllEmployeesExceptAdmins): 42P01: отношение "users" не существует
+
+POSITION: 486
+2026-06-16 15:38:00 - DB ERROR (GetEmployeesList): 42P01: отношение "users" не существует
+
+POSITION: 251
+2026-06-16 15:38:08 - AUTH ERROR: 42P01: отношение "users" не существует
+
+POSITION: 157
+2026-06-16 15:38:14 - AUTH ERROR: 42P01: отношение "users" не существует
+
+POSITION: 157
+2026-06-16 15:38:14 - AUTH ERROR: 42P01: отношение "users" не существует
+
+POSITION: 157
+2026-06-16 15:38:14 - AUTH ERROR: 42P01: отношение "users" не существует
+
+POSITION: 157
+2026-06-16 15:38:15 - AUTH ERROR: 42P01: отношение "users" не существует
+
+POSITION: 157
+2026-06-16 15:38:15 - AUTH ERROR: 42P01: отношение "users" не существует
+
+POSITION: 157
+2026-06-16 15:39:05 - AUTH ERROR: 42P01: отношение "users" не существует
+
+POSITION: 157
+2026-06-16 15:39:08 - AUTH ERROR: 42P01: отношение "users" не существует
+
+POSITION: 157
+2026-06-16 15:41:30 - AUTH ERROR: 42P01: отношение "users" не существует
+
+POSITION: 157
+2026-06-16 15:42:47 - AUTH ERROR: 42P01: отношение "users" не существует
+
+POSITION: 157
+2026-06-16 15:42:48 - AUTH ERROR: 42P01: отношение "users" не существует
+
+POSITION: 157
+2026-06-16 15:42:48 - AUTH ERROR: 42P01: отношение "users" не существует
+
+POSITION: 157
+2026-06-16 15:43:18 - AUTH ERROR: 42P01: отношение "users" не существует
+
+POSITION: 157
+2026-06-16 15:43:59 - Employee loaded successfully: Регистрация сотрудника
+2026-06-16 15:44:00 - DB ERROR (GetAllEmployeesExceptAdmins): 42P01: отношение "users" не существует
+
+POSITION: 486
+2026-06-16 15:44:00 - DB ERROR (GetEmployeesList): 42P01: отношение "users" не существует
+
+POSITION: 251
+2026-06-16 15:44:06 - AUTH ERROR: 42P01: отношение "users" не существует
+
+POSITION: 157
+2026-06-16 15:46:42 - Employee loaded successfully: Редактирование сотрудника
+2026-06-16 15:46:42 - Employee found: ID=1, Username=admin, Role=администратор, Name=Иванова Анна
+2026-06-16 15:46:42 - Employee loaded successfully: Иванова Анна $"Петровнаадминистратор admin123
+2026-06-16 15:47:06 - Employee loaded successfully: Редактирование сотрудника
+2026-06-16 15:47:06 - Employee found: ID=1, Username=admin, Role=администратор, Name=Иванова Анна
+2026-06-16 15:47:06 - Employee loaded successfully: Иванова Анна $"Петровнаадминистратор admin123
+2026-06-16 15:47:16 - Employee status updated: ID=1, New Status=уволен, Rows affected: 1
+2026-06-16 15:47:39 - Employee loaded successfully: Редактирование сотрудника
+2026-06-16 15:47:39 - Employee found: ID=1, Username=admin, Role=администратор, Name=Иванова Анна
+2026-06-16 15:47:39 - Employee loaded successfully: Иванова Анна $"Петровнаадминистратор admin123
+2026-06-16 15:47:41 - Employee status updated: ID=1, New Status=работает, Rows affected: 1
+2026-06-16 15:50:35 - Employee status updated: ID=1, New Status=работает, Rows affected: 1
+2026-06-16 15:50:38 - Employee loaded successfully: Редактирование сотрудника
+2026-06-16 15:50:38 - Employee found: ID=1, Username=admin, Role=администратор, Name=Иванова Анна
+2026-06-16 15:50:38 - Employee loaded successfully: Иванова Анна $"Петровнаадминистратор admin123
+2026-06-16 15:50:58 - Employee loaded successfully: Редактирование сотрудника
+2026-06-16 15:50:58 - Employee found: ID=1, Username=admin, Role=администратор, Name=Иванова Анна
+2026-06-16 15:50:58 - Employee loaded successfully: Иванова Анна $"Петровнаадминистратор admin123
+2026-06-16 15:53:15 - Employee loaded successfully: Регистрация сотрудника
+2026-06-16 15:54:11 - Employee loaded successfully: Редактирование сотрудника
+2026-06-16 15:54:11 - Employee found: ID=1, Username=admin, Role=администратор, Name=Иванова Анна
+2026-06-16 15:54:11 - Employee loaded successfully: Иванова Анна $"Петровнаадминистратор admin123
+2026-06-16 15:54:12 - Employee status updated: ID=1, New Status=уволен, Rows affected: 1
+2026-06-16 15:54:14 - Employee status updated: ID=1, New Status=работает, Rows affected: 1
+2026-06-16 15:54:15 - Employee loaded successfully: Редактирование сотрудника
+2026-06-16 15:54:15 - Employee found: ID=1, Username=admin, Role=администратор, Name=Иванова Анна
+2026-06-16 15:54:15 - Employee loaded successfully: Иванова Анна $"Петровнаадминистратор admin123
+2026-06-16 15:54:30 - Employee loaded successfully: Регистрация сотрудника
+2026-06-16 15:54:37 - Employee loaded successfully: Редактирование сотрудника
+2026-06-16 15:54:37 - Employee found: ID=1, Username=admin, Role=администратор, Name=Иванова Анна
+2026-06-16 15:54:37 - Employee loaded successfully: Иванова Анна $"Петровнаадминистратор admin123
+2026-06-16 15:59:26 - Order found: ID=5, Status=оплачен, Waiter=Смирнова Мария Олеговна, CustomerCount=1
+2026-06-16 15:59:26 - Order item: Кофе американо, Quantity: 1
+2026-06-16 15:59:26 - Order item: Чизкейк, Quantity: 1
+2026-06-16 15:59:26 - Found 2 order items
+2026-06-16 15:59:26 - DB ERROR (GetOrderPaymentType): 42703: столбец "payment_type" не существует
+
+POSITION: 8
+2026-06-16 15:59:42 - Order found: ID=4, Status=принят, Waiter=Козлов Дмитрий Сергеевич, CustomerCount=2
+2026-06-16 15:59:42 - Order item: Кофе американо, Quantity: 1
+2026-06-16 15:59:42 - Order item: Капучино, Quantity: 1
+2026-06-16 15:59:42 - Found 2 order items
+2026-06-16 15:59:45 - Order found: ID=5, Status=оплачен, Waiter=Смирнова Мария Олеговна, CustomerCount=1
+2026-06-16 15:59:45 - Order item: Кофе американо, Quantity: 1
+2026-06-16 15:59:45 - Order item: Чизкейк, Quantity: 1
+2026-06-16 15:59:45 - Found 2 order items
+2026-06-16 15:59:45 - DB ERROR (GetOrderPaymentType): 42703: столбец "payment_type" не существует
+
+POSITION: 8
+2026-06-16 16:05:14 - DB ERROR (GetOrdersReceivedReport): 42703: столбец o.payment_type не существует
+
+POSITION: 353
+2026-06-16 16:05:21 - DB ERROR (GetOrdersReceivedReport): 42703: столбец o.payment_type не существует
+
+POSITION: 353
+2026-06-16 16:05:24 - DB ERROR (GetOrdersReceivedReport): 42703: столбец o.payment_type не существует
+
+POSITION: 353
+2026-06-16 16:05:28 - DB ERROR (GetOrdersReceivedReport): 42703: столбец o.payment_type не существует
+
+POSITION: 353
+2026-06-16 16:05:30 - DB ERROR (GetOrdersReceivedReport): 42703: столбец o.payment_type не существует
+
+POSITION: 353
+2026-06-16 16:09:00 - DB ERROR (GetOrdersReceivedReport): 42703: столбец o.payment_type не существует
+
+POSITION: 353
+2026-06-16 16:14:32 - Current shift not found, using latest shift: ID=5
+2026-06-16 16:14:32 - DB ERROR (GetPaidOrdersReport): 42703: столбец o.payment_type не существует
+
+POSITION: 381
+2026-06-16 16:15:21 - Current shift not found, using latest shift: ID=5
+2026-06-16 16:15:21 - DB ERROR (GetPaidOrdersReport): 42703: столбец o.payment_type не существует
+
+POSITION: 381
+2026-06-16 16:15:50 - Current shift not found, using latest shift: ID=5
+2026-06-16 16:15:50 - DB ERROR (GetPaidOrdersReport): 42703: столбец o.payment_type не существует
+
+POSITION: 381
+2026-06-16 16:19:07 - Order found: ID=5, Status=оплачен, Waiter=Смирнова Мария Олеговна, CustomerCount=1
+2026-06-16 16:19:07 - Order item: Кофе американо, Quantity: 1
+2026-06-16 16:19:07 - Order item: Чизкейк, Quantity: 1
+2026-06-16 16:19:07 - Found 2 order items
+2026-06-16 16:19:07 - DB ERROR (GetOrderPaymentType): 42703: столбец "payment_type" не существует
+
+POSITION: 8
+16.06.2026 16:21:13 - Table assignment: Table=4, Waiter=2, Shift=5, Rows affected=1
+2026-06-16 16:22:18 - Order found: ID=3, Status=готовится, Waiter=Козлов Дмитрий Сергеевич, CustomerCount=4
+2026-06-16 16:22:18 - Order item: Салат Цезарь, Quantity: 4
+2026-06-16 16:22:18 - Order item: Борщ, Quantity: 4
+2026-06-16 16:22:18 - Found 2 order items
+2026-06-16 16:22:26 - Order found: ID=5, Status=оплачен, Waiter=Смирнова Мария Олеговна, CustomerCount=1
+2026-06-16 16:22:26 - Order item: Кофе американо, Quantity: 1
+2026-06-16 16:22:26 - Order item: Чизкейк, Quantity: 1
+2026-06-16 16:22:26 - Found 2 order items
+2026-06-16 16:22:26 - DB ERROR (GetOrderPaymentType): 42703: столбец "payment_type" не существует
+
+POSITION: 8
+2026-06-16 16:22:33 - Order found: ID=2, Status=готов, Waiter=Смирнова Мария Олеговна, CustomerCount=3
+2026-06-16 16:22:33 - Order item: Капучино, Quantity: 3
+2026-06-16 16:22:33 - Order item: Салат Цезарь, Quantity: 2
+2026-06-16 16:22:33 - Found 2 order items
+2026-06-16 16:23:00 - Order found: ID=5, Status=оплачен, Waiter=Смирнова Мария Олеговна, CustomerCount=1
+2026-06-16 16:23:00 - Order item: Кофе американо, Quantity: 1
+2026-06-16 16:23:00 - Order item: Чизкейк, Quantity: 1
+2026-06-16 16:23:00 - Found 2 order items
+2026-06-16 16:23:00 - DB ERROR (GetOrderPaymentType): 42703: столбец "payment_type" не существует
+
+POSITION: 8
+2026-06-16 16:23:22 - Order found: ID=2, Status=готов, Waiter=Смирнова Мария Олеговна, CustomerCount=3
+2026-06-16 16:23:22 - Order item: Капучино, Quantity: 3
+2026-06-16 16:23:22 - Order item: Салат Цезарь, Quantity: 2
+2026-06-16 16:23:22 - Found 2 order items
+2026-06-16 16:26:16 - Employee loaded successfully: Редактирование сотрудника
+2026-06-16 16:26:16 - Employee found: ID=1, Username=admin, Role=администратор, Name=Иванова Анна
+2026-06-16 16:26:16 - Employee loaded successfully: Иванова Анна $"Петровнаадминистратор admin123
+2026-06-16 16:27:54 - Employee loaded successfully: Редактирование сотрудника
+2026-06-16 16:27:54 - Employee found: ID=4, Username=cook1, Role=повар, Name=Петров Олег
+2026-06-16 16:27:54 - Employee loaded successfully: Петров Олег $"Викторовичповар cook123
+2026-06-16 16:38:46 - Order found: ID=5, Status=оплачен, Waiter=Смирнова Мария Олеговна, CustomerCount=1
+2026-06-16 16:38:46 - Order item: Кофе американо, Quantity: 1
+2026-06-16 16:38:46 - Order item: Чизкейк, Quantity: 1
+2026-06-16 16:38:46 - Found 2 order items
+2026-06-16 16:38:46 - DB ERROR (GetOrderPaymentType): 42703: столбец "payment_type" не существует
+
+POSITION: 8
+2026-06-16 16:50:15 - Employee loaded successfully: Регистрация сотрудника
+2026-06-16 16:50:33 - DB ERROR (GetOrdersReceivedReport): 42703: столбец o.payment_type не существует
+
+POSITION: 353
+2026-06-16 16:53:52 - DB ERROR (GetOrdersReceivedReport): 42703: столбец o.payment_type не существует
+
+POSITION: 353
+2026-06-16 16:53:53 - DB ERROR (GetOrdersReceivedReport): 42703: столбец o.payment_type не существует
+
+POSITION: 353
+2026-06-16 16:55:37 - DB ERROR (GetOrdersReceivedReport): 42703: столбец o.payment_type не существует
+
+POSITION: 353

@@ -1,4 +1,4 @@
-﻿namespace CafeApp.Models;
+namespace CafeApp.Models;
 using Npgsql;
 using System;
 using System.Collections.Generic;

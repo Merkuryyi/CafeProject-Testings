@@ -23,53 +23,51 @@ build_property.EnforceExtendedAnalyzerRules =
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = CafeApp
-build_property.ProjectDir = C:\Users\Terra\RiderProjects\CafeProject\CafeApp\
+build_property.ProjectDir = A:\RiderProjects\авалония\CafeProject\CafeApp\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
-build_property.EffectiveAnalysisLevelStyle = 8.0
-build_property.EnableCodeStyleSeverity = 
 
-[C:/Users/Terra/RiderProjects/CafeProject/CafeApp/App.axaml]
+[A:/RiderProjects/авалония/CafeProject/CafeApp/App.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 
-[C:/Users/Terra/RiderProjects/CafeProject/CafeApp/Controls/Components/Button/Button.axaml]
+[A:/RiderProjects/авалония/CafeProject/CafeApp/Controls/Components/Button/Button.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 
-[C:/Users/Terra/RiderProjects/CafeProject/CafeApp/Controls/Components/ComboBox/ComboBox.axaml]
+[A:/RiderProjects/авалония/CafeProject/CafeApp/Controls/Components/ComboBox/ComboBox.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 
-[C:/Users/Terra/RiderProjects/CafeProject/CafeApp/Controls/Components/DragAndDrop/DragAndDrop.axaml]
+[A:/RiderProjects/авалония/CafeProject/CafeApp/Controls/Components/DragAndDrop/DragAndDrop.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 
-[C:/Users/Terra/RiderProjects/CafeProject/CafeApp/Controls/Components/Input/Input.axaml]
+[A:/RiderProjects/авалония/CafeProject/CafeApp/Controls/Components/Input/Input.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 
-[C:/Users/Terra/RiderProjects/CafeProject/CafeApp/Controls/Components/List/List.axaml]
+[A:/RiderProjects/авалония/CafeProject/CafeApp/Controls/Components/List/List.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 
-[C:/Users/Terra/RiderProjects/CafeProject/CafeApp/Controls/Components/Sidebar/Sidebar.axaml]
+[A:/RiderProjects/авалония/CafeProject/CafeApp/Controls/Components/Sidebar/Sidebar.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 
-[C:/Users/Terra/RiderProjects/CafeProject/CafeApp/Controls/Components/Table/Table.axaml]
+[A:/RiderProjects/авалония/CafeProject/CafeApp/Controls/Components/Table/Table.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 
-[C:/Users/Terra/RiderProjects/CafeProject/CafeApp/Controls/formEmployee/FormEmployee.axaml]
+[A:/RiderProjects/авалония/CafeProject/CafeApp/Controls/formEmployee/FormEmployee.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 
-[C:/Users/Terra/RiderProjects/CafeProject/CafeApp/Controls/FormInput/FormInput.axaml]
+[A:/RiderProjects/авалония/CafeProject/CafeApp/Controls/FormInput/FormInput.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 
-[C:/Users/Terra/RiderProjects/CafeProject/CafeApp/Controls/Order/Order.axaml]
+[A:/RiderProjects/авалония/CafeProject/CafeApp/Controls/Order/Order.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 
-[C:/Users/Terra/RiderProjects/CafeProject/CafeApp/Controls/Report/Report.axaml]
+[A:/RiderProjects/авалония/CafeProject/CafeApp/Controls/Report/Report.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 
-[C:/Users/Terra/RiderProjects/CafeProject/CafeApp/Controls/Shift/Shift.axaml]
+[A:/RiderProjects/авалония/CafeProject/CafeApp/Controls/Shift/Shift.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 
-[C:/Users/Terra/RiderProjects/CafeProject/CafeApp/Controls/WaiterReport/WaiterReport.axaml]
+[A:/RiderProjects/авалония/CafeProject/CafeApp/Controls/WaiterReport/WaiterReport.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 
-[C:/Users/Terra/RiderProjects/CafeProject/CafeApp/MainWindow.axaml]
+[A:/RiderProjects/авалония/CafeProject/CafeApp/MainWindow.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml

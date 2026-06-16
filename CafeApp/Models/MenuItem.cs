@@ -1,4 +1,4 @@
-﻿namespace CafeApp.Models
+namespace CafeApp.Models
 {
     public class MenuItem
     {

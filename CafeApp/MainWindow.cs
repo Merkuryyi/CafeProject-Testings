@@ -17,7 +17,7 @@ namespace CafeApp
         private readonly ObservableCollection<ListItem> _orders = new();
         private readonly ObservableCollection<ListItem> _shifts = new();
         private readonly DatabaseService _databaseService = new();
-
+        public string logPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "debug.log");
         public MainWindow()
         {
             InitializeComponent();
@@ -66,7 +66,7 @@ namespace CafeApp
             }
             catch (Exception ex)
             {
-                File.AppendAllText(@"A:\debug.log", 
+                File.AppendAllText(logPath, 
                     $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - ERROR in OnWaiterReportOrderClicked: {ex.Message}\n{ex.StackTrace}\n");
             }
         }
@@ -132,7 +132,7 @@ namespace CafeApp
             }
             catch (Exception ex)
             {
-                File.AppendAllText(@"A:\debug.log", 
+                File.AppendAllText(logPath, 
                     $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - ERROR in ShowWaiterReport: {ex.Message}\n{ex.StackTrace}\n");
             }
         }

@@ -1,6 +1,3 @@
-﻿
-
-
 namespace CafeApp.Models
 {
     public class ShiftAssignment

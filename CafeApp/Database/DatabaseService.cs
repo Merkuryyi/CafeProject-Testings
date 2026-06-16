@@ -11,7 +11,7 @@ namespace CafeApp.Database
     {
         private NpgsqlConnection? _connection;
         private string _connectionString = "Host=localhost;Username=postgres;Password=6645;Database=Cafe;Include Error Detail=true";
-
+        public string logPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "debug.log");
         public NpgsqlConnection GetConnection()
         {
             _connection = new NpgsqlConnection(_connectionString);
@@ -53,7 +53,7 @@ namespace CafeApp.Database
             }
             catch (Exception ex)
             {
-                string logPath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
+                
                 File.AppendAllText(logPath, $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - AUTH ERROR: {ex.Message}\n");
                 return (null, null, null);
             }
@@ -89,9 +89,9 @@ namespace CafeApp.Database
             }
             catch (Exception ex)
             {
-                string filePath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
+               
                 string errorMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB ERROR: {ex.Message}\n";
-                File.AppendAllText(filePath, errorMessage);
+                File.AppendAllText(logPath, errorMessage);
                 return false;
             }
         }
@@ -136,9 +136,9 @@ namespace CafeApp.Database
             }
             catch (Exception ex)
             {
-                string filePath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
+               
                 string errorMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB ERROR (GetEmployeesList): {ex.Message}\n";
-                File.AppendAllText(filePath, errorMessage);
+                File.AppendAllText(logPath, errorMessage);
             }
             return employees;
         }
@@ -154,7 +154,7 @@ namespace CafeApp.Database
                                 table_id,
                                 created_at,
                                 status
-                            FROM ""order""
+                            FROM orders
                             ORDER BY created_at DESC";
             
                     using (var command = new NpgsqlCommand(query, conn))
@@ -180,9 +180,8 @@ namespace CafeApp.Database
             }
             catch (Exception ex)
             {
-                string filePath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
                 string errorMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB ERROR (GetOrdersList): {ex.Message}\n";
-                File.AppendAllText(filePath, errorMessage);
+                File.AppendAllText(logPath, errorMessage);
             }
             return orders;
         }
@@ -205,9 +204,8 @@ namespace CafeApp.Database
             }
             catch (Exception ex)
             {
-                string filePath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
                 string errorMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB ERROR (GetOrderStatus): {ex.Message}\n";
-                File.AppendAllText(filePath, errorMessage);
+                File.AppendAllText(logPath, errorMessage);
                 return "";
             }
         }
@@ -218,17 +216,15 @@ namespace CafeApp.Database
             {
                 using (var conn = GetConnection())
                 {
-                    // Получаем текущую дату
+                   
                     DateTime currentDate = DateTime.Today;
-                    
-                    // Находим текущую смену (предполагаем, что смена сегодняшняя)
                     string query = @"SELECT 
                                 o.order_id,
                                 o.table_id,
                                 o.created_at,
                                 o.status,
                                 s.shift_id
-                            FROM ""order"" o
+                            FROM orders o
                             JOIN shift s ON o.shift_id = s.shift_id
                             WHERE s.shift_date = @currentDate
                             ORDER BY o.created_at DESC";
@@ -261,9 +257,8 @@ namespace CafeApp.Database
             }
             catch (Exception ex)
             {
-                string filePath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
                 string errorMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB ERROR (GetCurrentShiftOrdersList): {ex.Message}\n";
-                File.AppendAllText(filePath, errorMessage);
+                File.AppendAllText(logPath, errorMessage);
             }
             return orders;
         }
@@ -305,9 +300,8 @@ namespace CafeApp.Database
             }
             catch (Exception ex)
             {
-                string filePath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
                 string errorMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB ERROR (GetShiftsList): {ex.Message}\n";
-                File.AppendAllText(filePath, errorMessage);
+                File.AppendAllText(logPath, errorMessage);
             }
             return shifts;
         }
@@ -340,9 +334,8 @@ namespace CafeApp.Database
             }
             catch (Exception ex)
             {
-                string filePath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
                 string errorMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB ERROR (GetWaiterIdByName): {ex.Message}\n";
-                File.AppendAllText(filePath, errorMessage);
+                File.AppendAllText(logPath, errorMessage);
                 return -1;
             }
         }
@@ -357,7 +350,7 @@ namespace CafeApp.Database
                     {
                       
                         string orderQuery = @"
-                            INSERT INTO ""order"" 
+                            INSERT INTO orders 
                             (table_id, waiter_id, shift_id, customer_count, status, created_at) 
                             VALUES (@tableId, @waiterId, @shiftId, @customerCount, @status, @createdAt)
                             RETURNING order_id";
@@ -374,8 +367,7 @@ namespace CafeApp.Database
 
                             orderId = Convert.ToInt32(orderCommand.ExecuteScalar());
                         }
-
-                        // 2. Вставляем позиции заказа
+                        
                         string orderItemQuery = @"
                             INSERT INTO order_item 
                             (order_id, menu_item_id, quantity) 
@@ -394,27 +386,24 @@ namespace CafeApp.Database
 
                         transaction.Commit();
                         
-                        string filePath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
                         string successMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Order created successfully: ID={orderId}, Table={tableId}, Items={orderItems.Count}\n";
-                        File.AppendAllText(filePath, successMessage);
+                        File.AppendAllText(logPath, successMessage);
                         
                         return orderId;
                     }
                     catch (Exception ex)
                     {
                         transaction.Rollback();
-                        string filePath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
                         string errorMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB ERROR in transaction (CreateOrder): {ex.Message}\n{ex.StackTrace}\n";
-                        File.AppendAllText(filePath, errorMessage);
+                        File.AppendAllText(logPath, errorMessage);
                         throw;
                     }
                 }
             }
             catch (Exception ex)
             {
-                string filePath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
                 string errorMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB ERROR (CreateOrder): {ex.Message}\n{ex.StackTrace}\n";
-                File.AppendAllText(filePath, errorMessage);
+                File.AppendAllText(logPath, errorMessage);
                 return -1;
             }
         }
@@ -440,7 +429,7 @@ namespace CafeApp.Database
             }
             catch (Exception ex)
             {
-                File.AppendAllText(@"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log", 
+                File.AppendAllText(logPath, 
                     $"Error getting current shift: {ex.Message}\n");
                 return -1;
             }
@@ -465,9 +454,8 @@ namespace CafeApp.Database
             }
             catch (Exception ex)
             {
-                string filePath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
                 string errorMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB ERROR (GetMenuItemIdByName): {ex.Message}\n";
-                File.AppendAllText(filePath, errorMessage);
+                File.AppendAllText(logPath, errorMessage);
                 return -1;
             }
         }
@@ -495,8 +483,8 @@ namespace CafeApp.Database
                             o.status,
                             o.created_at,
                             u.surname || ' ' || u.name || COALESCE(' ' || u.patronymic, '') as waiter_name
-                        FROM ""order"" o
-                        JOIN ""users"" u ON o.waiter_id = u.user_id
+                        FROM orders o
+                        JOIN users u ON o.waiter_id = u.user_id
                         WHERE o.order_id = @orderId";
                     
                     using (var orderCommand = new NpgsqlCommand(orderQuery, conn))
@@ -515,13 +503,13 @@ namespace CafeApp.Database
                                 orderInfo.CreatedAt = reader.GetDateTime(5);
                                 orderInfo.WaiterName = reader.GetString(6);
                                 
-                                File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", 
+                                File.AppendAllText(logPath, 
                                     $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Order found: ID={orderInfo.OrderId}, Status={orderInfo.Status}, " +
                                     $"Waiter={orderInfo.WaiterName}, CustomerCount={orderInfo.CustomerCount}\n");
                             }
                             else
                             {
-                                File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", 
+                                File.AppendAllText(logPath, 
                                     $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - No order found with ID: {orderId}\n");
                                 return orderInfo;
                             }
@@ -553,10 +541,10 @@ namespace CafeApp.Database
                                 orderInfo.Items.Add(item);
                                 itemCount++;
                                 
-                                File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", 
+                                File.AppendAllText(logPath, 
                                     $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Order item: {item.MenuItemName}, Quantity: {item.Quantity}\n");
                             }
-                            File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", 
+                            File.AppendAllText(logPath, 
                                 $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Found {itemCount} order items\n");
                         }
                     }
@@ -564,9 +552,8 @@ namespace CafeApp.Database
             }
             catch (Exception ex)
             {
-                string filePath = @"A:/Инженерно-техническая поддержка сопровождения ИС/debug.log";
                 string errorMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB ERROR (GetOrderById): {ex.Message}\n{ex.StackTrace}\n";
-                File.AppendAllText(filePath, errorMessage);
+                File.AppendAllText(logPath, errorMessage);
             }
             
             return orderInfo;
@@ -583,7 +570,7 @@ namespace CafeApp.Database
                         try
                         {
                              string orderQuery = @"
-                                UPDATE ""order"" 
+                                UPDATE orders 
                                 SET table_id = @tableId, 
                                     waiter_id = @waiterId, 
                                     status = @status,
@@ -602,12 +589,12 @@ namespace CafeApp.Database
                                 
                                 int rowsAffected = orderCommand.ExecuteNonQuery();
                                 
-                                File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", 
+                                File.AppendAllText(logPath, 
                                     $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Updated main order: ID={orderId}, Rows affected: {rowsAffected}\n");
                                 
                                 if (rowsAffected == 0)
                                 {
-                                    File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", 
+                                    File.AppendAllText(logPath, 
                                         $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - WARNING: No rows affected in order update!\n");
                                 }
                             }
@@ -618,7 +605,7 @@ namespace CafeApp.Database
                                 deleteCommand.Parameters.AddWithValue("@orderId", orderId);
                                 int deletedRows = deleteCommand.ExecuteNonQuery();
                                 
-                                File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", 
+                                File.AppendAllText(logPath, 
                                     $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Deleted old order items: {deletedRows} rows\n");
                             }
 
@@ -639,25 +626,15 @@ namespace CafeApp.Database
                                     int itemRows = itemCommand.ExecuteNonQuery();
                                     itemsCount++;
                                     
-                                    File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", 
+                                    File.AppendAllText(logPath, 
                                         $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Inserted item: {item.MenuItemId}, rows affected: {itemRows}\n");
                                 }
                             }
-
-                            // Явно коммитим транзакцию
-                            transaction.Commit();
-                            
-                            File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", 
-                                $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - TRANSACTION COMMITTED. Order ID: {orderId}, Items added: {itemsCount}\n");
-                            
-                            // Проверяем изменения сразу после коммита
-                           
-                            
                             return true;
                         }
                         catch (Exception ex)
                         {
-                            File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", 
+                            File.AppendAllText(logPath, 
                                 $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - ERROR in update transaction: {ex.Message}\n{ex.StackTrace}\n");
                             throw;
                         }
@@ -666,7 +643,7 @@ namespace CafeApp.Database
             }
             catch (Exception ex)
             {
-                File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", 
+                File.AppendAllText(logPath, 
                     $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB ERROR (UpdateOrder): {ex.Message}\n{ex.StackTrace}\n");
                 return false;
             }
@@ -690,9 +667,8 @@ namespace CafeApp.Database
             }
             catch (Exception ex)
             {
-                string filePath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
                 string errorMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB ERROR (GetOrderPaymentType): {ex.Message}\n";
-                File.AppendAllText(filePath, errorMessage);
+                File.AppendAllText(logPath, errorMessage);
                 return "не указан";
             }
         }
@@ -702,7 +678,6 @@ namespace CafeApp.Database
             {
                 using (var conn = GetConnection())
                 {
-                    // Сначала пытаемся найти текущую активную смену
                     string currentShiftQuery = @"
                         SELECT shift_id 
                         FROM shift 
@@ -717,13 +692,11 @@ namespace CafeApp.Database
                         if (result != null)
                         {
                             int currentShiftId = Convert.ToInt32(result);
-                            File.AppendAllText(@"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log", 
+                            File.AppendAllText(logPath, 
                                 $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Found current shift: ID={currentShiftId}\n");
                             return currentShiftId;
                         }
                     }
-
-                    // Если текущая смена не найдена, берем самую недавнюю смену
                     string latestShiftQuery = @"
                         SELECT shift_id 
                         FROM shift 
@@ -737,21 +710,20 @@ namespace CafeApp.Database
                         if (result != null)
                         {
                             int latestShiftId = Convert.ToInt32(result);
-                            File.AppendAllText(@"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log", 
+                            File.AppendAllText(logPath, 
                                 $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Current shift not found, using latest shift: ID={latestShiftId}\n");
                             return latestShiftId;
                         }
                     }
-
-                    // Если вообще нет смен в базе
-                    File.AppendAllText(@"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log", 
+                    
+                    File.AppendAllText(logPath, 
                         $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - WARNING: No shifts found in database\n");
                     return -1;
                 }
             }
             catch (Exception ex)
             {
-                File.AppendAllText(@"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log", 
+                File.AppendAllText(logPath, 
                     $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - ERROR in GetCurrentOrLatestShiftId: {ex.Message}\n{ex.StackTrace}\n");
                 return -1;
             }
@@ -759,20 +731,18 @@ namespace CafeApp.Database
         public ReceiptOrder GetReceiptOrderData(int orderId)
         {
             var receiptOrder = new ReceiptOrder();
-            
             try
             {
                 using (var conn = GetConnection())
                 {
-                    // Получаем основную информацию о заказе
                     string orderQuery = @"
                         SELECT 
                             o.order_id,
                             o.created_at,
                             o.payment_type,
                             u.surname || ' ' || u.name || COALESCE(' ' || u.patronymic, '') as waiter_name
-                        FROM ""order"" o
-                        JOIN ""users"" u ON o.waiter_id = u.user_id
+                        FROM orders o
+                        JOIN users u ON o.waiter_id = u.user_id
                         WHERE o.order_id = @orderId";
                     
                     using (var orderCommand = new NpgsqlCommand(orderQuery, conn))
@@ -790,8 +760,6 @@ namespace CafeApp.Database
                             }
                         }
                     }
-
-                    // Получаем позиции заказа с ценами
                     string itemsQuery = @"
                         SELECT 
                             mi.name,
@@ -824,9 +792,8 @@ namespace CafeApp.Database
             }
             catch (Exception ex)
             {
-                string filePath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
                 string errorMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB ERROR (GetReceiptOrderData): {ex.Message}\n";
-                File.AppendAllText(filePath, errorMessage);
+                File.AppendAllText(logPath, errorMessage);
             }
             
             return receiptOrder;
@@ -842,7 +809,7 @@ namespace CafeApp.Database
                         try
                         {
                             string orderQuery = @"
-                                UPDATE ""order"" 
+                                UPDATE orders 
                                 SET payment_type = @paymentType 
                                 WHERE order_id = @orderId";
                             
@@ -850,34 +817,30 @@ namespace CafeApp.Database
                             {
                                 orderCommand.Parameters.AddWithValue("@orderId", orderId);
                                 orderCommand.Parameters.AddWithValue("@paymentType", paymentType);
-                                
-                                // ДОБАВЬТЕ: выполнение команды
                                 int rowsAffected = orderCommand.ExecuteNonQuery();
                                 
-                                File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", 
+                                File.AppendAllText(logPath, 
                                     $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - UpdatePaymentOrder: ID={orderId}, Type={paymentType}, Rows affected: {rowsAffected}\n");
                                 
                                 if (rowsAffected == 0)
                                 {
-                                    File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", 
+                                    File.AppendAllText(logPath, 
                                         $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - WARNING: No rows affected in payment update!\n");
                                 }
                             }
-
-                            // ДОБАВЬТЕ: коммит транзакции
                             transaction.Commit();
                             
-                            File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", 
+                            File.AppendAllText(logPath, 
                                 $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Payment update COMMITTED\n");
                             
                             return true;
                         }
                         catch (Exception ex)
                         {
-                            File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", 
+                            File.AppendAllText(logPath, 
                                 $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - ERROR in payment update transaction: {ex.Message}\n{ex.StackTrace}\n");
                             transaction.Rollback();
-                            File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", 
+                            File.AppendAllText(logPath, 
                                 $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Payment update ROLLED BACK\n");
                             throw;
                         }
@@ -886,7 +849,7 @@ namespace CafeApp.Database
             }
             catch (Exception ex)
             {
-                File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", 
+                File.AppendAllText(logPath, 
                     $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB ERROR (UpdatePaymentOrder): {ex.Message}\n{ex.StackTrace}\n");
                 return false;
             }
@@ -906,9 +869,8 @@ namespace CafeApp.Database
             }
             catch (Exception ex)
             {
-                string filePath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
                 string errorMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB ERROR (GetMenuItemPriceByName): {ex.Message}\n";
-                File.AppendAllText(filePath, errorMessage);
+                File.AppendAllText(logPath, errorMessage);
                 return 0;
             }
         }
@@ -954,13 +916,13 @@ namespace CafeApp.Database
                                 userInfo.PhotoLink = reader.IsDBNull(8) ? null : reader.GetString(8);
                                 userInfo.ContractScanLink = reader.IsDBNull(9) ? null : reader.GetString(9);
                                 
-                                File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", 
+                                File.AppendAllText(logPath, 
                                     $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Employee found: ID={userInfo.UserId}, " +
                                     $"Username={userInfo.Username}, Role={userInfo.Role}, Name={userInfo.Surname} {userInfo.Name}\n");
                             }
                             else
                             {
-                                File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", 
+                                File.AppendAllText(logPath, 
                                     $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - No employee found with ID: {employeeId}\n");
                                 return userInfo;
                             }
@@ -970,9 +932,8 @@ namespace CafeApp.Database
             }
             catch (Exception ex)
             {
-                string filePath = @"A:/Инженерно-техническая поддержка сопровождения ИС/debug.log";
                 string errorMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB ERROR (GetEmployeeById): {ex.Message}\n{ex.StackTrace}\n";
-                File.AppendAllText(filePath, errorMessage);
+                File.AppendAllText(logPath, errorMessage);
             }
             
             return userInfo;
@@ -994,11 +955,10 @@ namespace CafeApp.Database
                         command.Parameters.AddWithValue("@employmentStatus", employmentStatus);
                 
                         int rowsAffected = command.ExecuteNonQuery();
-                
-                        string filePath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
+                        
                         string logMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Employee status updated: ID={employeeId}, " +
                                             $"New Status={(employmentStatus ? "работает" : "уволен")}, Rows affected: {rowsAffected}\n";
-                        File.AppendAllText(filePath, logMessage);
+                        File.AppendAllText(logPath, logMessage);
                 
                         return rowsAffected == 1;
                     }
@@ -1006,9 +966,8 @@ namespace CafeApp.Database
             }
             catch (Exception ex)
             {
-                string filePath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
                 string errorMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB ERROR (UpdateEmployeeStatus): {ex.Message}\n{ex.StackTrace}\n";
-                File.AppendAllText(filePath, errorMessage);
+                File.AppendAllText(logPath, errorMessage);
                 return false;
             }
         }
@@ -1060,13 +1019,11 @@ namespace CafeApp.Database
             }
             catch (Exception ex)
             {
-                string filePath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
                 string errorMessage = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + " - DB ERROR (GetAllEmployeesExceptAdmins): " + ex.Message + "\n";
-                File.AppendAllText(filePath, errorMessage);
+                File.AppendAllText(logPath, errorMessage);
             }
             return employees;
         }
-        // Метод для создания смены
         public int CreateShift(DateTime shiftDate, TimeSpan startTime, TimeSpan endTime)
         {
             try
@@ -1091,9 +1048,8 @@ namespace CafeApp.Database
             }
             catch (Exception ex)
             {
-                string filePath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
                 string errorMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB ERROR (CreateShift): {ex.Message}\n";
-                File.AppendAllText(filePath, errorMessage);
+                File.AppendAllText(logPath, errorMessage);
                 return -1;
             }
         }
@@ -1121,9 +1077,8 @@ namespace CafeApp.Database
             }
             catch (Exception ex)
             {
-                string filePath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
                 string errorMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB ERROR (AddEmployeeToShift): {ex.Message}\n";
-                File.AppendAllText(filePath, errorMessage);
+                File.AppendAllText(logPath, errorMessage);
                 return false;
             }
         }
@@ -1137,7 +1092,6 @@ namespace CafeApp.Database
             {
                 using (var conn = GetConnection())
                 {
-                    // Получаем основную информацию о смене
                     string shiftQuery = @"
                         SELECT 
                             shift_id,
@@ -1162,8 +1116,6 @@ namespace CafeApp.Database
                             }
                         }
                     }
-
-                    // Получаем сотрудников смены с номерами столиков из table_assignment
                     string employeesQuery = @"
                         SELECT 
                             u.user_id,
@@ -1175,7 +1127,7 @@ namespace CafeApp.Database
                         FROM shift_assignment sa
                         JOIN users u ON sa.user_id = u.user_id
                         LEFT JOIN table_assignment ta ON sa.shift_id = ta.shift_id AND sa.user_id = ta.user_id
-                        LEFT JOIN ""table"" t ON ta.table_id = t.table_id
+                        LEFT JOIN table_cafe t ON ta.table_id = t.table_id
                         WHERE sa.shift_id = @shiftId
                         ORDER BY u.surname, u.name";
                     
@@ -1204,21 +1156,18 @@ namespace CafeApp.Database
             }
             catch (Exception ex)
             {
-                string filePath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
                 string errorMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB ERROR (GetShiftById): {ex.Message}\n";
-                File.AppendAllText(filePath, errorMessage);
+                File.AppendAllText(logPath, errorMessage);
             }
             
             return shiftInfo;
         }
-        // Метод для назначения столика официанту на смену
         public bool AssignTableToWaiter(int shiftId, int waiterId, int tableNumber, DateTime assignmentDate)
         {
             try
             {
                 using (var conn = GetConnection())
                 {
-                    // Сначала проверяем существование столика
                     string checkTableQuery = "SELECT table_id FROM \"table\" WHERE table_number = @tableNumber";
                     int tableId = -1;
                     
@@ -1228,9 +1177,8 @@ namespace CafeApp.Database
                         var result = checkCommand.ExecuteScalar();
                         if (result == null)
                         {
-                            // Столик не существует, создаем его
                             string createTableQuery = @"
-                                INSERT INTO ""table"" (table_number, capacity) 
+                                INSERT INTO table_cafe (table_number, capacity) 
                                 VALUES (@tableNumber, 4)
                                 RETURNING table_id";
                             
@@ -1239,7 +1187,7 @@ namespace CafeApp.Database
                                 createCommand.Parameters.AddWithValue("@tableNumber", tableNumber);
                                 tableId = Convert.ToInt32(createCommand.ExecuteScalar());
                                 
-                                File.AppendAllText(@"A:\debug.log", 
+                                File.AppendAllText(logPath, 
                                     DateTime.Now.ToString() + " - Created new table: ID=" + tableId.ToString() + 
                                     ", Number=" + tableNumber.ToString() + "\n");
                             }
@@ -1250,7 +1198,6 @@ namespace CafeApp.Database
                         }
                     }
 
-                    // Назначаем столик официанту
                     string assignQuery = @"
                         INSERT INTO table_assignment (table_id, user_id, shift_id, assignment_date) 
                         VALUES (@tableId, @waiterId, @shiftId, @assignmentDate)";
@@ -1264,7 +1211,7 @@ namespace CafeApp.Database
 
                         int rowsAffected = assignCommand.ExecuteNonQuery();
                         
-                        File.AppendAllText(@"A:\debug.log", 
+                        File.AppendAllText(logPath, 
                             DateTime.Now.ToString() + " - Table assignment: Table=" + tableNumber.ToString() + 
                             ", Waiter=" + waiterId.ToString() + ", Shift=" + shiftId.ToString() + 
                             ", Rows affected=" + rowsAffected.ToString() + "\n");
@@ -1275,14 +1222,11 @@ namespace CafeApp.Database
             }
             catch (Exception ex)
             {
-                string filePath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
                 string errorMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB ERROR (AssignTableToWaiter): {ex.Message}\n{ex.StackTrace}\n";
-                File.AppendAllText(filePath, errorMessage);
+                File.AppendAllText(logPath, errorMessage);
                 return false;
             }
         }
-
-        // Метод для проверки существования смены на указанную дату и время
         public bool IsShiftExists(DateTime shiftDate, TimeSpan startTime, TimeSpan endTime)
         {
             try
@@ -1309,14 +1253,11 @@ namespace CafeApp.Database
             }
             catch (Exception ex)
             {
-                string filePath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
                 string errorMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB ERROR (IsShiftExists): {ex.Message}\n";
-                File.AppendAllText(filePath, errorMessage);
+                File.AppendAllText(logPath, errorMessage);
                 return false;
             }
         }
-
-        // Метод для получения ID сотрудника по ФИО
         public int GetEmployeeIdByName(string fullName)
         {
             try
@@ -1350,14 +1291,11 @@ namespace CafeApp.Database
             }
             catch (Exception ex)
             {
-                string filePath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
                 string errorMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB ERROR (GetEmployeeIdByName): {ex.Message}\n";
-                File.AppendAllText(filePath, errorMessage);
+                File.AppendAllText(logPath, errorMessage);
                 return -1;
             }
         }
-        // В DatabaseService добавьте эти методы:
-
         public bool UpdateShift(int shiftId, DateTime shiftDate, TimeSpan startTime, TimeSpan endTime)
         {
             try
@@ -1385,9 +1323,8 @@ namespace CafeApp.Database
             }
             catch (Exception ex)
             {
-                string filePath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
                 string errorMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB ERROR (UpdateShift): {ex.Message}\n";
-                File.AppendAllText(filePath, errorMessage);
+                File.AppendAllText(logPath, errorMessage);
                 return false;
             }
         }
@@ -1404,15 +1341,14 @@ namespace CafeApp.Database
                     {
                         command.Parameters.AddWithValue("@shiftId", shiftId);
                         int rowsAffected = command.ExecuteNonQuery();
-                        return true; // Всегда возвращаем true, даже если не было записей для удаления
+                        return true;
                     }
                 }
             }
             catch (Exception ex)
             {
-                string filePath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
                 string errorMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB ERROR (ClearShiftEmployees): {ex.Message}\n";
-                File.AppendAllText(filePath, errorMessage);
+                File.AppendAllText(logPath, errorMessage);
                 return false;
             }
         }
@@ -1438,14 +1374,11 @@ namespace CafeApp.Database
             }
             catch (Exception ex)
             {
-                string filePath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
                 string errorMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB ERROR (ClearWaiterTableAssignments): {ex.Message}\n";
-                File.AppendAllText(filePath, errorMessage);
+                File.AppendAllText(logPath, errorMessage);
                 return false;
             }
         }
-
-        // Метод для удаления смены
         public bool DeleteShift(int shiftId)
         {
             try
@@ -1455,7 +1388,6 @@ namespace CafeApp.Database
                 {
                     try
                     {
-                        // Сначала удаляем связанные записи из shift_employee
                         string deleteEmployeesQuery = "DELETE FROM shift_employee WHERE shift_id = @shiftId";
                         using (var deleteCommand = new NpgsqlCommand(deleteEmployeesQuery, conn, transaction))
                         {
@@ -1463,7 +1395,6 @@ namespace CafeApp.Database
                             deleteCommand.ExecuteNonQuery();
                         }
 
-                        // Затем удаляем саму смену
                         string deleteShiftQuery = "DELETE FROM shift WHERE shift_id = @shiftId";
                         using (var shiftCommand = new NpgsqlCommand(deleteShiftQuery, conn, transaction))
                         {
@@ -1483,14 +1414,12 @@ namespace CafeApp.Database
             }
             catch (Exception ex)
             {
-                string filePath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
                 string errorMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB ERROR (DeleteShift): {ex.Message}\n";
-                File.AppendAllText(filePath, errorMessage);
+                File.AppendAllText(logPath, errorMessage);
                 return false;
             }
             
         }
-        // В класс DatabaseService добавьте метод:
         public List<ListItem> GetWaiterOrders(int waiterId, int shiftId = -1)
         {
             var orders = new List<ListItem>();
@@ -1503,7 +1432,6 @@ namespace CafeApp.Database
 
                     if (shiftId > 0)
                     {
-                        // Заказы официанта за конкретную смену с вычислением суммы
                         query = @"
                             SELECT 
                                 o.order_id,
@@ -1517,7 +1445,7 @@ namespace CafeApp.Database
                                     JOIN menu_item mi ON oi.menu_item_id = mi.item_id
                                     WHERE oi.order_id = o.order_id
                                 ), 0) as total_amount
-                            FROM ""order"" o
+                            FROM orders o
                             WHERE o.waiter_id = @waiterId 
                             AND o.shift_id = @shiftId
                             ORDER BY o.created_at DESC";
@@ -1528,7 +1456,6 @@ namespace CafeApp.Database
                     }
                     else
                     {
-                        // Все заказы официанта с вычислением суммы
                         query = @"
                             SELECT 
                                 o.order_id,
@@ -1543,7 +1470,7 @@ namespace CafeApp.Database
                                     JOIN menu_item mi ON oi.menu_item_id = mi.item_id
                                     WHERE oi.order_id = o.order_id
                                 ), 0) as total_amount
-                            FROM ""order"" o
+                            FROM orders o
                             JOIN shift s ON o.shift_id = s.shift_id
                             WHERE o.waiter_id = @waiterId
                             ORDER BY o.created_at DESC";
@@ -1586,9 +1513,8 @@ namespace CafeApp.Database
             }
             catch (Exception ex)
             {
-                string filePath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
                 string errorMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB ERROR (GetWaiterOrders): {ex.Message}\n";
-                File.AppendAllText(filePath, errorMessage);
+                File.AppendAllText(logPath, errorMessage);
             }
             return orders;
         }
@@ -1598,20 +1524,18 @@ namespace CafeApp.Database
             {
                 using (var conn = GetConnection())
                 {
-                    // Получаем текущую смену
                     int currentShiftId = GetCurrentOrLatestShiftId();
                     if (currentShiftId == -1)
                     {
-                        File.AppendAllText(@"A:\debug.log", 
+                        File.AppendAllText(logPath, 
                             $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - No current shift found for waiter {waiterId}\n");
                         return null;
                     }
 
-                    // Получаем номер столика официанта на текущую смену
                     string query = @"
                         SELECT t.table_number
                         FROM table_assignment ta
-                        JOIN ""table"" t ON ta.table_id = t.table_id
+                        JOIN table_cafe t ON ta.table_id = t.table_id
                         WHERE ta.user_id = @waiterId 
                         AND ta.shift_id = @shiftId
                         LIMIT 1";
@@ -1625,13 +1549,13 @@ namespace CafeApp.Database
                         if (result != null)
                         {
                             int tableNumber = Convert.ToInt32(result);
-                            File.AppendAllText(@"A:\debug.log", 
+                            File.AppendAllText(logPath, 
                                 $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Found table {tableNumber} for waiter {waiterId} in shift {currentShiftId}\n");
                             return tableNumber;
                         }
                         else
                         {
-                            File.AppendAllText(@"A:\debug.log", 
+                            File.AppendAllText(logPath, 
                                 $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - No table assigned to waiter {waiterId} in shift {currentShiftId}\n");
                             return null;
                         }
@@ -1640,15 +1564,11 @@ namespace CafeApp.Database
             }
             catch (Exception ex)
             {
-                string filePath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
                 string errorMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB ERROR (GetWaiterTableForCurrentShift): {ex.Message}\n";
-                File.AppendAllText(filePath, errorMessage);
+                File.AppendAllText(logPath, errorMessage);
                 return null;
             }
         }
-        // В DatabaseService добавьте методы:
-
-        // Отчет о полученных заказах за смену
          public List<OrderReportData> GetOrdersReceivedReport(int shiftId)
          {
              var orders = new List<OrderReportData>();
@@ -1671,7 +1591,7 @@ namespace CafeApp.Database
                                  JOIN menu_item mi ON oi.menu_item_id = mi.item_id
                                  WHERE oi.order_id = o.order_id
                              ), 0) as total_amount
-                         FROM ""order"" o
+                         FROM orders o
                          JOIN users u ON o.waiter_id = u.user_id
                          WHERE o.shift_id = @shiftId
                          ORDER BY o.created_at";
@@ -1695,8 +1615,6 @@ namespace CafeApp.Database
                                      CustomerCount = reader.GetInt32(6),
                                      TotalAmount = reader.GetDecimal(7)
                                  };
-                                 
-                                 // Получаем позиции заказа
                                  order.Items = GetOrderItemsForReport(order.OrderId);
                                  orders.Add(order);
                              }
@@ -1706,14 +1624,12 @@ namespace CafeApp.Database
              }
              catch (Exception ex)
              {
-                 string filePath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
                  string errorMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB ERROR (GetOrdersReceivedReport): {ex.Message}\n";
-                 File.AppendAllText(filePath, errorMessage);
+                 File.AppendAllText(logPath, errorMessage);
              }
              return orders;
          }
  
-         // Отчет об оплаченных заказах
          public List<OrderReportData> GetPaidOrdersReport(int shiftId = -1)
          {
              var orders = new List<OrderReportData>();
@@ -1741,7 +1657,7 @@ namespace CafeApp.Database
                                      JOIN menu_item mi ON oi.menu_item_id = mi.item_id
                                      WHERE oi.order_id = o.order_id
                                  ), 0) as total_amount
-                             FROM ""order"" o
+                             FROM orders o
                              JOIN users u ON o.waiter_id = u.user_id
                              WHERE o.shift_id = @shiftId AND o.status = 'оплачен'
                              ORDER BY o.created_at";
@@ -1751,7 +1667,6 @@ namespace CafeApp.Database
                      }
                      else
                      {
-                         // Берем текущую или последнюю смену
                          int currentShiftId = GetCurrentOrLatestShiftId();
                          
                          query = @"
@@ -1769,7 +1684,7 @@ namespace CafeApp.Database
                                      JOIN menu_item mi ON oi.menu_item_id = mi.item_id
                                      WHERE oi.order_id = o.order_id
                                  ), 0) as total_amount
-                             FROM ""order"" o
+                             FROM orders o
                              JOIN users u ON o.waiter_id = u.user_id
                              WHERE o.shift_id = @shiftId AND o.status = 'оплачен'
                              ORDER BY o.created_at";
@@ -1803,14 +1718,12 @@ namespace CafeApp.Database
              }
              catch (Exception ex)
              {
-                 string filePath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
                  string errorMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB ERROR (GetPaidOrdersReport): {ex.Message}\n";
-                 File.AppendAllText(filePath, errorMessage);
+                 File.AppendAllText(logPath, errorMessage);
              }
              return orders;
          }
 
-        // Вспомогательный метод для получения позиций заказа
             private List<OrderItemReport> GetOrderItemsForReport(int orderId)
             {
                 var items = new List<OrderItemReport>();
@@ -1849,9 +1762,8 @@ namespace CafeApp.Database
                 }
                 catch (Exception ex)
                 {
-                    string filePath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
                     string errorMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - DB ERROR (GetOrderItemsForReport): {ex.Message}\n";
-                    File.AppendAllText(filePath, errorMessage);
+                    File.AppendAllText(logPath, errorMessage);
                 }
                 return items;
             }

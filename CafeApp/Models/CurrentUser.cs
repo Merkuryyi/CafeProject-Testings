@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace CafeApp.Models
 {
@@ -19,7 +19,7 @@ namespace CafeApp.Models
             
             // Логируем вход пользователя
             // string logPath = @"A:\Инженерно-техническая поддержка сопровождения ИС\debug.log";
-           // File.AppendAllText(logPath, $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - USER LOGIN: ID={Id}, Role={Role}, Username={Username}\n");
+            // File.AppendAllText(logPath, $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - USER LOGIN: ID={Id}, Role={Role}, Username={Username}\n");
         }
 
         public static void Clear()

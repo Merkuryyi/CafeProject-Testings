@@ -1,4 +1,4 @@
-﻿// Models/Order.cs
+// Models/Order.cs
 using System;
 using System.Collections.Generic;
 

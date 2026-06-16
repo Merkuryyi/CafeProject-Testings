@@ -12,8 +12,10 @@ using CafeApp.Database;
 
 namespace CafeApp.Controls
 {
+    
     public partial class FormEmployee : UserControl
     {
+        public string logPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "debug.log");
         private string _photoFilePath = "";
         private string _contractFilePath = "";
         private DatabaseService _databaseService;
@@ -65,7 +67,10 @@ namespace CafeApp.Controls
 
         public void ResetComponents()
         {
-            File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log",
+            
+          
+            
+            File.AppendAllText(logPath,
                 $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - " +
                 $"Employee loaded successfully: {Title}\n");
             EmployeeId = -1;
@@ -159,7 +164,7 @@ namespace CafeApp.Controls
                 nameTextBlock.Text = employeeInfo.Name;
                 surnameTextBlock.Text = employeeInfo.Surname;
                 patronymicTextBlock.Text = employeeInfo.Patronymic;
-                File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", 
+                File.AppendAllText(logPath, 
                 $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - " +
                 $"Employee loaded successfully: {employeeInfo.Surname} " +
                 $"{employeeInfo.Name} $\"{employeeInfo.Patronymic}" +
@@ -261,7 +266,7 @@ namespace CafeApp.Controls
             catch (Exception ex)
             {
                 string errorMessage = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - ERROR saving files: {ex.Message}\n";
-                File.AppendAllText("A:/Инженерно-техническая поддержка сопровождения ИС/debug.log", errorMessage);
+                File.AppendAllText(logPath, errorMessage);
             }
         }
         private string GetComboBoxValue(string comboBoxName)

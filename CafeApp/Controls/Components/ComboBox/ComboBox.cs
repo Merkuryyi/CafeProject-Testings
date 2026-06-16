@@ -23,7 +23,6 @@ namespace CafeApp.Controls.Components.ComboBox
         public static readonly StyledProperty<int> SelectedIndexProperty =
             AvaloniaProperty.Register<ComboBox, int>(nameof(SelectedIndex), -1);
 
-        // Событие SelectionChanged
         public event EventHandler<SelectionChangedEventArgs>? SelectionChanged;
 
         public ComboBox()
@@ -39,8 +38,6 @@ namespace CafeApp.Controls.Components.ComboBox
         protected override void OnInitialized()
         {
             base.OnInitialized();
-            
-            // Находим внутренний ComboBox и подписываемся на его событие
             var innerComboBox = this.FindControl<Avalonia.Controls.ComboBox>("MainComboBox");
             if (innerComboBox != null)
             {
@@ -50,7 +47,6 @@ namespace CafeApp.Controls.Components.ComboBox
 
         private void InnerComboBox_SelectionChanged(object? sender, SelectionChangedEventArgs e)
         {
-            // Пробрасываем событие наружу
             SelectionChanged?.Invoke(this, e);
         }
 
