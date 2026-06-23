@@ -4,16 +4,23 @@ using System.Data;
 using System.IO;
 using System.Collections.Generic;
 using CafeApp.Models;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.Json;
 
 namespace CafeApp.Database
 {
     public class DatabaseService : IDisposable
     {
         private NpgsqlConnection? _connection;
-        private string _connectionString = "Host=localhost;Username=postgres;Password=6645;Database=Cafe;Include Error Detail=true";
+        private string _connectionString = "";
         public string logPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "debug.log");
         public NpgsqlConnection GetConnection()
         {
+            var builder = new ConfigurationBuilder()
+                .AddUserSecrets<Program>()
+                .Build();
+            _connectionString = builder["ConnectionStrings:DefaultConnection"];
+            
             _connection = new NpgsqlConnection(_connectionString);
             _connection.Open();
             return _connection;

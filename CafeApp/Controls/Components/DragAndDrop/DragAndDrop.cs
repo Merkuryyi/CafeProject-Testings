@@ -27,7 +27,6 @@ namespace CafeApp.Controls.Components.DragAndDrop
             base.OnInitialized();
             var addFile = this.FindControl<TextBlock>("AddDocument");
             addFile.PointerPressed += async (s, e) => await OpenFilePicker();
-            
             DragDrop.SetAllowDrop(this, true);
             this.AddHandler(DragDrop.DropEvent, OnDrop);
         }
@@ -40,9 +39,7 @@ namespace CafeApp.Controls.Components.DragAndDrop
             if (files != null)
             {
                 foreach (var file in files)
-                {
-                    await SaveFile(file.Path.LocalPath);
-                }
+                { await SaveFile(file.Path.LocalPath); }
             }
         }
 
@@ -54,9 +51,7 @@ namespace CafeApp.Controls.Components.DragAndDrop
             var window = this.VisualRoot as Window;
             var result = await fileDialog.ShowAsync(window);
             if (result != null && result.Length > 0)
-            {
-                await SaveFile(result[0]);
-            }
+            { await SaveFile(result[0]); }
         }
 
         private async Task SaveFile(string sourceFilePath)

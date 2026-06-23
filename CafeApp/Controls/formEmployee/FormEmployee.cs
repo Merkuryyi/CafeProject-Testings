@@ -67,9 +67,6 @@ namespace CafeApp.Controls
 
         public void ResetComponents()
         {
-            
-          
-            
             File.AppendAllText(logPath,
                 $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - " +
                 $"Employee loaded successfully: {Title}\n");
