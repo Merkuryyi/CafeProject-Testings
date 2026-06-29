@@ -11,14 +11,10 @@ namespace CafeApp.Controls.Components.Button
             AvaloniaProperty.Register<Button, string>(nameof(Text), "Кнопка");
 
         public Button()
-        {
-            InitializeComponent();
-        }
+        { InitializeComponent(); }
 
         private void InitializeComponent()
-        {
-            AvaloniaXamlLoader.Load(this);
-        }
+        { AvaloniaXamlLoader.Load(this); }
 
         public string Text
         {

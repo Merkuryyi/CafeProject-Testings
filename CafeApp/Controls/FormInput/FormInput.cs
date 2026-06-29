@@ -51,12 +51,10 @@ namespace CafeApp.Controls
                               passwordInput.Content?.ToString() ?? 
                               passwordInput.Text ?? "";
 
-            // Получаем данные пользователя
             var (role, userId, fullName) = _databaseService.AuthenticateUser(username, password);
     
             if (!string.IsNullOrEmpty(role) && userId.HasValue)
             {
-                // Сохраняем данные в статическом классе
                 CurrentUser.SetUser(userId.Value, role, username, fullName ?? "");
                 LoginResult?.Invoke(this, "SUCCESS");
             }

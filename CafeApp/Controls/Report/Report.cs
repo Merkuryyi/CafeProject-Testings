@@ -289,11 +289,9 @@ namespace CafeApp.Controls
                     WindowStartupLocation = WindowStartupLocation.CenterOwner
                 };
 
-                var mainWindow = this.VisualRoot as Window;
+                var mainWindow = VisualRoot as Window;
                 if (mainWindow != null)
-                {
-                    await dialog.ShowDialog(mainWindow);
-                }
+                { await dialog.ShowDialog(mainWindow); }
             }
             catch (Exception ex)
             {

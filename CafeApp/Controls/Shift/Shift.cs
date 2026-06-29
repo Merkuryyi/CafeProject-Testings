@@ -54,7 +54,7 @@ namespace CafeApp.Controls
         {
             InitializeComponent();
             
-            this.DataContext = this;
+            DataContext = this;
             _databaseService = new DatabaseService();
             AllEmployees = new ObservableCollection<string>();
             ShiftEmployees = new ObservableCollection<ShiftEmployeeData>();
@@ -222,7 +222,7 @@ namespace CafeApp.Controls
                 if (string.IsNullOrEmpty(date) || string.IsNullOrEmpty(startTime) || string.IsNullOrEmpty(endTime))
                 { return; }
 
-                bool success;
+                bool success = false;
                 
                 if (CurrentShiftId > 0)
                 { success = UpdateShiftInDatabase(CurrentShiftId, date, startTime, endTime); }
@@ -280,9 +280,7 @@ namespace CafeApp.Controls
                                     $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Employee is waiter with table: {employee.TableNumber}\n");
 
                                 if (int.TryParse(employee.TableNumber, out int tableNumber))
-                                {
-                                    bool tableAssigned = _databaseService.AssignTableToWaiter(shiftId, employeeId, tableNumber, shiftDate);
-                                }
+                                { bool tableAssigned = _databaseService.AssignTableToWaiter(shiftId, employeeId, tableNumber, shiftDate); }
                                 else
                                 {
                                     File.AppendAllText(@"A:\debug.log", 
