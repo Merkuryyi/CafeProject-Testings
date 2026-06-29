@@ -39,6 +39,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="CafeApp\images\EmployeePhoto\" />
+    <Folder Include="CafeApp\images\EmploymentContract\" />
     <Folder Include="images\EmployeePhoto\" />
     <Folder Include="images\EmploymentContract\" />
   </ItemGroup>
